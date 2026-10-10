@@ -1,0 +1,27 @@
+# MVP validation
+
+Validated in the cloud workspace on 2026-10-10 using Node 24.19.0, Linux, and Chromium 151.0.7922.173 with SwiftShader software rendering.
+
+## Automated checks
+
+- `npm test`: 9 passing tests covering all 15 source records, source-backed household weights, milk conversion, meal totals, missing fiber, rounding, duplicate instances, undo/reset, invalid portions, movement bounds, and capacity/history limits.
+- `npm run build`: TypeScript checking and production bundling pass.
+- `npm run test:e2e`: browser checks against the production bundle cover meal construction, portions, removal/reset/undo, filtering/search, keyboard adding, duplicate instances, source disclosure, missing-fiber display, mobile/reduced motion, modal focus, library drag-and-drop, rejection of off-plate drops, direct 3D movement and undo, no-WebGL fallback, and all fifteen models at tablet width.
+- Axe WCAG A/AA scans cover empty, selected-food, and help-dialog states with no automated violations. This is not a declaration of complete accessibility conformance.
+- Screenshots are generated under ignored `test-results/` for the empty desktop plate, assembled desktop meal, mobile meal, and tablet containing all foods. Viewports: 1440×1100, 390×844, and 900×1100.
+
+## Measured build size
+
+The production JS is split into the UI (~265 kB), scene (~203 kB), and Three.js (~704 kB). Together these are approximately **328 kB gzip**, plus approximately **9.5 kB gzip CSS**. The two Latin variable font files total approximately **62 kB**. Configure compression on the static host; a compressed build-size estimate does not prove network startup performance.
+
+Rendering uses an on-demand frame loop, capped pixel ratio (1.75), simple lighting, no real-time shadows or physics, bounded undo history, and a 24-item capacity. All food assets are procedural and local.
+
+## Open release checks
+
+- Define a reference mid-range laptop, operating system, GPU, and browser version. Measure cold production startup on a specified broadband profile; target <3 seconds.
+- Measure frame times while orbiting and dragging typical and 24-item plates; target 60 FPS on that reference device. Do not infer this from SwiftShader results.
+- Profile WebGL/JS memory across repeated add/remove/reset cycles on the reference browser.
+- Manually evaluate recognizable food silhouettes, touch dragging, screen-reader announcements, keyboard navigation, and zoomed text on real devices. Automated desktop/mobile emulation does not replace that review.
+- Consider validating the historical USDA mirror against the official release when the USDA host is reachable. Exact mirrored records, source IDs, checksums, and missing-data behavior are already documented and tested.
+
+There is no production deployment, save/load persistence, telemetry, or user study in this implementation.

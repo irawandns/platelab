@@ -1,0 +1,392 @@
+[
+  {
+    "id": "rice",
+    "name": "White rice",
+    "category": "Carbohydrates",
+    "preparation": "Cooked · long-grain",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked, edible weight.",
+    "nutrientsPer100g": {
+      "calories": 130.0,
+      "protein": 2.69,
+      "carbohydrates": 28.17,
+      "fat": 0.28,
+      "fiber": 0.4
+    },
+    "educationalDescription": "Rice contributes carbohydrates, one of the body’s sources of energy.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "20045",
+      "description": "Rice, white, long-grain, regular, enriched, cooked",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "bread",
+    "name": "Bread",
+    "category": "Carbohydrates",
+    "preparation": "White · commercially prepared",
+    "defaultPortionGrams": 25,
+    "minPortionGrams": 6.25,
+    "maxPortionGrams": 75,
+    "servingLabel": "1 slice",
+    "countable": true,
+    "conversionNote": "USDA household measure: 1 slice = 25 g.",
+    "nutrientsPer100g": {
+      "calories": 266.0,
+      "protein": 8.85,
+      "carbohydrates": 49.42,
+      "fat": 3.33,
+      "fiber": 2.7
+    },
+    "educationalDescription": "A slice is a serving, not a fixed weight across every loaf. Here, one slice weighs 25 g.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "18069",
+      "description": "Bread, white, commercially prepared (includes soft bread crumbs)",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "noodles",
+    "name": "Egg noodles",
+    "category": "Carbohydrates",
+    "preparation": "Cooked · with salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked, edible weight.",
+    "nutrientsPer100g": {
+      "calories": 138.0,
+      "protein": 4.54,
+      "carbohydrates": 25.16,
+      "fat": 2.07,
+      "fiber": 1.2
+    },
+    "educationalDescription": "Noodles absorb water as they cook. Cooked and dry weights have different nutrition per 100 g.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "20310",
+      "description": "Noodles, egg, cooked, enriched, with added salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "egg",
+    "name": "Boiled egg",
+    "category": "Protein",
+    "preparation": "Hard-boiled · large",
+    "defaultPortionGrams": 50,
+    "minPortionGrams": 12.5,
+    "maxPortionGrams": 150,
+    "servingLabel": "1 egg",
+    "countable": true,
+    "conversionNote": "USDA household measure: 1 large egg = 50 g edible weight, without shell.",
+    "nutrientsPer100g": {
+      "calories": 155.0,
+      "protein": 12.58,
+      "carbohydrates": 1.12,
+      "fat": 10.61,
+      "fiber": 0.0
+    },
+    "educationalDescription": "Eggs provide protein and dietary fat. Changing the number of eggs changes both.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "01129",
+      "description": "Egg, whole, cooked, hard-boiled",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "chicken",
+    "name": "Chicken breast",
+    "category": "Protein",
+    "preparation": "Roasted · skinless",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked meat only, without skin or bone.",
+    "nutrientsPer100g": {
+      "calories": 165.0,
+      "protein": 31.02,
+      "carbohydrates": 0.0,
+      "fat": 3.57,
+      "fiber": 0.0
+    },
+    "educationalDescription": "Chicken breast contributes protein. These estimates are for roasted meat without skin.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "05064",
+      "description": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "salmon",
+    "name": "Salmon",
+    "category": "Protein",
+    "preparation": "Atlantic · cooked, dry heat",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked, edible weight; farmed Atlantic salmon.",
+    "nutrientsPer100g": {
+      "calories": 206.0,
+      "protein": 22.1,
+      "carbohydrates": 0.0,
+      "fat": 12.35,
+      "fiber": 0.0
+    },
+    "educationalDescription": "Salmon contributes both protein and fat. Preparation and species affect its composition.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "15237",
+      "description": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "tofu",
+    "name": "Firm tofu",
+    "category": "Protein",
+    "preparation": "Raw · calcium-set",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Raw firm tofu, prepared with calcium sulfate; edible weight.",
+    "nutrientsPer100g": {
+      "calories": 144.0,
+      "protein": 17.27,
+      "carbohydrates": 2.78,
+      "fat": 8.72,
+      "fiber": 2.3
+    },
+    "educationalDescription": "Tofu is made from soybeans. Firm and silken tofu contain different amounts of water and nutrients.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "16426",
+      "description": "Tofu, raw, firm, prepared with calcium sulfate",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "tempeh",
+    "name": "Tempeh",
+    "category": "Protein",
+    "preparation": "Cooked",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked, edible weight. Fiber is not reported in this USDA record.",
+    "nutrientsPer100g": {
+      "calories": 195.0,
+      "protein": 19.91,
+      "carbohydrates": 7.62,
+      "fat": 11.38,
+      "fiber": null
+    },
+    "educationalDescription": "Tempeh is a fermented soy food. Its source record does not report fiber, so we leave that value unknown.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "16174",
+      "description": "Tempeh, cooked",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "broccoli",
+    "name": "Broccoli",
+    "category": "Vegetables",
+    "preparation": "Boiled · drained, no salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Cooked and drained, edible weight.",
+    "nutrientsPer100g": {
+      "calories": 35.0,
+      "protein": 2.38,
+      "carbohydrates": 7.18,
+      "fat": 0.41,
+      "fiber": 3.3
+    },
+    "educationalDescription": "Broccoli contributes fiber. Watch the fiber estimate change as you adjust its portion.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "11091",
+      "description": "Broccoli, cooked, boiled, drained, without salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "carrot",
+    "name": "Carrot",
+    "category": "Vegetables",
+    "preparation": "Raw",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Raw, edible weight.",
+    "nutrientsPer100g": {
+      "calories": 41.0,
+      "protein": 0.93,
+      "carbohydrates": 9.58,
+      "fat": 0.24,
+      "fiber": 2.8
+    },
+    "educationalDescription": "Carrots contain carbohydrates and fiber. Fiber is included in the total carbohydrate value.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "11124",
+      "description": "Carrots, raw",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "avocado",
+    "name": "Avocado",
+    "category": "Fruits",
+    "preparation": "Raw · flesh only",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25.0,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "Raw edible flesh, without peel or stone.",
+    "nutrientsPer100g": {
+      "calories": 160.0,
+      "protein": 2.0,
+      "carbohydrates": 8.53,
+      "fat": 14.66,
+      "fiber": 6.7
+    },
+    "educationalDescription": "Avocado contributes both fat and fiber. Food categories do not describe every nutrient in a food.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "09037",
+      "description": "Avocados, raw, all commercial varieties",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "banana",
+    "name": "Banana",
+    "category": "Fruits",
+    "preparation": "Raw · medium",
+    "defaultPortionGrams": 118,
+    "minPortionGrams": 29.5,
+    "maxPortionGrams": 354,
+    "servingLabel": "1 banana",
+    "countable": true,
+    "conversionNote": "USDA household measure: 1 medium banana (7–7⅞ inches) = 118 g, without peel.",
+    "nutrientsPer100g": {
+      "calories": 89.0,
+      "protein": 1.09,
+      "carbohydrates": 22.84,
+      "fat": 0.33,
+      "fiber": 2.6
+    },
+    "educationalDescription": "Bananas contribute carbohydrates and fiber. The edible weight here excludes the peel.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "09040",
+      "description": "Bananas, raw",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "category": "Fruits",
+    "preparation": "Raw · with skin, medium",
+    "defaultPortionGrams": 182,
+    "minPortionGrams": 45.5,
+    "maxPortionGrams": 546,
+    "servingLabel": "1 apple",
+    "countable": true,
+    "conversionNote": "USDA household measure: 1 medium apple (3-inch diameter) = 182 g edible weight.",
+    "nutrientsPer100g": {
+      "calories": 52.0,
+      "protein": 0.26,
+      "carbohydrates": 13.81,
+      "fat": 0.17,
+      "fiber": 2.4
+    },
+    "educationalDescription": "Apples with skin contain fiber. These values represent the edible portion of a medium apple.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "09003",
+      "description": "Apples, raw, with skin",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "milk",
+    "name": "Whole milk",
+    "category": "Dairy",
+    "preparation": "3.25% fat · vitamin D added",
+    "defaultPortionGrams": 206.26553848124226,
+    "minPortionGrams": 51.566384620310565,
+    "maxPortionGrams": 618.7966154437268,
+    "servingLabel": "200 ml",
+    "countable": false,
+    "conversionNote": "USDA: 1 US cup milk = 244 g. Using 1 US cup = 236.5882365 ml, 200 ml ≈ 206.27 g.",
+    "nutrientsPer100g": {
+      "calories": 61.0,
+      "protein": 3.15,
+      "carbohydrates": 4.8,
+      "fat": 3.25,
+      "fiber": 0.0
+    },
+    "educationalDescription": "Milk contributes protein, carbohydrates, and fat. This estimate uses whole milk with 3.25% fat.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "01077",
+      "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "cheese",
+    "name": "Cheddar",
+    "category": "Dairy",
+    "preparation": "Cheddar cheese",
+    "defaultPortionGrams": 30,
+    "minPortionGrams": 7.5,
+    "maxPortionGrams": 90,
+    "servingLabel": "30 g",
+    "countable": false,
+    "conversionNote": "Edible weight.",
+    "nutrientsPer100g": {
+      "calories": 404.0,
+      "protein": 22.87,
+      "carbohydrates": 3.09,
+      "fat": 33.31,
+      "fiber": 0.0
+    },
+    "educationalDescription": "Cheddar contains protein and fat. Try a smaller portion and observe how each estimate changes.",
+    "source": {
+      "database": "USDA National Nutrient Database, SR28 (2015)",
+      "id": "01009",
+      "description": "Cheese, cheddar",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  }
+]
