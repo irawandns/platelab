@@ -15,6 +15,7 @@ import {
 import { FoodLibrary } from "./components/FoodLibrary";
 import { NutritionDashboard } from "./components/NutritionDashboard";
 import { PortionControls } from "./components/PortionControls";
+import { PlateSizeControls } from "./components/PlateSizeControls";
 import { FoodArt } from "./components/FoodArt";
 import { usePlate } from "./lib/store";
 import { foodById, portionLabel } from "./lib/nutrition";
@@ -102,6 +103,7 @@ export default function App() {
               </button>
             </div>
           </div>
+          <PlateSizeControls />
           <div className="plate-stage">
             <span className="plate-counter">
               <span />
@@ -228,9 +230,10 @@ export default function App() {
           </ol>
           <p className="help-footnote">
             All values use USDA SR28 data and edible weights. Missing data stays
-            unknown. The 3D sizes are illustrative, and this experience does not
-            give medical or dietary advice. Your plate stays in this session and
-            resets on reload.
+            unknown. Start with a 26 cm plate or enter your own diameter. Food
+            dimensions are approximate; plate size changes never change
+            nutrition. This experience does not give medical or dietary advice.
+            Your plate stays in this session and resets on reload.
           </p>
           <button
             className="primary-button"

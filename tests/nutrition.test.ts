@@ -2,12 +2,8 @@ import { describe, expect, it } from "vitest";
 import { foods, foodById, forPortion, summarize } from "../src/lib/nutrition";
 import rawNutrients from "../src/data/usda-nut_data.json";
 import rawWeights from "../src/data/usda-weight.json";
-import {
-  clampPosition,
-  MAX_ITEMS,
-  PLACEMENT_RADIUS,
-  usePlate,
-} from "../src/lib/store";
+import { clampPosition, MAX_ITEMS, usePlate } from "../src/lib/store";
+import { DEFAULT_PLATE_CM, placementRadius } from "../src/lib/scale";
 import type { PlateItem, Nutrient } from "../src/types";
 const item = (foodId: string, grams: number): PlateItem => ({
   instanceId: foodId,
@@ -100,6 +96,7 @@ describe("plate state and boundaries", () => {
       selectedItemId: null,
       history: [],
       announcement: "",
+      plateDiameterCm: DEFAULT_PLATE_CM,
     });
   it("keeps duplicate instances independent and restores a cleared plate", () => {
     clean();
@@ -127,7 +124,10 @@ describe("plate state and boundaries", () => {
     expect(usePlate.getState().items).toHaveLength(0);
     s.add("rice", [100, 100]);
     let i = usePlate.getState().items[0];
-    expect(Math.hypot(...i.position)).toBeCloseTo(PLACEMENT_RADIUS, 8);
+    expect(Math.hypot(...i.position)).toBeCloseTo(
+      placementRadius(DEFAULT_PLATE_CM, i, 100),
+      8,
+    );
     s.setPortion(i.instanceId, Infinity);
     expect(usePlate.getState().items[0].portionGrams).toBe(100);
     s.setPortion(i.instanceId, 999);

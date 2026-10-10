@@ -87,6 +87,8 @@ The plate is the primary interaction area.
 #### Functional Requirements
 
 - Display a stylized 3D plate in the center of the interface.
+- Default to a 26 cm outer diameter. Offer 20/26/32 cm presets and a custom 18–36 cm diameter in 0.1 cm steps.
+- Keep food dimensions and nutrient estimates unchanged when plate size changes. Make plate-size changes undoable.
 - Support adding food items to the plate.
 - Allow users to select individual food objects.
 - Allow users to reposition food objects.
@@ -108,7 +110,7 @@ Provide click-to-add as an alternative to drag-and-drop.
 
 #### Constraints
 
-- Foods must remain inside the plate's placement boundary.
+- Clamp food placement using the current plate's eating area and the selected portion's footprint. If a portion is larger than the eating area, center it and explain the overflow; never shrink food to fit a plate.
 - Food objects must be individually selectable.
 - Model scale should remain visually recognizable.
 - Models should avoid expensive physics simulations.
@@ -179,11 +181,11 @@ Users can adjust portions after adding food to the plate.
 
 - Changing portions updates nutritional values immediately.
 - Portion changes visually affect the food's appearance.
-- Countable foods may use additional pieces rather than uniform scaling.
+- Countable foods must use additional whole pieces rather than enlarging a single whole food. Fractional remainders may use estimated smaller pieces.
 - Foods can define their own valid portion ranges.
 - Portion changes must preserve nutrient calculation accuracy relative to the data source.
 
-**Important:** Low-poly visual scale is illustrative and does not represent a precise physical volume or weight measurement.
+**Important:** Visual scale is a core educational requirement. Use shared centimetre coordinates and plausible dimensions for each default serving. Anchor dimensions to source household measures where available. Other food dimensions are explicit visual estimates, not measured physical volumes or weights; edible grams remain authoritative for nutrition.
 
 ### 4.4 Nutrition Dashboard
 
@@ -437,6 +439,7 @@ All food models should follow a consistent low-poly visual language.
 - Avoid photorealistic shaders.
 - Reuse common geometry and materials.
 - Maintain consistent proportions and orientation.
+- Calibrate each default serving to documented dimensions against the plate, including matching one egg serving to one egg model.
 
 ### 7.2 Asset Formats
 
@@ -473,12 +476,14 @@ These are optimization targets, not strict artistic limits.
 Use food-specific portion strategies.
 
 - **Piece-based:** Eggs, apples, bananas.
+- **Stacked slices:** Bread.
 - **Cluster-based:** Broccoli, strawberries.
 - **Mound-based:** Rice, noodles.
 - **Volume-based representation:** Milk, sauces.
 - **Scale-based:** Chicken, tofu, salmon.
 
 A numeric portion label remains the authoritative representation of quantity.
+Whole pieces retain their dimensions when counts increase. Fractional pieces use cube-root estimated size. Mounds and weighed solid foods use cube-root scaling so doubling grams doubles estimated model volume. Milk uses a fixed-size glass with a changing liquid level.
 
 ---
 
@@ -850,18 +855,19 @@ PlateLab is a lightweight, playful 3D nutrition playground where users build vir
 
 ---
 
-## 18. Implementation Clarifications (v1.1)
+## 18. Implementation Clarifications (v1.2)
 
 These refinements preserve the product's educational focus while resolving ambiguity in the original draft.
 
 - **MVP implementation:** React + TypeScript + Vite, React Three Fiber/Three.js, Drei camera controls, Zustand, and ordinary CSS. Procedural geometry avoids an external model pipeline; vector thumbnails share its silhouettes. Fonts, food data, and models are bundled locally. No backend or API key is required.
 - **Undo:** Basic undo is P0 because accidental removal/reset recovery was already a required behavior in §4.7. The implementation retains the last 30 changes; redo remains outside this release.
-- **Portions:** Small = 0.5×, Regular = 1×, Large = 2× of the defined serving. Foods allow 0.25×–3×, including a gram input. Count controls adjust by one source-defined serving. Edible weight drives every calculation, including milk. Visual model size uses cube-root scaling and is illustrative; repeated pieces are a future visual improvement.
+- **Portions:** Small = 0.5×, Regular = 1×, Large = 2× of the defined serving. Foods allow 0.25×–3×, including a gram input. Count controls adjust by one source-defined serving. Edible weight drives every calculation, including milk. Apples, eggs, bananas and bread repeat whole pieces, with a smaller estimated piece for fractional remainders. Mounds and weighed solids use cube-root volume scaling. A fixed-size glass changes fill level for milk.
+- **Physical scale and plate size:** One scene unit equals 5 cm. The default plate is 26 cm across the outer rim. Presets are 20/26/32 cm; custom diameter is 18–36 cm in 0.1 cm steps. All food models use explicit regular-serving dimensions in `src/lib/scale.ts`. Apple's 7.62 cm diameter is source-backed; banana's curved dimensions approximate its source length. Other dimensions are visual estimates documented in `src/data/visual-scale.md`. Plate diameter affects geometry, drop acceptance and placement, never food size or nutrition. Camera framing fits the maximum supported diameter and stays fixed when changing plate size. Clear plate retains the chosen diameter; undo restores diameter and food positions together.
 - **Source data:** Use the USDA SR28 (2015) records and household weights documented in `src/data/README.md`. This is a curated historical dataset, not a live FoodData Central feed. Tofu is raw firm calcium-set tofu; tempeh is cooked; noodles are cooked egg noodles with salt. Preparation labels remain visible when selected.
 - **Missing nutrients:** The cooked-tempeh record has no fiber value. Keep that value `null`, show “Unknown” at food level, and label the meal fiber figure as a known subtotal with `+`. Do not infer zero or substitute a different preparation. The nutrition engine returns totals and an explicit set of incomplete nutrients.
 - **Chart meaning:** Macronutrient bar segments represent approximate energy shares using 4/4/9 kcal per gram, not personalized targets or a health score. Total energy uses the independently sourced calorie value. Fiber is included in carbohydrates and is not added twice.
 - **Data model:** The actual interfaces are in `src/types.ts`. Plate coordinates use `[x, z]` on a fixed-height plane; nutrition is independent of position. Model IDs match food IDs. Data source metadata and food-specific serving conversions are explicit.
-- **Capacity:** Limit the plate to 24 independently selectable instances to bound render cost. The UI explains when the plate is full. Food positions are clamped with a margin for the largest model. Overlap is permitted; the food list always allows selecting obscured objects.
+- **Capacity:** Limit the plate to 24 independently selectable instances to bound render cost. The UI explains when the plate is full. Food positions are clamped with a conservative footprint for each current portion; larger portions and smaller plates reclamp existing positions. Oversized portions are centered and may extend past the eating area, with a visible explanation. Overlap is permitted; the food list always allows selecting obscured objects.
 - **Accessibility:** Every canvas action has ordinary button/input alternatives. Use native controls and a modal dialog, visible focus styles, reduced-motion handling, and live action announcements. If WebGL fails, nutrition and non-canvas controls remain usable.
 - **Session behavior:** The first visit starts with an empty plate. The current meal stays in memory and resets on reload; save/load and persistent plates remain P1. No telemetry is collected.
 - **Validation:** Automated functional and calculation checks are separate from usability studies and hardware benchmarks. A software-rendered cloud browser cannot establish the 60 FPS mid-range laptop target or the broadband startup target. Those release acceptance criteria remain open until measured on a named reference device.

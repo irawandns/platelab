@@ -207,3 +207,53 @@ test("renders all fifteen models on tablet without overflow or runtime errors", 
   });
   expect(errors).toEqual([]);
 });
+
+test("changes custom plate diameter without changing nutrition and supports undo", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./");
+  await expect(page.getByLabel("Custom plate diameter")).toHaveValue("26");
+  await page.getByRole("button", { name: "Add Apple", exact: true }).click();
+  await page.getByRole("button", { name: "Large 2×" }).click();
+  await expect(page.getByTestId("portion-label")).toHaveText(
+    "2 apples · 364 g",
+  );
+  const energy = await page.getByTestId("total-calories").textContent();
+  await page.getByLabel("Custom plate diameter").fill("18");
+  await page.getByLabel("Custom plate diameter").press("Enter");
+  await expect(
+    page.getByRole("img", { name: /Interactive 3D plate, 18 centimetres/ }),
+  ).toBeVisible();
+  await expect(page.getByTestId("total-calories")).toHaveText(energy!);
+  await expect(page.getByTestId("portion-label")).toHaveText(
+    "2 apples · 364 g",
+  );
+  await expect(page.getByText(/A portion extends beyond/)).toBeVisible();
+  await page.getByRole("button", { name: "Undo last change" }).click();
+  await expect(page.getByLabel("Custom plate diameter")).toHaveValue("26");
+  await expect(page.getByText(/A portion extends beyond/)).toHaveCount(0);
+  await page.screenshot({
+    path: "test-results/default-26cm-apples.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "32 cm", exact: true }).click();
+  await expect(page.getByLabel("Custom plate diameter")).toHaveValue("32");
+  await page.getByLabel("Custom plate diameter").fill("999");
+  await page.getByLabel("Custom plate diameter").press("Enter");
+  await expect(page.getByLabel("Custom plate diameter")).toHaveValue("36");
+  await page.getByLabel("Custom plate diameter").fill("999");
+  await page.getByLabel("Custom plate diameter").press("Enter");
+  await expect(page.getByLabel("Custom plate diameter")).toHaveValue("36");
+  await page.screenshot({
+    path: "test-results/physical-scale-apples.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByLabel("Custom plate diameter")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});

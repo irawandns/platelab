@@ -24,7 +24,13 @@ function Stem({ color = "#74945c", ...props }: ShapeProps) {
     </mesh>
   );
 }
-export function FoodModel({ id }: { id: string }) {
+export function FoodModel({
+  id,
+  milkRatio = 1,
+}: {
+  id: string;
+  milkRatio?: number;
+}) {
   switch (id) {
     case "rice":
       return (
@@ -107,26 +113,11 @@ export function FoodModel({ id }: { id: string }) {
       );
     case "egg":
       return (
-        <group>
-          <Facet
-            color="#f5ede0"
-            position={[-0.15, 0.26, 0]}
-            scale={[0.24, 0.34, 0.24]}
-          />
-          <mesh
-            castShadow
-            position={[0.22, 0.1, 0.12]}
-            rotation={[-Math.PI / 2, 0, 0]}
-          >
-            <cylinderGeometry args={[0.25, 0.21, 0.1, 12]} />
-            <meshStandardMaterial color="#fff8e8" />
-          </mesh>
-          <Facet
-            color="#efb333"
-            position={[0.22, 0.17, 0.12]}
-            scale={[0.15, 0.07, 0.15]}
-          />
-        </group>
+        <Facet
+          color="#f5ede0"
+          position={[0, 0.34, 0]}
+          scale={[0.24, 0.34, 0.24]}
+        />
       );
     case "chicken":
       return (
@@ -246,8 +237,8 @@ export function FoodModel({ id }: { id: string }) {
       );
     case "carrot":
       return (
-        <group rotation={[0, 0, -1.05]} position={[0, 0.24, 0]}>
-          <mesh castShadow rotation={[0, 0, Math.PI]}>
+        <group rotation={[0, 0, -Math.PI / 2]} position={[0, 0.17, 0]}>
+          <mesh castShadow>
             <coneGeometry args={[0.17, 0.85, 7]} />
             <meshStandardMaterial color="#f09b45" flatShading />
           </mesh>
@@ -331,19 +322,38 @@ export function FoodModel({ id }: { id: string }) {
     case "milk":
       return (
         <group>
-          <mesh castShadow position={[0, 0.32, 0]}>
-            <cylinderGeometry args={[0.25, 0.2, 0.62, 12]} />
-            <meshStandardMaterial color="#d5e4dc" roughness={0.3} />
+          <mesh position={[0, 1.3, 0]}>
+            <cylinderGeometry args={[0.84, 0.84, 2.6, 24, 1, true]} />
+            <meshStandardMaterial
+              color="#bdcec7"
+              transparent
+              opacity={0.2}
+              roughness={0.15}
+              depthWrite={false}
+              side={2}
+            />
           </mesh>
-          <mesh position={[0, 0.635, 0]}>
-            <cylinderGeometry args={[0.223, 0.223, 0.014, 12]} />
-            <meshStandardMaterial color="#fffbed" />
+          <mesh position={[0, 0.01, 0]}>
+            <cylinderGeometry args={[0.84, 0.84, 0.02, 24]} />
+            <meshStandardMaterial color="#bdcec7" transparent opacity={0.3} />
           </mesh>
-          <Box
-            color="#edf4e8"
-            position={[-0.12, 0.35, 0.195]}
-            scale={[0.035, 0.4, 0.025]}
-          />
+          <mesh
+            position={[
+              0,
+              0.02 + (200 * milkRatio) / (Math.PI * 3.9 ** 2) / 5 / 2,
+              0,
+            ]}
+          >
+            <cylinderGeometry
+              args={[
+                0.78,
+                0.78,
+                (200 * milkRatio) / (Math.PI * 3.9 ** 2) / 5,
+                24,
+              ]}
+            />
+            <meshStandardMaterial color="#fffbed" roughness={0.5} />
+          </mesh>
         </group>
       );
     case "cheese":

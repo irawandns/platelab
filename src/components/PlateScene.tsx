@@ -17,7 +17,13 @@ import { OrbitControls } from "@react-three/drei";
 import { Group, Plane, Raycaster, Vector2, Vector3, DoubleSide } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { RotateCcw, RotateCw, ZoomIn, ZoomOut, View } from "lucide-react";
-import { FoodModel } from "./FoodModel";
+import { FoodPortion } from "./FoodPortion";
+import {
+  footprintRadius,
+  plateRadius,
+  wellRadius,
+  MAX_PLATE_CM,
+} from "../lib/scale";
 import { foodById } from "../lib/nutrition";
 import { usePlate } from "../lib/store";
 import type { PlateItem } from "../types";
@@ -40,7 +46,8 @@ function Item({
   const { invalidate } = useThree();
   const food = foodById[item.foodId];
   const ratio = item.portionGrams / food.defaultPortionGrams;
-  const targetScale = Math.cbrt(ratio) * 0.85;
+  const targetScale = 1;
+  const footprint = footprintRadius(item.foodId, ratio);
   const animated = useRef(reduced ? targetScale : 0.03);
   useFrame((_, delta) => {
     if (!group.current) return;
@@ -102,12 +109,12 @@ function Item({
     >
       {selected && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-          <ringGeometry args={[0.53, 0.55, 40]} />
+          <ringGeometry args={[footprint, footprint + 0.025, 40]} />
           <meshBasicMaterial color="#b16c41" side={DoubleSide} />
         </mesh>
       )}
       <group ref={group}>
-        <FoodModel id={item.foodId} />
+        <FoodPortion id={item.foodId} ratio={ratio} />
       </group>
     </group>
   );
@@ -122,9 +129,25 @@ function World({
   libraryDrag: boolean;
 }) {
   const items = usePlate((s) => s.items);
+  const diameterCm = usePlate((s) => s.plateDiameterCm);
+  const radius = plateRadius(diameterCm);
+  const plateScale = radius / 2.74;
   const controls = useRef<OrbitControlsImpl>(null);
   const [dragging, setDragging] = useState(false);
-  const { camera, gl, invalidate } = useThree();
+  const { camera, gl, invalidate, size } = useThree();
+  // Keep the same camera for every diameter so a bigger plate actually looks bigger.
+  // Fit the largest supported plate even in a narrow mobile viewport.
+  const fitDistance = Math.max(
+    10,
+    (plateRadius(MAX_PLATE_CM) * 2 + 0.8) /
+      (2 * Math.tan((39 * Math.PI) / 360) * (size.width / size.height)),
+  );
+  useEffect(() => {
+    camera.position.set(0, fitDistance * 0.676, fitDistance * 0.737);
+    camera.lookAt(0, 0, 0);
+    controls.current?.update();
+    invalidate();
+  }, [camera, fitDistance, invalidate]);
   const ready = useRef(false);
   useFrame(() => {
     if (!ready.current) {
@@ -137,7 +160,7 @@ function World({
     if (!c) return;
     const action = cameraAction.action;
     if (action === "reset") {
-      camera.position.set(0, 5.6, 6.1);
+      camera.position.set(0, fitDistance * 0.676, fitDistance * 0.737);
       c.target.set(0, 0, 0);
     }
     if (action === "left" || action === "right") {
@@ -147,11 +170,11 @@ function World({
     if (action === "in" || action === "out") {
       const desired =
         camera.position.length() * (action === "in" ? 0.85 : 1.15);
-      camera.position.setLength(Math.max(6.5, Math.min(12, desired)));
+      camera.position.setLength(Math.max(6.5, Math.min(24, desired)));
     }
     c.update();
     invalidate();
-  }, [cameraAction, camera, invalidate]);
+  }, [cameraAction, camera, fitDistance, invalidate]);
   useEffect(() => {
     const canvas = gl.domElement;
     const drop = (e: DragEvent) => {
@@ -168,7 +191,7 @@ function World({
         camera,
       );
       const point = ray.ray.intersectPlane(surface, new Vector3());
-      if (point && Math.hypot(point.x, point.z) <= 2.65)
+      if (point && Math.hypot(point.x, point.z) <= radius)
         usePlate.getState().add(id, [point.x, point.z]);
     };
     const allow = (e: DragEvent) => {
@@ -181,39 +204,43 @@ function World({
       canvas.removeEventListener("drop", drop);
       canvas.removeEventListener("dragover", allow);
     };
-  }, [gl, camera]);
+  }, [gl, camera, radius]);
   return (
     <>
       <ambientLight intensity={1.7} />
       <directionalLight position={[-3, 7, 5]} intensity={2.4} />
       <directionalLight position={[4, 3, -2]} intensity={0.6} color="#ffe4ba" />
-      <mesh position={[0, -0.035, 0]}>
-        <cylinderGeometry args={[2.74, 2.63, 0.14, 80]} />
-        <meshStandardMaterial color="#d5d9c4" roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 0.045, 0]}>
-        <cylinderGeometry args={[2.68, 2.7, 0.12, 80]} />
-        <meshStandardMaterial color="#faf9ed" roughness={0.85} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.115, 0]}>
-        <torusGeometry args={[2.43, 0.24, 10, 80]} />
-        <meshStandardMaterial color="#f3f3e5" roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 0.12, 0]}>
-        <cylinderGeometry args={[2.24, 2.24, 0.07, 80]} />
-        <meshStandardMaterial color="#f8f8eb" roughness={0.9} />
-      </mesh>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -0.12, 0]}
-        scale={[1, 1, 1]}
-      >
-        <circleGeometry args={[2.82, 64]} />
-        <meshBasicMaterial color="#555b38" transparent opacity={0.06} />
-      </mesh>
+      <group scale={[plateScale, 1, plateScale]}>
+        <mesh position={[0, -0.035, 0]}>
+          <cylinderGeometry args={[2.74, 2.63, 0.14, 80]} />
+          <meshStandardMaterial color="#d5d9c4" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, 0.045, 0]}>
+          <cylinderGeometry args={[2.68, 2.7, 0.12, 80]} />
+          <meshStandardMaterial color="#faf9ed" roughness={0.85} />
+        </mesh>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.115, 0]}>
+          <torusGeometry args={[2.43, 0.24, 10, 80]} />
+          <meshStandardMaterial color="#f3f3e5" roughness={0.9} />
+        </mesh>
+        <mesh position={[0, 0.12, 0]}>
+          <cylinderGeometry args={[2.24, 2.24, 0.07, 80]} />
+          <meshStandardMaterial color="#f8f8eb" roughness={0.9} />
+        </mesh>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -0.12, 0]}
+          scale={[1, 1, 1]}
+        >
+          <circleGeometry args={[2.82, 64]} />
+          <meshBasicMaterial color="#555b38" transparent opacity={0.06} />
+        </mesh>
+      </group>
       {(dragging || libraryDrag) && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.175, 0]}>
-          <ringGeometry args={[2.15, 2.19, 64]} />
+          <ringGeometry
+            args={[wellRadius(diameterCm) - 0.04, wellRadius(diameterCm), 64]}
+          />
           <meshBasicMaterial color="#829568" transparent opacity={0.7} />
         </mesh>
       )}
@@ -231,7 +258,7 @@ function World({
         enablePan={false}
         enableDamping={!reduced}
         minDistance={6.5}
-        maxDistance={12}
+        maxDistance={24}
         minPolarAngle={0.15}
         maxPolarAngle={Math.PI / 2.5}
         makeDefault
@@ -240,9 +267,16 @@ function World({
   );
 }
 function Fallback() {
+  const diameterCm = usePlate((s) => s.plateDiameterCm);
   return (
     <div className="scene-fallback">
-      <div className="fallback-plate" />
+      <div
+        className="fallback-plate"
+        style={{
+          width: (200 * diameterCm) / 26,
+          height: (95 * diameterCm) / 26,
+        }}
+      />
       <p>3D isn’t available in this browser.</p>
       <span>
         You can still build your plate using the food library and controls
@@ -264,6 +298,7 @@ class SceneBoundary extends Component<
   }
 }
 export default function PlateScene() {
+  const diameterCm = usePlate((s) => s.plateDiameterCm);
   const [cameraAction, setCameraAction] = useState({ action: "", nonce: 0 });
   const [reduced, setReduced] = useState(false);
   const [over, setOver] = useState(false);
@@ -284,7 +319,7 @@ export default function PlateScene() {
       <div
         className="canvas-wrap"
         role="img"
-        aria-label="Interactive 3D plate. Use the food list and portion controls below as a keyboard alternative."
+        aria-label={`Interactive 3D plate, ${diameterCm} centimetres in diameter. Use the food list and portion controls below as a keyboard alternative.`}
       >
         <SceneBoundary>
           <Suspense

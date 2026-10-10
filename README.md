@@ -16,6 +16,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 ## What works
 
 - Fifteen foods with procedural low-poly models and vector thumbnails.
+- A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
 - Search/category filtering; click, tap, keyboard, and drag-to-add.
 - Select independent instances, reposition by dragging or buttons, rotate/zoom/reset the camera.
 - Small/regular/large portions, a slider, serving increment/decrement, and edible-gram input.
@@ -24,7 +25,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 - Rule-based learning notes without health scores or daily targets.
 - Responsive desktop/tablet/mobile layout, reduced motion, keyboard alternatives, accessible help dialog, and a non-WebGL fallback for the nutrition workflow.
 
-The current implementation uses illustrative cube-root model scaling. Repeated-piece portion visuals, save/load, direct comparison, and guided lessons remain future improvements.
+Food models share a centimetre scale and plausible regular-serving dimensions. Apples, eggs, bananas, and bread repeat whole pieces; fractional pieces use estimated size. Mounds and weighed solids grow by volume, and milk changes its fill level in a fixed-size glass. See [visual dimensions and limits](src/data/visual-scale.md). Save/load, direct comparison, and guided lessons remain future improvements.
 
 ## Validate
 
@@ -63,6 +64,7 @@ Missing nutrients remain unknown. Cooked tempeh's fiber is unreported, so a plat
 - `src/data/foods.json`: local food definitions and provenance.
 - `src/lib/nutrition.ts`: portion conversion, totals, formatting, and learning rules.
 - `src/lib/store.ts`: plate instances, bounded placement, portions, selection, and undo.
+- `src/lib/scale.ts`: physical units, plate diameters, regular-serving dimensions, piece layouts and footprints.
 - `src/components/PlateScene.tsx`, `FoodModel.tsx`: demand-rendered scene, camera, selection, drag interactions, and procedural models.
 - `src/components/`: food shelf, portion controls, nutrition dashboard, and illustrations.
 - `tests/`: source/data, calculation, state, browser workflow, and accessibility checks.

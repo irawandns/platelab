@@ -196,7 +196,8 @@ export function PortionControls() {
         </div>
       </div>
       <p className="scale-note">
-        Visual size is illustrative. The portion label tells the full story.
+        Food sizes are approximate, scaled to your plate. Whole pieces repeat;
+        fractional pieces use estimated size. Grams determine nutrition.
       </p>
     </section>
   );

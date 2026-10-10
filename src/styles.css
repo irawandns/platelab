@@ -454,6 +454,55 @@ button:disabled:hover {
   gap: 8px;
   align-items: center;
 }
+.plate-size-panel {
+  margin-top: 18px;
+  padding: 12px;
+  background: #f0f2e7;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 11px;
+}
+.plate-size-controls,
+.plate-size-presets,
+.plate-size-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.plate-size-controls {
+  justify-content: space-between;
+}
+.plate-size-controls > span {
+  font-weight: 600;
+}
+.plate-size-presets button {
+  background: var(--surface);
+  border: 1px solid #d3d9c7;
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+.plate-size-presets button[aria-pressed="true"] {
+  border-color: #8a9c74;
+  background: #e0e8d2;
+}
+.plate-size-input input {
+  width: 65px;
+  border: 1px solid #d3d9c7;
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 6px;
+  color: var(--ink);
+}
+.plate-size-panel p {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.plate-size-panel .plate-fit-note {
+  color: #8b4128;
+}
 .icon-button {
   width: 30px;
   height: 30px;
