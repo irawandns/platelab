@@ -39,6 +39,19 @@ The browser suite uses `/usr/bin/chromium` if present; otherwise install Playwri
 
 Production build: `npm run build`. Static-host the generated `dist/` directory at the domain root. No server-side API is required. Use `npm run preview` to inspect the production bundle.
 
+## GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` builds, tests, and deploys `main` to GitHub Pages. In repository **Settings → Pages**, select **GitHub Actions** as the build source. The intended site address is **https://irawandns.github.io/platelab/**. The workflow can also be launched manually from the repository's Actions tab.
+
+`npm run build:pages` uses `/platelab/` as the asset base, including fonts, the favicon, and the lazy-loaded 3D scene. To verify that production path locally:
+
+```sh
+npm run build:pages
+PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
+```
+
+Deployments run unit tests, all browser checks, and formatting validation before publishing. Actions are pinned to commit hashes. The build job has read-only repository access; the deployment job has Pages and OIDC permissions. Future pushes to `main` automatically update the site. If Pages is not enabled, enable it in Settings and rerun the workflow. This workflow does not require a personal token or any app secrets.
+
 ## Nutrition data
 
 The app uses curated **USDA SR28 (2015)** records. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. This is historical generic composition data, not a live database or brand-specific lookup.

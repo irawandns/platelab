@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 test("has no automated WCAG A/AA violations in empty, selected and help states", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   const scan = async () => {
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])

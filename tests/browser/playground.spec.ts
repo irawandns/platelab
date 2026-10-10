@@ -4,7 +4,7 @@ test("builds a meal, adjusts portions, removes, clears and undoes", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(15);
   await expect(page.getByTestId("total-calories")).toHaveText("0");
   await expect(page.locator("canvas")).toBeVisible();
@@ -42,7 +42,7 @@ test("builds a meal, adjusts portions, removes, clears and undoes", async ({
 test("supports search, filtering, keyboard input, duplicate foods and source details", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByRole("button", { name: "Fruits", exact: true }).click();
   await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(3);
   await page.getByRole("textbox", { name: "Search foods" }).fill("banana");
@@ -77,7 +77,7 @@ test("works on mobile, with reduced motion and an accessible help dialog", async
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("./");
   await page.getByRole("button", { name: "How it works" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -106,7 +106,7 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("./");
   const canvas = page.locator('canvas[data-ready="true"]');
   await expect(canvas).toBeVisible();
   const box = (await canvas.boundingBox())!;
@@ -163,7 +163,7 @@ test("keeps the nutrition workflow usable without WebGL", async ({ page }) => {
       >);
     } as typeof original;
   });
-  await page.goto("/");
+  await page.goto("./");
   await expect(
     page.getByText("3D isn’t available in this browser."),
   ).toBeVisible();
@@ -182,7 +182,7 @@ test("renders all fifteen models on tablet without overflow or runtime errors", 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.setViewportSize({ width: 900, height: 1100 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("./");
   const addButtons = page.getByRole("button", { name: /^Add / });
   await expect(addButtons).toHaveCount(15);
   for (let index = 0; index < 15; index++) await addButtons.nth(index).click();

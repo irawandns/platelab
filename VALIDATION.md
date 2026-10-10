@@ -24,4 +24,4 @@ Rendering uses an on-demand frame loop, capped pixel ratio (1.75), simple lighti
 - Manually evaluate recognizable food silhouettes, touch dragging, screen-reader announcements, keyboard navigation, and zoomed text on real devices. Automated desktop/mobile emulation does not replace that review.
 - Consider validating the historical USDA mirror against the official release when the USDA host is reachable. Exact mirrored records, source IDs, checksums, and missing-data behavior are already documented and tested.
 
-There is no production deployment, save/load persistence, telemetry, or user study in this implementation.
+A GitHub Pages deployment workflow is included. Local production-path validation uses `/platelab/` to exercise bundled assets and the lazy 3D scene. A public deployment is only confirmed when its Actions run and live URL have been checked. There is no save/load persistence, telemetry, or user study in this implementation.
