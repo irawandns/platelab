@@ -107,7 +107,7 @@ test("works on mobile, with reduced motion and an accessible help dialog", async
 
 test("accepts library drops only on the plate and supports direct 3D movement", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   const canvas = page.locator('canvas[data-ready="true"]');
@@ -148,6 +148,12 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
   await expect(page.getByTestId("total-calories")).toHaveText("130");
   await expect(canvas).toHaveAttribute("data-physics", "settled");
   const restored = await canvas.screenshot();
+  for (const [name, body] of [
+    ["before-food-drag", before],
+    ["after-food-drag", after],
+    ["after-food-drag-undo", restored],
+  ] as const)
+    await testInfo.attach(name, { body, contentType: "image/png" });
   expect(restored.equals(before)).toBe(true);
 });
 

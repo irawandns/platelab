@@ -2,6 +2,7 @@ import {
   Suspense,
   useEffect,
   useMemo,
+  useCallback,
   useLayoutEffect,
   useRef,
   useState,
@@ -149,6 +150,12 @@ function World({
   const radius = plateRadius(diameterCm);
   const controls = useRef<OrbitControlsImpl>(null);
   const [dragging, setDragging] = useState(false);
+  const setFoodDragging = useCallback((value: boolean) => {
+    // Lock orbit controls during the pointer event, before React commits the
+    // next render. Otherwise the first food-drag movement can orbit the camera.
+    if (controls.current) controls.current.enabled = !value;
+    setDragging(value);
+  }, []);
   const runtime = useRef<FoodPhysics | null>(null);
   const idleCommitted = useRef(false);
   const plate = useRef<Group>(null);
@@ -298,13 +305,13 @@ function World({
             key={item.instanceId}
             item={item}
             runtime={runtime}
-            setDragging={setDragging}
+            setDragging={setFoodDragging}
           />
         ) : (
           <Item
             key={item.instanceId}
             item={item}
-            setDragging={setDragging}
+            setDragging={setFoodDragging}
             reduced={reduced}
           />
         ),
