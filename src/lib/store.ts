@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { foodById } from "./nutrition";
-import type { PlateItem } from "../types";
+import type { FoodPose, PlateItem } from "../types";
 import {
   DEFAULT_PLATE_CM,
   MIN_PLATE_CM,
@@ -25,6 +25,8 @@ interface Snapshot {
   selectedItemId: string | null;
 }
 interface State extends Snapshot {
+  sceneRevision: number;
+  restorePhysics: boolean;
   history: Snapshot[];
   announcement: string;
   add: (foodId: string, position?: [number, number]) => void;
@@ -36,7 +38,38 @@ interface State extends Snapshot {
   remove: (id: string) => void;
   reset: () => void;
   undo: () => void;
+  commitPoses: (poses: Record<string, FoodPose>) => void;
 }
+let readPoses: (() => Record<string, FoodPose>) | undefined;
+export function registerPoseReader(reader: () => Record<string, FoodPose>) {
+  readPoses = reader;
+  return () => {
+    if (readPoses === reader) readPoses = undefined;
+  };
+}
+const captureState = (state: State): State => {
+  const poses = readPoses?.();
+  if (!poses) return state;
+  return {
+    ...state,
+    items: state.items.map((item) =>
+      poses[item.instanceId]
+        ? {
+            ...item,
+            pose: poses[item.instanceId],
+            position: [
+              poses[item.instanceId].position[0],
+              poses[item.instanceId].position[2],
+            ],
+          }
+        : item,
+    ),
+  };
+};
+const changed = (state: State) => ({
+  sceneRevision: state.sceneRevision + 1,
+  restorePhysics: false,
+});
 const remember = (state: State) => [
   ...state.history.slice(-29),
   {
@@ -61,9 +94,12 @@ export const usePlate = create<State>((set) => ({
   items: [],
   selectedItemId: null,
   history: [],
+  sceneRevision: 0,
+  restorePhysics: false,
   announcement: "",
   add: (foodId, position) =>
     set((state) => {
+      state = captureState(state);
       const food = foodById[foodId];
       if (!food) return state;
       if (state.items.length >= MAX_ITEMS)
@@ -90,6 +126,7 @@ export const usePlate = create<State>((set) => ({
         item.position = [Math.cos(angle) * radius, Math.sin(angle) * radius];
       }
       return {
+        ...changed(state),
         history: remember(state),
         items: [...state.items, fitItem(item, state.plateDiameterCm)],
         selectedItemId: item.instanceId,
@@ -99,6 +136,7 @@ export const usePlate = create<State>((set) => ({
   select: (id) => set({ selectedItemId: id }),
   setPortion: (id, grams) =>
     set((state) => {
+      state = captureState(state);
       const item = state.items.find((i) => i.instanceId === id);
       if (!item || !Number.isFinite(grams)) return state;
       const food = foodById[item.foodId];
@@ -108,10 +146,14 @@ export const usePlate = create<State>((set) => ({
       );
       if (Math.abs(portionGrams - item.portionGrams) < 1e-8) return state;
       return {
+        ...changed(state),
         history: remember(state),
         items: state.items.map((i) =>
           i.instanceId === id
-            ? fitItem({ ...i, portionGrams }, state.plateDiameterCm)
+            ? fitItem(
+                { ...i, portionGrams, pose: undefined },
+                state.plateDiameterCm,
+              )
             : i,
         ),
         announcement: `${food.name} portion updated.`,
@@ -119,55 +161,91 @@ export const usePlate = create<State>((set) => ({
     }),
   setPlateDiameter: (cm) =>
     set((state) => {
+      state = captureState(state);
       if (!Number.isFinite(cm)) return state;
       const plateDiameterCm =
         Math.round(Math.min(MAX_PLATE_CM, Math.max(MIN_PLATE_CM, cm)) * 10) /
         10;
       if (plateDiameterCm === state.plateDiameterCm) return state;
       return {
+        ...changed(state),
         history: remember(state),
         plateDiameterCm,
-        items: state.items.map((item) => fitItem(item, plateDiameterCm)),
+        items: state.items.map((item) =>
+          fitItem({ ...item, pose: undefined }, plateDiameterCm),
+        ),
         announcement: `Plate diameter changed to ${plateDiameterCm} centimetres. Food portions stay the same.`,
       };
     }),
-  beginMove: () => set((state) => ({ history: remember(state) })),
+  beginMove: () => set((state) => ({ history: remember(captureState(state)) })),
   move: (id, position, save = true) =>
-    set((state) => ({
-      history: save ? remember(state) : state.history,
-      items: state.items.map((i) =>
-        i.instanceId === id
-          ? fitItem({ ...i, position }, state.plateDiameterCm)
-          : i,
-      ),
-    })),
+    set((state) => {
+      state = captureState(state);
+      return {
+        ...changed(state),
+        history: save ? remember(state) : state.history,
+        items: state.items.map((i) =>
+          i.instanceId === id
+            ? fitItem(
+                { ...i, position, pose: undefined },
+                state.plateDiameterCm,
+              )
+            : i,
+        ),
+      };
+    }),
   remove: (id) =>
-    set((state) => ({
-      history: remember(state),
-      items: state.items.filter((i) => i.instanceId !== id),
-      selectedItemId: state.selectedItemId === id ? null : state.selectedItemId,
-      announcement: "Food removed. Undo is available.",
-    })),
+    set((state) => {
+      state = captureState(state);
+      return {
+        ...changed(state),
+        history: remember(state),
+        items: state.items.filter((i) => i.instanceId !== id),
+        selectedItemId:
+          state.selectedItemId === id ? null : state.selectedItemId,
+        announcement: "Food removed. Undo is available.",
+      };
+    }),
   reset: () =>
-    set((state) =>
-      state.items.length
+    set((state) => {
+      state = captureState(state);
+      return state.items.length
         ? {
+            ...changed(state),
             history: remember(state),
             items: [],
             selectedItemId: null,
             announcement: "Plate cleared. Undo is available.",
           }
-        : state,
-    ),
+        : state;
+    }),
   undo: () =>
     set((state) => {
       const previous = state.history.at(-1);
       return previous
         ? {
             ...previous,
+            sceneRevision: state.sceneRevision + 1,
+            restorePhysics: true,
             history: state.history.slice(0, -1),
             announcement: "Last change undone.",
           }
         : state;
     }),
+  commitPoses: (poses) =>
+    set((state) => ({
+      items: state.items.map((item) => {
+        const pose = poses[item.instanceId];
+        if (
+          !pose ||
+          ![...pose.position, ...pose.rotation].every(Number.isFinite)
+        )
+          return item;
+        return {
+          ...item,
+          pose,
+          position: [pose.position[0], pose.position[2]],
+        };
+      }),
+    })),
 }));

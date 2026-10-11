@@ -12,9 +12,9 @@ const item = (foodId: string, grams: number): PlateItem => ({
   position: [0, 0],
 });
 describe("auditable food data", () => {
-  it("has all 15 distinct foods and exact USDA values, preserving missing data", () => {
-    expect(foods).toHaveLength(15);
-    expect(new Set(foods.map((f) => f.id)).size).toBe(15);
+  it("has 11 available distinct foods and exact USDA values, preserving missing data", () => {
+    expect(foods).toHaveLength(11);
+    expect(new Set(foods.map((f) => f.id)).size).toBe(11);
     const nutrientIds: Record<Nutrient, string> = {
       calories: "208",
       protein: "203",
@@ -46,13 +46,13 @@ describe("auditable food data", () => {
         ),
       ).toBe(true);
   });
-  it("converts 200 ml milk using a USDA 244 g US cup without early rounding", () => {
-    const expected = (244 / 236.5882365) * 200;
-    expect(foodById.milk.defaultPortionGrams).toBeCloseTo(expected, 10);
-    expect(forPortion(foodById.milk, expected).calories).toBeCloseTo(
-      expected * 0.61,
-      10,
-    );
+  it("keeps temporarily unavailable foods off the shelf and rejects adding them", () => {
+    usePlate.setState({ items: [], history: [] });
+    for (const id of ["carrot", "banana", "apple", "milk"]) {
+      expect(foodById[id]).toBeUndefined();
+      usePlate.getState().add(id);
+    }
+    expect(usePlate.getState().items).toHaveLength(0);
   });
 });
 describe("nutrition calculations", () => {
@@ -73,9 +73,9 @@ describe("nutrition calculations", () => {
     ).toBe(460);
   });
   it("does not round intermediate values or count fiber twice", () => {
-    const result = summarize([item("apple", 17.3), item("apple", 17.3)]).totals;
-    expect(result.calories).toBeCloseTo(17.992, 8);
-    expect(result.carbohydrates).toBeCloseTo(4.77826, 8);
+    const result = summarize([item("rice", 17.3), item("rice", 17.3)]).totals;
+    expect(result.calories).toBeCloseTo(44.98, 8);
+    expect(result.carbohydrates).toBeCloseTo(9.74682, 8);
   });
   it("distinguishes missing fiber from zero and returns a known subtotal", () => {
     expect(forPortion(foodById.tempeh, 100).fiber).toBeNull();

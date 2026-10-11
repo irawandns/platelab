@@ -2,6 +2,8 @@
 
 The 15 food records in `foods.json` use the **USDA National Nutrient Database for Standard Reference, Release 28 (2015)**. Values are per 100 g of edible food, in the preparation state shown in each record. This is historical reference data, not live FoodData Central data or brand-specific advice.
 
+Eleven foods are currently available. Carrot, banana, apple, and whole milk have `available: false` and are excluded from the shelf and runtime food lookup. Their records and source rows remain here for later restoration; the fruit weights and milk conversion below describe those archived records.
+
 Original documentation: https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf
 
 The SR28 ASCII tables were obtained from the public [alyssaq/usda-sqlite mirror](https://github.com/alyssaq/usda-sqlite/tree/1e457b599af101ce463a195867574eba16c81acb/data), pinned to commit `1e457b599af101ce463a195867574eba16c81acb`. That repository identifies the included files as SR28. The original USDA host was blocked by the setup environment's egress proxy; the mirror was accessible. No missing values were invented.

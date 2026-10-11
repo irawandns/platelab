@@ -12,6 +12,7 @@ export type Nutrient =
   "calories" | "protein" | "carbohydrates" | "fat" | "fiber";
 export type Nutrients = Record<Nutrient, number | null>;
 export interface Food {
+  available?: boolean;
   id: string;
   name: string;
   category: Category;
@@ -31,4 +32,9 @@ export interface PlateItem {
   foodId: string;
   portionGrams: number;
   position: [number, number];
+  pose?: FoodPose;
+}
+export interface FoodPose {
+  position: [number, number, number];
+  rotation: [number, number, number, number];
 }

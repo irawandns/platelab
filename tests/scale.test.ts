@@ -10,6 +10,7 @@ import {
   plateRadius,
   portionPieces,
   wellRadius,
+  physicsFoods,
 } from "../src/lib/scale";
 
 beforeEach(() =>
@@ -23,10 +24,13 @@ beforeEach(() =>
 );
 
 describe("physical food scale", () => {
-  it("anchors the apple to its source diameter and supplies dimensions for all foods", () => {
+  it("supplies consistent physical dimensions for all available foods", () => {
+    expect([...physicsFoods].sort()).toEqual(
+      foods.map((food) => food.id).sort(),
+    );
     expect(
-      foodDimensionsCm.apple[0] / (plateRadius(26) * 2 * CM_PER_UNIT),
-    ).toBeCloseTo(7.62 / 26);
+      foodDimensionsCm.bread[0] / (plateRadius(26) * 2 * CM_PER_UNIT),
+    ).toBeCloseTo(10 / 26);
     for (const food of foods) {
       expect(foodDimensionsCm[food.id].every((cm) => cm > 0)).toBe(true);
       expect(footprintRadius(food.id, 1)).toBeLessThan(wellRadius(26));
@@ -40,11 +44,24 @@ describe("physical food scale", () => {
       expect(fractional.reduce((v, p) => v + p.scale ** 3, 0)).toBeCloseTo(2.5);
     }
     expect(portionPieces("rice", 2)[0].scale ** 3).toBeCloseTo(2);
-    expect(portionPieces("milk", 3)[0].scale).toBe(1);
   });
 });
 
 describe("custom plate size", () => {
+  it("lets the physics foods reach the curved shoulder instead of restricting them to the well", () => {
+    for (const foodId of physicsFoods) {
+      const food = foodById[foodId];
+      usePlate.getState().add(foodId, [99, 0]);
+      const item = usePlate.getState().items.at(-1)!;
+      expect(item.position[0] + footprintRadius(foodId, 1)).toBeGreaterThan(
+        wellRadius(26),
+      );
+      expect(item.position[0] + footprintRadius(foodId, 1)).toBeLessThan(
+        plateRadius(26),
+      );
+      expect(item.portionGrams).toBe(food.defaultPortionGrams);
+    }
+  });
   it("shrinks placement without shrinking food or changing nutrition, and undoes exactly", () => {
     const s = usePlate.getState();
     s.setPlateDiameter(36);
@@ -75,10 +92,10 @@ describe("custom plate size", () => {
     expect(Math.hypot(...item.position)).toBeCloseTo(
       placementRadius(18, item, 100),
     );
-    s.add("banana");
+    s.add("broccoli");
     s.setPortion(
       usePlate.getState().items[1].instanceId,
-      foodById.banana.maxPortionGrams,
+      foodById.broccoli.maxPortionGrams,
     );
     expect(usePlate.getState().items[1].position).toEqual([0, 0]);
   });

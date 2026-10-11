@@ -1,8 +1,30 @@
 # MVP validation
 
+## All-food physics and shelf update — 2026-10-11
+
+- `npm test`: 24 tests pass. The shelf and runtime lookup exclude carrot, banana, apple, and whole milk. Their source records remain archived. Real Rapier simulations cover all eleven available foods on 18/21/26/36 cm plates, minimum and maximum portions with correct edible mass, compound geometry, bread/cheese and tofu stacks, support removal, portion/diameter changes, and pose restoration. A crowded plate containing every available food settles with plate and food contacts within a 0.75 mm penetration tolerance; nutrition is unchanged.
+- Every available food is dynamic. Broccoli florets and tofu blocks have separate collision hulls, as do repeated bread slices and eggs; each portion still moves as one rigid group. Visual models and hulls use the same vertex calibration. The plate collider now matches the visible shell's 128 radial segments. Sixteen solver iterations improve crowded contact stability. Dragged food does not impart pointer-speed impulses into its supports; normal contact resumes on release.
+- `npm run build`, `npm run build:pages`, `npm run format:check`, and `git diff --check`: pass using Node 22.20.0. The lazy scene chunk is 2.26 MB / 821 kB gzip; total production JavaScript is approximately 1.09 MB gzip. Device startup and frame-rate measurement remain pending.
+- `npm run test:e2e`: blocked before browser tests start. The preview server cannot open port 4173 (`listen EPERM: operation not permitted 0.0.0.0:4173`). Browser tests were updated for the eleven-food shelf, avocado search/source disclosure, and crowded-plate settling, but their execution and visual review remain unverified in this sandbox. Soft-food deformation and independently tumbling pieces remain outside this update.
+
+## Controlled physics pilot — 2026-10-11
+
+- `npm test`: 22 tests pass, including real Rapier WASM simulation of calibrated collision hulls, flat-well and shoulder contact on 18/21/26/36 cm plates, three-portion tofu stacking, removal of a support, chicken dragged and settled on rice, non-penetrating food contact within solver tolerance, unchanged nutrition, live-pose capture, portion/diameter resettling, and exact sleeping-pose undo restoration. Non-pilot foods retain the conservative-clearance tests.
+- `npm run build`: passes using Node 22.20.0. Rapier 0.12.0 is now an explicit dependency, reusing the version already in the lockfile via Drei. WASM is embedded and adds no remote runtime data request. The lazy scene chunk is approximately 2.26 MB / 821 kB gzip; total production JS is approximately 1.09 MB gzip. This is a material increase over the previous MVP and needs startup/performance measurement on a real device.
+- The browser suite now includes a stacked-tofu removal/undo scenario and waits for physics to settle before comparing restored screenshots. Browser execution is still blocked at preview-server startup by the sandbox socket restrictions described below. These new browser checks, touch dragging, visual fidelity, and consumer-device frame rates are **not verified**.
+- Scope: rice, chicken breast, and tofu are dynamic; other foods are fixed with approximate piece-box colliders. Rice is a rigid mound and tofu's three blocks remain one rigid portion. There is no soft-food deformation or per-piece simulation in this milestone.
+
+## Ceramic plate update — 2026-10-11
+
+- `npm test`: 15 tests pass, including footprint clearance sampled across all foods at minimum/default/maximum portions on 18/21/26/36 cm plates. Fitting portions remain in the flat well; oversized portions clear the curved ceramic without changing food dimensions or nutrition.
+- `npm run build` and `npm run format:check`: pass using Node 22.20.0.
+- Browser checks and visual review of the new ceramic model remain pending. The current sandbox rejects preview-server sockets (`listen EPERM`) and Chromium startup (`setsockopt: Operation not permitted`), including a server-free rendering attempt. Earlier screenshots and browser results below apply to the previous plate geometry.
+
+## Previous MVP validation
+
 Validated in the cloud workspace on 2026-10-10 using Node 24.19.0, Linux, and Chromium 151.0.7922.173 with SwiftShader software rendering.
 
-## Automated checks
+### Automated checks
 
 - `npm test`: 14 passing tests covering all 15 source records, source-backed household weights, milk conversion, meal totals, missing fiber, rounding, duplicate instances, undo/reset, invalid portions, movement bounds, capacity/history limits, physical dimensions, repeated whole pieces, fractional volume scaling, custom plate size, portion-dependent placement, and undo of size plus arrangement.
 - `npm run build`: TypeScript checking and production bundling pass.
@@ -10,7 +32,7 @@ Validated in the cloud workspace on 2026-10-10 using Node 24.19.0, Linux, and Ch
 - Axe WCAG A/AA scans cover empty, selected-food, and help-dialog states with no automated violations. This is not a declaration of complete accessibility conformance.
 - Screenshots are generated under ignored `test-results/` for the empty desktop plate, assembled desktop meal, mobile meal, tablet containing all foods, and two full-sized apples on 26 cm and 36 cm plates. Viewports: 1440×1100, 390×844, and 900×1100. Visual review confirmed the default food-to-plate proportions and repeated whole-piece appearance; food dimensions remain estimates rather than validated physical volume conversions.
 
-## Measured build size
+### Measured build size
 
 The production JS is split into the UI (~265 kB), scene (~203 kB), and Three.js (~704 kB). Together these are approximately **328 kB gzip**, plus approximately **9.5 kB gzip CSS**. The two Latin variable font files total approximately **62 kB**. Configure compression on the static host; a compressed build-size estimate does not prove network startup performance.
 

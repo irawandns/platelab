@@ -5,7 +5,7 @@ test("builds a meal, adjusts portions, removes, clears and undoes", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(15);
+  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(11);
   await expect(page.getByTestId("total-calories")).toHaveText("0");
   await expect(page.locator("canvas")).toBeVisible();
   await page.screenshot({
@@ -44,23 +44,26 @@ test("supports search, filtering, keyboard input, duplicate foods and source det
 }) => {
   await page.goto("./");
   await page.getByRole("button", { name: "Fruits", exact: true }).click();
-  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(3);
-  await page.getByRole("textbox", { name: "Search foods" }).fill("banana");
   await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(1);
-  const banana = page.getByRole("button", { name: "Add Banana", exact: true });
-  await banana.focus();
+  await page.getByRole("textbox", { name: "Search foods" }).fill("avocado");
+  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(1);
+  const avocado = page.getByRole("button", {
+    name: "Add Avocado",
+    exact: true,
+  });
+  await avocado.focus();
   await page.keyboard.press("Enter");
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("button", { name: /^Select Banana/ }),
+    page.getByRole("button", { name: /^Select Avocado/ }),
   ).toHaveCount(2);
-  await expect(page.getByTestId("total-calories")).toHaveText("210");
-  await page.getByLabel("Edible weight").fill("59");
+  await expect(page.getByTestId("total-calories")).toHaveText("320");
+  await page.getByLabel("Edible weight").fill("50");
   await page.getByLabel("Edible weight").press("Enter");
-  await expect(page.getByTestId("total-calories")).toHaveText("158");
+  await expect(page.getByTestId("total-calories")).toHaveText("240");
   await page.getByText("Serving & data source").click();
   await expect(
-    page.getByText(/USDA household measure: 1 medium banana/),
+    page.getByText(/Raw edible flesh, without peel or stone/),
   ).toBeVisible();
   await page.getByRole("textbox", { name: "Search foods" }).fill("zzzz");
   await expect(page.getByText("No foods found.")).toBeVisible();
@@ -116,6 +119,9 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
       targetPosition: { x: box.width / 2, y: box.height / 2 },
     });
   await expect(page.getByTestId("total-calories")).toHaveText("130");
+  await expect(canvas).toHaveAttribute("data-physics", "settled", {
+    timeout: 15000,
+  });
   await page
     .getByRole("button", { name: "Add Bread", exact: true })
     .dragTo(canvas, { targetPosition: { x: 5, y: 5 } });
@@ -140,8 +146,51 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
   expect(after.equals(before)).toBe(false);
   await page.getByRole("button", { name: "Undo last change" }).click();
   await expect(page.getByTestId("total-calories")).toHaveText("130");
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
   const restored = await canvas.screenshot();
   expect(restored.equals(before)).toBe(true);
+});
+
+test("settles stacked foods and restores the arrangement after removal", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./");
+  const canvas = page.locator('canvas[data-ready="true"]');
+  await expect(canvas).toBeVisible();
+  const box = (await canvas.boundingBox())!;
+  for (let i = 0; i < 3; i++) {
+    await page
+      .getByRole("button", { name: "Add Firm tofu", exact: true })
+      .dragTo(canvas, {
+        targetPosition: { x: box.width / 2, y: box.height / 2 },
+      });
+    await expect(canvas).toHaveAttribute("data-physics", "settled", {
+      timeout: 15000,
+    });
+  }
+  await expect(
+    page.getByRole("button", { name: /^Select Firm tofu/ }),
+  ).toHaveCount(3);
+  await expect(
+    page.getByText("Drag onto another food to stack it.", { exact: false }),
+  ).toBeVisible();
+  const energy = await page.getByTestId("total-calories").textContent();
+  const before = await canvas.screenshot();
+  await page
+    .getByRole("button", { name: "Remove Firm tofu", exact: true })
+    .click();
+  await expect(canvas).toHaveAttribute("data-physics", "settled", {
+    timeout: 15000,
+  });
+  await page.getByRole("button", { name: "Undo last change" }).click();
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
+  await expect(page.getByTestId("total-calories")).toHaveText(energy!);
+  expect((await canvas.screenshot()).equals(before)).toBe(true);
+  await canvas.screenshot({ path: "test-results/stacked-tofu.png" });
+  expect(errors).toEqual([]);
 });
 
 test("keeps the nutrition workflow usable without WebGL", async ({ page }) => {
@@ -175,7 +224,7 @@ test("keeps the nutrition workflow usable without WebGL", async ({ page }) => {
   await expect(page.getByTestId("total-calories")).toHaveText("260");
 });
 
-test("renders all fifteen models on tablet without overflow or runtime errors", async ({
+test("renders all eleven models on tablet without overflow or runtime errors", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -184,13 +233,20 @@ test("renders all fifteen models on tablet without overflow or runtime errors", 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   const addButtons = page.getByRole("button", { name: /^Add / });
-  await expect(addButtons).toHaveCount(15);
-  for (let index = 0; index < 15; index++) await addButtons.nth(index).click();
-  await expect(page.getByRole("button", { name: /^Select / })).toHaveCount(15);
+  await expect(addButtons).toHaveCount(11);
+  for (let index = 0; index < 11; index++) await addButtons.nth(index).click();
+  await expect(page.getByRole("button", { name: /^Select / })).toHaveCount(11);
   await expect(page.locator("canvas")).toBeVisible();
   await page.getByLabel("Edible weight").fill("999");
   await page.getByLabel("Edible weight").press("Enter");
   await expect(page.getByLabel("Edible weight")).toHaveValue("90");
+  await expect(page.locator("canvas")).toHaveAttribute(
+    "data-physics",
+    "settled",
+    {
+      timeout: 15000,
+    },
+  );
   // Repeating an out-of-range value must still normalize the input when state is unchanged.
   await page.getByLabel("Edible weight").fill("999");
   await page.getByLabel("Edible weight").press("Enter");
@@ -214,11 +270,10 @@ test("changes custom plate diameter without changing nutrition and supports undo
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   await expect(page.getByLabel("Custom plate diameter")).toHaveValue("26");
-  await page.getByRole("button", { name: "Add Apple", exact: true }).click();
-  await page.getByRole("button", { name: "Large 2×" }).click();
-  await expect(page.getByTestId("portion-label")).toHaveText(
-    "2 apples · 364 g",
-  );
+  await page.getByRole("button", { name: "Add Broccoli", exact: true }).click();
+  await page.getByLabel("Edible weight").fill("300");
+  await page.getByLabel("Edible weight").press("Enter");
+  await expect(page.getByTestId("portion-label")).toHaveText("300 g");
   const energy = await page.getByTestId("total-calories").textContent();
   await page.getByLabel("Custom plate diameter").fill("18");
   await page.getByLabel("Custom plate diameter").press("Enter");
@@ -226,15 +281,13 @@ test("changes custom plate diameter without changing nutrition and supports undo
     page.getByRole("img", { name: /Interactive 3D plate, 18 centimetres/ }),
   ).toBeVisible();
   await expect(page.getByTestId("total-calories")).toHaveText(energy!);
-  await expect(page.getByTestId("portion-label")).toHaveText(
-    "2 apples · 364 g",
-  );
+  await expect(page.getByTestId("portion-label")).toHaveText("300 g");
   await expect(page.getByText(/A portion extends beyond/)).toBeVisible();
   await page.getByRole("button", { name: "Undo last change" }).click();
   await expect(page.getByLabel("Custom plate diameter")).toHaveValue("26");
   await expect(page.getByText(/A portion extends beyond/)).toHaveCount(0);
   await page.screenshot({
-    path: "test-results/default-26cm-apples.png",
+    path: "test-results/default-26cm-broccoli.png",
     fullPage: true,
   });
   await page.getByRole("button", { name: "32 cm", exact: true }).click();
@@ -246,7 +299,7 @@ test("changes custom plate diameter without changing nutrition and supports undo
   await page.getByLabel("Custom plate diameter").press("Enter");
   await expect(page.getByLabel("Custom plate diameter")).toHaveValue("36");
   await page.screenshot({
-    path: "test-results/physical-scale-apples.png",
+    path: "test-results/physical-scale-broccoli.png",
     fullPage: true,
   });
   await page.setViewportSize({ width: 390, height: 844 });

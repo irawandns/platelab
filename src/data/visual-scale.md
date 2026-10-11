@@ -1,29 +1,27 @@
 # Food and plate scale
 
-One scene unit equals **5 cm**. Plate diameter is measured across the outer rim: default **26 cm**, presets **20/26/32 cm**, custom **18–36 cm** in 0.1 cm steps. The eating area is approximately 82% of the outer diameter. Camera framing fits the largest supported plate at each viewport size and does not change when selecting a new diameter.
+One scene unit equals **5 cm**. Plate diameter is measured across the outer rim: default **26 cm**, presets **20/26/32 cm**, custom **18–36 cm** in 0.1 cm steps. The flat eating area is 70% of the outer diameter. A continuous revolved ceramic shell has a shallow curved shoulder, rolled brown outer rim, fine inner brown line, cream glaze, and an underside foot ring, inspired by the supplied Indonesian household plate reference. Total height is 3.5 cm; diameter changes affect width and depth while height stays fixed. Camera framing fits the largest supported plate at each viewport size and does not change when selecting a new diameter.
 
-The procedural models are normalized to the following regular-serving bounding dimensions, including decorations such as stems. Width and depth lie along the plate; height is vertical. Except for the apple diameter, these are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight.
+The eleven available procedural models are normalized to the following regular-serving bounding dimensions, including decorations such as stems. Width and depth lie along the plate; height is vertical. These are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight. Carrot, banana, apple, and whole milk are currently unavailable.
 
-| Food           | Regular serving          | Width × height × depth (cm) |
-| -------------- | ------------------------ | --------------------------- |
-| White rice     | 100 g cooked             | 9 × 3.5 × 8                 |
-| Bread          | 25 g slice               | 10 × 1.2 × 10               |
-| Egg noodles    | 100 g cooked             | 10 × 3.5 × 9                |
-| Boiled egg     | 50 g, one large egg      | 4.4 × 5.7 × 4.4             |
-| Chicken breast | 100 g cooked             | 10 × 2.8 × 6                |
-| Salmon         | 100 g cooked             | 9 × 2.5 × 4.5               |
-| Firm tofu      | 100 g                    | 7 × 4.5 × 6                 |
-| Tempeh         | 100 g cooked             | 8 × 2.5 × 5                 |
-| Broccoli       | 100 g cooked             | 10 × 6 × 9                  |
-| Carrot         | 100 g raw                | 15 × 3.5 × 3.5              |
-| Avocado        | 100 g edible flesh       | 7 × 4 × 10                  |
-| Banana         | 118 g, one medium banana | 14.6 × 3 × 6                |
-| Apple          | 182 g, one medium apple  | 7.62 × 8.2 × 7.2            |
-| Whole milk     | 200 ml                   | Fixed glass: 8.4 × 13 × 8.4 |
-| Cheddar        | 30 g                     | 5 × 2 × 4                   |
+| Food           | Regular serving     | Width × height × depth (cm) |
+| -------------- | ------------------- | --------------------------- |
+| White rice     | 100 g cooked        | 9 × 3.5 × 8                 |
+| Bread          | 25 g slice          | 10 × 1.2 × 10               |
+| Egg noodles    | 100 g cooked        | 10 × 3.5 × 9                |
+| Boiled egg     | 50 g, one large egg | 4.4 × 5.7 × 4.4             |
+| Chicken breast | 100 g cooked        | 10 × 2.8 × 6                |
+| Salmon         | 100 g cooked        | 9 × 2.5 × 4.5               |
+| Firm tofu      | 100 g               | 7 × 4.5 × 6                 |
+| Tempeh         | 100 g cooked        | 8 × 2.5 × 5                 |
+| Broccoli       | 100 g cooked        | 10 × 6 × 9                  |
+| Avocado        | 100 g edible flesh  | 7 × 4 × 10                  |
+| Cheddar        | 30 g                | 5 × 2 × 4                   |
 
-USDA's retained household measure gives a **3-inch (7.62 cm) diameter** for a medium apple and **7–7⅞ inches** for a medium banana. The banana's curved model has an estimated 14.6 cm chord, based on a nominal 18.8 cm length. Other dimensions are chosen to depict plausible servings; the nutrition data does not establish these dimensions.
+Eggs and bread retain their whole-piece dimensions when quantity increases. Bread stacks; eggs form a small group. Fractional remainders use cube-root scaling of a smaller model, an approximate quantity cue rather than a physically cut portion. For weighed solids and mounds, multiplying grams by two multiplies model volume by two using cube-root scaling in each axis.
 
-Apples, eggs, bananas and bread retain their whole-piece dimensions when quantity increases. Bread stacks; other pieces form a small group. Fractional remainders use cube-root scaling of a smaller model, an approximate quantity cue rather than a physically cut portion. For weighed solids and mounds, multiplying grams by two multiplies model volume by two using cube-root scaling in each axis. Milk uses a fixed glass with a 3.9 cm inner radius and a liquid height of `volume / (π × radius²)`; the full allowed 50–600 ml range fits inside it.
+Every available food uses controlled Rapier rigid-body physics. Placement bounds use the outer diameter, so foods can reach the curved shoulder. The plate has a fixed flat-well collider and a simplified triangle-mesh shoulder following the visible ceramic profile. Convex food hulls derive from the same mesh definitions and vertex calibration as the visible models. Tofu has three block hulls and broccoli has three floret hulls, preserving gaps between them. Repeated bread slices and eggs have a hull per piece. Other foods use a convex envelope; flat decorative cheese markings do not obstruct contact. Collider mass is distributed by volume and totals the portion's edible grams. Each portion remains one selectable rigid body, so its pieces move together. Rice and noodles remain cohesive mounds.
 
-Placement uses a conservative circular bound around each model or piece group, with a 2 mm margin. Changing diameter or increasing a portion reclamps positions without changing the food's dimensions. A portion whose bound exceeds the eating area is centered and the interface explains that it extends beyond the eating area. Food overlap remains allowed. Nutrition depends only on edible grams; changing diameter, position or camera cannot change it. Undo restores plate size and arrangement together, while clearing retains the chosen diameter.
+Adding/moving a food sweeps its hulls down from above to find support on the plate or existing foods. The sweep starts above the rotation-independent reach of existing portions, including tilted bread slices. During dragging it is controlled by the pointer above that support, without imparting pointer-speed impulses into other foods; release resumes normal contact, gravity, friction, damping, and tilt. Physics steps at 120 Hz with sixteen solver iterations and at most 0.1 seconds of catch-up per rendered frame. Sleeping bodies stop further frame requests. Food that spills outside the scene is returned to the plate. Portion changes rebuild the affected collision hull and settle the arrangement. Diameter changes re-place foods on the resized surface. Undo captures live positions and quaternions before a user edit and restores those poses asleep, including edits made during settling. Simulation frames do not consume undo history.
+
+Before physics initializes, conservative geometric clearance keeps the temporary models above the ceramic. Oversized portions are centered. Keyboard movement and the non-WebGL nutrition workflow remain available. Nutrition depends only on edible grams; position, orientation, camera and plate diameter cannot change it. Clearing retains the chosen diameter. Convex envelopes approximate uneven surfaces; soft-food deformation, loose grains, and independently moving pieces are not simulated.

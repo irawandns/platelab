@@ -2,6 +2,7 @@ import {
   Suspense,
   useEffect,
   useMemo,
+  useLayoutEffect,
   useRef,
   useState,
   Component,
@@ -18,16 +19,20 @@ import { Group, Plane, Raycaster, Vector2, Vector3, DoubleSide } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { RotateCcw, RotateCw, ZoomIn, ZoomOut, View } from "lucide-react";
 import { FoodPortion } from "./FoodPortion";
+import { PlateModel } from "./PlateModel";
+import { PhysicsFood } from "./PhysicsFood";
+import { FoodPhysics, initializePhysics } from "../lib/physics";
 import {
   footprintRadius,
   plateRadius,
-  wellRadius,
   MAX_PLATE_CM,
+  PLATE_SURFACE_Y,
+  foodSupportHeight,
+  physicsFoods,
 } from "../lib/scale";
 import { foodById } from "../lib/nutrition";
-import { usePlate } from "../lib/store";
+import { registerPoseReader, usePlate } from "../lib/store";
 import type { PlateItem } from "../types";
-const surface = new Plane(new Vector3(0, 1, 0), -0.18);
 function Item({
   item,
   setDragging,
@@ -38,6 +43,7 @@ function Item({
   reduced: boolean;
 }) {
   const selected = usePlate((s) => s.selectedItemId === item.instanceId);
+  const diameterCm = usePlate((s) => s.plateDiameterCm);
   const group = useRef<Group>(null);
   const pressed = useRef(false);
   const remembered = useRef(false);
@@ -48,6 +54,15 @@ function Item({
   const ratio = item.portionGrams / food.defaultPortionGrams;
   const targetScale = 1;
   const footprint = footprintRadius(item.foodId, ratio);
+  const supportY = foodSupportHeight(
+    diameterCm,
+    item,
+    food.defaultPortionGrams,
+  );
+  const dragSurface = useMemo(
+    () => new Plane(new Vector3(0, 1, 0), -supportY),
+    [supportY],
+  );
   const animated = useRef(reduced ? targetScale : 0.03);
   useFrame((_, delta) => {
     if (!group.current) return;
@@ -66,7 +81,7 @@ function Item({
     e.stopPropagation();
     usePlate.getState().select(item.instanceId);
     remembered.current = false;
-    if (e.ray.intersectPlane(surface, point))
+    if (e.ray.intersectPlane(dragSurface, point))
       offset.current = [item.position[0] - point.x, item.position[1] - point.z];
     pressed.current = true;
     setDragging(true);
@@ -75,7 +90,7 @@ function Item({
   const move = (e: ThreeEvent<PointerEvent>) => {
     if (!pressed.current) return;
     e.stopPropagation();
-    if (e.ray.intersectPlane(surface, point)) {
+    if (e.ray.intersectPlane(dragSurface, point)) {
       const next: [number, number] = [
         point.x + offset.current[0],
         point.z + offset.current[1],
@@ -101,7 +116,7 @@ function Item({
   };
   return (
     <group
-      position={[item.position[0], 0.18, item.position[1]]}
+      position={[item.position[0], supportY, item.position[1]]}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
@@ -129,12 +144,63 @@ function World({
   libraryDrag: boolean;
 }) {
   const items = usePlate((s) => s.items);
+  const sceneRevision = usePlate((s) => s.sceneRevision);
   const diameterCm = usePlate((s) => s.plateDiameterCm);
   const radius = plateRadius(diameterCm);
-  const plateScale = radius / 2.74;
   const controls = useRef<OrbitControlsImpl>(null);
   const [dragging, setDragging] = useState(false);
+  const runtime = useRef<FoodPhysics | null>(null);
+  const idleCommitted = useRef(false);
+  const plate = useRef<Group>(null);
+  const [physicsReady, setPhysicsReady] = useState(false);
+  const [physicsError, setPhysicsError] = useState<Error | null>(null);
   const { camera, gl, invalidate, size } = useThree();
+  useEffect(() => {
+    let active = true;
+    initializePhysics()
+      .then(() => {
+        if (active) setPhysicsReady(true);
+      })
+      .catch((error) => {
+        if (active) setPhysicsError(error);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  useLayoutEffect(() => {
+    if (!physicsReady) return;
+    const state = usePlate.getState();
+    const simulation = new FoodPhysics(
+      state.plateDiameterCm,
+      state.items,
+      state.restorePhysics,
+    );
+    runtime.current = simulation;
+    gl.domElement.dataset.physics = "settling";
+    idleCommitted.current = false;
+    const unregister = registerPoseReader(() => simulation.poses());
+    invalidate();
+    return () => {
+      unregister();
+      runtime.current = null;
+      simulation.dispose();
+    };
+  }, [physicsReady, sceneRevision, gl, invalidate]);
+  useFrame((_, delta) => {
+    if (!runtime.current) return;
+    const active = runtime.current.hasActivity();
+    if (active) {
+      runtime.current.step(delta);
+      idleCommitted.current = false;
+      invalidate();
+    }
+    gl.domElement.dataset.physics = active ? "settling" : "settled";
+    if (!active && !idleCommitted.current) {
+      idleCommitted.current = true;
+      usePlate.getState().commitPoses(runtime.current.poses());
+    }
+  });
   // Keep the same camera for every diameter so a bigger plate actually looks bigger.
   // Fit the largest supported plate even in a narrow mobile viewport.
   const fitDistance = Math.max(
@@ -190,7 +256,13 @@ function World({
         ),
         camera,
       );
-      const point = ray.ray.intersectPlane(surface, new Vector3());
+      // Hit the curved ceramic itself, not an invisible flat plane below it.
+      const hit =
+        plate.current &&
+        ray
+          .intersectObject(plate.current, true)
+          .find((hit) => hit.object.name === "plate-ceramic");
+      const point = hit?.point;
       if (point && Math.hypot(point.x, point.z) <= radius)
         usePlate.getState().add(id, [point.x, point.z]);
     };
@@ -205,53 +277,38 @@ function World({
       canvas.removeEventListener("dragover", allow);
     };
   }, [gl, camera, radius]);
+  if (physicsError) throw physicsError;
   return (
     <>
       <ambientLight intensity={1.7} />
       <directionalLight position={[-3, 7, 5]} intensity={2.4} />
       <directionalLight position={[4, 3, -2]} intensity={0.6} color="#ffe4ba" />
-      <group scale={[plateScale, 1, plateScale]}>
-        <mesh position={[0, -0.035, 0]}>
-          <cylinderGeometry args={[2.74, 2.63, 0.14, 80]} />
-          <meshStandardMaterial color="#d5d9c4" roughness={0.8} />
-        </mesh>
-        <mesh position={[0, 0.045, 0]}>
-          <cylinderGeometry args={[2.68, 2.7, 0.12, 80]} />
-          <meshStandardMaterial color="#faf9ed" roughness={0.85} />
-        </mesh>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.115, 0]}>
-          <torusGeometry args={[2.43, 0.24, 10, 80]} />
-          <meshStandardMaterial color="#f3f3e5" roughness={0.9} />
-        </mesh>
-        <mesh position={[0, 0.12, 0]}>
-          <cylinderGeometry args={[2.24, 2.24, 0.07, 80]} />
-          <meshStandardMaterial color="#f8f8eb" roughness={0.9} />
-        </mesh>
-        <mesh
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[0, -0.12, 0]}
-          scale={[1, 1, 1]}
-        >
-          <circleGeometry args={[2.82, 64]} />
-          <meshBasicMaterial color="#555b38" transparent opacity={0.06} />
-        </mesh>
+      <group ref={plate}>
+        <PlateModel diameterCm={diameterCm} />
       </group>
       {(dragging || libraryDrag) && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.175, 0]}>
-          <ringGeometry
-            args={[wellRadius(diameterCm) - 0.04, wellRadius(diameterCm), 64]}
-          />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.608, 0]}>
+          <ringGeometry args={[radius - 0.04, radius, 64]} />
           <meshBasicMaterial color="#829568" transparent opacity={0.7} />
         </mesh>
       )}
-      {items.map((item) => (
-        <Item
-          key={item.instanceId}
-          item={item}
-          setDragging={setDragging}
-          reduced={reduced}
-        />
-      ))}
+      {items.map((item) =>
+        physicsReady && physicsFoods.has(item.foodId) ? (
+          <PhysicsFood
+            key={item.instanceId}
+            item={item}
+            runtime={runtime}
+            setDragging={setDragging}
+          />
+        ) : (
+          <Item
+            key={item.instanceId}
+            item={item}
+            setDragging={setDragging}
+            reduced={reduced}
+          />
+        ),
+      )}
       <OrbitControls
         ref={controls}
         enabled={!dragging}

@@ -23,7 +23,7 @@ export function FoodLibrary() {
           <span className="eyebrow">A LITTLE INSPIRATION</span>
           <h2 id="library-heading">The food shelf</h2>
         </div>
-        <span className="count-badge">15</span>
+        <span className="count-badge">{foods.length}</span>
       </div>
       <p className="panel-intro">Familiar foods. New discoveries.</p>
       <div className="search-box">
@@ -41,16 +41,21 @@ export function FoodLibrary() {
         )}
       </div>
       <div className="filters" aria-label="Food categories">
-        {categories.map((c) => (
-          <button
-            key={c}
-            aria-pressed={category === c}
-            className={category === c ? "active" : ""}
-            onClick={() => setCategory(c)}
-          >
-            {c === "Carbohydrates" ? "Carbs" : c}
-          </button>
-        ))}
+        {categories
+          .filter(
+            (c) =>
+              c === "All foods" || foods.some((food) => food.category === c),
+          )
+          .map((c) => (
+            <button
+              key={c}
+              aria-pressed={category === c}
+              className={category === c ? "active" : ""}
+              onClick={() => setCategory(c)}
+            >
+              {c === "Carbohydrates" ? "Carbs" : c}
+            </button>
+          ))}
       </div>
       <div className="food-grid" aria-label="Available foods">
         {filtered.map((food) => (

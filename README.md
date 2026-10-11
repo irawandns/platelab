@@ -15,8 +15,10 @@ The app has no backend, required credentials, analytics, or runtime data request
 
 ## What works
 
-- Fifteen foods with procedural low-poly models and vector thumbnails.
+- Eleven available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
 - A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
+- Cream glazed ceramic plate inspired by Indonesian household plates, with a curved shoulder, brown rim and fine inner band.
+- Controlled Rapier physics for every available food: drag onto the curved plate or another food, release to settle/tilt/stack, and undo restores positions and rotations. Removing a support lets upper food fall. Collision shapes follow the food geometry, with separate hulls for tofu blocks, broccoli florets, bread slices, and multiple eggs.
 - Search/category filtering; click, tap, keyboard, and drag-to-add.
 - Select independent instances, reposition by dragging or buttons, rotate/zoom/reset the camera.
 - Small/regular/large portions, a slider, serving increment/decrement, and edible-gram input.
@@ -25,7 +27,11 @@ The app has no backend, required credentials, analytics, or runtime data request
 - Rule-based learning notes without health scores or daily targets.
 - Responsive desktop/tablet/mobile layout, reduced motion, keyboard alternatives, accessible help dialog, and a non-WebGL fallback for the nutrition workflow.
 
-Food models share a centimetre scale and plausible regular-serving dimensions. Apples, eggs, bananas, and bread repeat whole pieces; fractional pieces use estimated size. Mounds and weighed solids grow by volume, and milk changes its fill level in a fixed-size glass. See [visual dimensions and limits](src/data/visual-scale.md). Save/load, direct comparison, and guided lessons remain future improvements.
+Food models share a centimetre scale and plausible regular-serving dimensions. Eggs and bread repeat whole pieces; fractional pieces use estimated size. Mounds and weighed solids grow by volume. See [visual dimensions and limits](src/data/visual-scale.md). Save/load, direct comparison, and guided lessons remain future improvements.
+
+To try stacking, drag two or three tofu portions from the shelf onto the same spot, place cheese on bread, or drag chicken onto rice. Every portion moves as one rigid group, including its repeated pieces. Rice and noodles stay cohesive mounds; soft-food deformation and independently tumbling pieces remain future improvements.
+
+Read the [changelog](CHANGELOG.md) for recent changes and the [plate and food physics guide](docs/plate-and-food-physics.md) for local examples, collision behavior, undo, and implementation details.
 
 ## Validate
 
@@ -65,10 +71,11 @@ Missing nutrients remain unknown. Cooked tempeh's fiber is unreported, so a plat
 - `src/lib/nutrition.ts`: portion conversion, totals, formatting, and learning rules.
 - `src/lib/store.ts`: plate instances, bounded placement, portions, selection, and undo.
 - `src/lib/scale.ts`: physical units, plate diameters, regular-serving dimensions, piece layouts and footprints.
+- `src/lib/physics.ts`, `food-shapes.ts`: fixed plate collision surface, shared food geometry/collision hulls, gravity, controlled dragging, and settling.
 - `src/components/PlateScene.tsx`, `FoodModel.tsx`: demand-rendered scene, camera, selection, drag interactions, and procedural models.
 - `src/components/`: food shelf, portion controls, nutrition dashboard, and illustrations.
 - `tests/`: source/data, calculation, state, browser workflow, and accessibility checks.
 
 ## Remaining release validation
 
-Read [VALIDATION.md](VALIDATION.md) for executed checks and limits. The 60 FPS target and sub-three-second broadband startup target need measurement on a named reference laptop. Automated accessibility checks are useful coverage, not a replacement for screen-reader and touch-device testing. The app is a working MVP implementation; no production deployment has been performed.
+Read [VALIDATION.md](VALIDATION.md) for executed checks and limits. The 60 FPS target and sub-three-second broadband startup target need measurement on a named reference laptop. Automated accessibility checks are useful coverage, not a replacement for screen-reader and touch-device testing. The app is a working MVP implementation; check the repository's Actions tab to confirm GitHub Pages deployment status.

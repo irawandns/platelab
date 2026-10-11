@@ -12,6 +12,7 @@ import {
 import { foodById, portionLabel } from "../lib/nutrition";
 import { usePlate } from "../lib/store";
 import { FoodArt } from "./FoodArt";
+import { physicsFoods } from "../lib/scale";
 export function PortionControls() {
   const { items, selectedItemId, setPortion, move, remove } = usePlate();
   const item = items.find((i) => i.instanceId === selectedItemId);
@@ -196,6 +197,8 @@ export function PortionControls() {
         </div>
       </div>
       <p className="scale-note">
+        {physicsFoods.has(food.id) &&
+          "Drag onto another food to stack it. Release to let it settle. "}
         Food sizes are approximate, scaled to your plate. Whole pieces repeat;
         fractional pieces use estimated size. Grams determine nutrition.
       </p>

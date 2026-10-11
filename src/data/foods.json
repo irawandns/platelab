@@ -235,6 +235,7 @@
   },
   {
     "id": "carrot",
+    "available": false,
     "name": "Carrot",
     "category": "Vegetables",
     "preparation": "Raw",
@@ -287,6 +288,7 @@
   },
   {
     "id": "banana",
+    "available": false,
     "name": "Banana",
     "category": "Fruits",
     "preparation": "Raw · medium",
@@ -313,6 +315,7 @@
   },
   {
     "id": "apple",
+    "available": false,
     "name": "Apple",
     "category": "Fruits",
     "preparation": "Raw · with skin, medium",
@@ -339,6 +342,7 @@
   },
   {
     "id": "milk",
+    "available": false,
     "name": "Whole milk",
     "category": "Dairy",
     "preparation": "3.25% fat · vitamin D added",

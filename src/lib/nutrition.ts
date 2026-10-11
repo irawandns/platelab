@@ -1,6 +1,8 @@
 import foodData from "../data/foods.json";
 import type { Food, Nutrient, Nutrients, PlateItem } from "../types";
-export const foods = foodData as Food[];
+export const foods = (foodData as Food[]).filter(
+  (food) => food.available !== false,
+);
 export const foodById = Object.fromEntries(
   foods.map((food) => [food.id, food]),
 );
@@ -47,8 +49,6 @@ export function format(value: number | null, digits = 1) {
       );
 }
 export function portionLabel(food: Food, grams: number) {
-  if (food.id === "milk")
-    return `${format((grams / food.defaultPortionGrams) * 200)} ml`;
   if (food.countable) {
     const count = grams / food.defaultPortionGrams;
     const unit = food.id === "bread" ? "slice" : food.id;

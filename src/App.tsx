@@ -227,6 +227,11 @@ export default function App() {
               have nutrition estimates. Undo brings back an accidental change or
               cleared plate.
             </li>
+            <li>
+              <strong>Try stacking.</strong> Every food settles onto the curved
+              plate and other foods. Drag one onto another and release, or use
+              the movement buttons. Each portion moves together as one group.
+            </li>
           </ol>
           <p className="help-footnote">
             All values use USDA SR28 data and edible weights. Missing data stays

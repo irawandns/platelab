@@ -5,6 +5,8 @@ import {
   MAX_PLATE_CM,
   footprintRadius,
   wellRadius,
+  physicsFoods,
+  plateRadius,
 } from "../lib/scale";
 import { foodById } from "../lib/nutrition";
 
@@ -25,7 +27,10 @@ export function PlateSizeControls() {
         item.foodId,
         item.portionGrams / foodById[item.foodId].defaultPortionGrams,
       ) >
-      wellRadius(plateDiameterCm) - 0.04,
+      (physicsFoods.has(item.foodId)
+        ? plateRadius(plateDiameterCm)
+        : wellRadius(plateDiameterCm)) -
+        0.04,
   );
   return (
     <div className="plate-size-panel">
