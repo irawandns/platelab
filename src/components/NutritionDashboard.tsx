@@ -1,7 +1,7 @@
 import { ArrowUpRight, Leaf, Lightbulb, Info } from "lucide-react";
 import {
   foodById,
-  forPortion,
+  forItem,
   format,
   getInsight,
   summarize,
@@ -9,6 +9,7 @@ import {
 } from "../lib/nutrition";
 import { usePlate } from "../lib/store";
 import type { Nutrient } from "../types";
+import { cookingMethods, oilForItem, retainedOilGrams } from "../lib/cooking";
 const macroRows = [
   { key: "protein", label: "Protein", color: "protein", factor: 4 },
   { key: "carbohydrates", label: "Carbs", color: "carbs", factor: 4 },
@@ -20,7 +21,7 @@ export function NutritionDashboard() {
   const { totals, incomplete } = summarize(items);
   const item = items.find((i) => i.instanceId === selectedItemId);
   const food = item ? foodById[item.foodId] : null;
-  const selected = item && food ? forPortion(food, item.portionGrams) : null;
+  const selected = item && food ? forItem(item) : null;
   const macroEnergy =
     totals.protein * 4 + totals.carbohydrates * 4 + totals.fat * 9;
   return (
@@ -130,6 +131,14 @@ export function NutritionDashboard() {
           <p className="muted">
             {portionLabel(food, item.portionGrams)} · {food.preparation}
           </p>
+          {item.cooking && (
+            <p className="food-oil-note">
+              {cookingMethods[item.cooking.method].label} oil experiment ·
+              includes {format(retainedOilGrams(item), 2)} g added oil (+
+              {format(oilForItem(item).calories, 0)} kcal). Reference
+              preparation stays as shown above.
+            </p>
+          )}
           <div className="detail-nutrients">
             {(
               [

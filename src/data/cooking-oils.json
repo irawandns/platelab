@@ -1,0 +1,56 @@
+[
+  {
+    "id": "soybean",
+    "name": "Soybean oil",
+    "gramsPerTeaspoon": 4.5,
+    "gramsPerTablespoon": 13.6,
+    "nutrientsPer100g": {
+      "calories": 884.0,
+      "protein": 0.0,
+      "carbohydrates": 0.0,
+      "fat": 100.0,
+      "fiber": 0.0
+    },
+    "source": {
+      "id": "04044",
+      "description": "Oil, soybean, salad or cooking",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "olive",
+    "name": "Olive oil",
+    "gramsPerTeaspoon": 4.5,
+    "gramsPerTablespoon": 13.5,
+    "nutrientsPer100g": {
+      "calories": 884.0,
+      "protein": 0.0,
+      "carbohydrates": 0.0,
+      "fat": 100.0,
+      "fiber": 0.0
+    },
+    "source": {
+      "id": "04053",
+      "description": "Oil, olive, salad or cooking",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "palm",
+    "name": "Palm oil",
+    "gramsPerTeaspoon": 4.5,
+    "gramsPerTablespoon": 13.6,
+    "nutrientsPer100g": {
+      "calories": 884.0,
+      "protein": 0.0,
+      "carbohydrates": 0.0,
+      "fat": 100.0,
+      "fiber": 0.0
+    },
+    "source": {
+      "id": "04055",
+      "description": "Oil, palm",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  }
+]

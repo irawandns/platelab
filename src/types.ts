@@ -33,6 +33,21 @@ export interface PlateItem {
   portionGrams: number;
   position: [number, number];
   pose?: FoodPose;
+  cooking?: CookingSettings;
+}
+export type CookingMethod = "sear" | "pan-fry" | "deep-fry" | "air-fry";
+export type OilId = "soybean" | "olive" | "palm";
+export type OilUnit = "g" | "tsp" | "tbsp";
+export interface CookingSettings {
+  method: CookingMethod;
+  oilId: OilId;
+  // Absent means the example preset scales with the reference food weight.
+  // A custom amount belongs to this serving and stays fixed on portion edits.
+  oil?: {
+    grams: number;
+    basis: "in-serving" | "used";
+    retainedPercent: number;
+  };
 }
 export interface FoodPose {
   position: [number, number, number];

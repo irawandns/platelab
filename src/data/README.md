@@ -49,3 +49,24 @@ Nutrient codes: 208 = energy (kcal), 203 = protein (g), 205 = carbohydrate by di
 - The 4/4/9 energy-share chart is illustrative; USDA energy is retained independently and may differ due to food-specific factors and fiber.
 
 USDA federal food-composition data is public domain. The source mirror is only used to retrieve the data; no application code from it is included.
+
+## Cooking oil experiments
+
+`cooking-oils.json` adds soybean oil (NDB 04044), olive oil (04053), and palm oil (04055) from the same pinned SR28 mirror and table checksums above. The selected nutrient and household-weight rows are retained by field in `usda-oils.json`; the cooking tests compare every oil nutrient and spoon conversion against those rows. All three records provide 884 kcal and 100 g fat per 100 g, with zero protein, carbohydrate, and fiber. Teaspoons weigh 4.5 g in these records. Tablespoons weigh 13.6 g for soybean/palm and 13.5 g for olive. These are USDA household measures; users with a scale can enter grams directly.
+
+The first cooking experiment supports firm tofu and chicken breast. Their existing reference preparations remain raw calcium-set tofu and roasted skinless chicken; selecting a method **does not substitute a cooked-food record or model cooking yield**. The calculation is reference-food nutrition plus explicitly counted oil. It preserves unknown reference nutrients and adds the oil contribution once. The food weight control still refers to the original food, excluding added oil.
+
+Method presets are deliberately labeled **example oil amounts**, not measured absorption factors, food-specific research results, or predictions of an actual fried meal:
+
+| Method   | Example oil in the serving per 100 g reference food |
+| -------- | --------------------------------------------------- |
+| Sear     | 2 g                                                 |
+| Pan-fry  | 5 g                                                 |
+| Deep-fry | 10 g                                                |
+| Air-fry  | 1 g                                                 |
+
+These amounts are editable starting scenarios for comparing oil contributions. They do not establish a universal ranking between cooking methods. Actual frying can change water and fat content; see [FAO's food-composition discussion of cooking methods](https://www.fao.org/4/y4705e/Y4705E08.htm). Water loss, fat loss from the food, coatings, and other preparation changes are outside this oil-only experiment. A method name alone cannot establish oil absorption.
+
+In details, the default input is oil in the serving. Alternatively, the user may enter oil used **for this portion** and specify the percentage ending up in the serving. That percentage is a user assumption, displayed alongside the counted grams; switching to this mode starts at an explicit 100%, and the control allows 0–100%. It is not a default empirical absorption estimate. Whole-pan or batch amounts must be allocated to the portion before entering them.
+
+Preset oil scales with reference-food weight. A custom oil amount stays fixed for this serving when the portion changes. Unit changes only change the display, retaining canonical gram precision. Changing oil type preserves the canonical gram amount. Switching methods or resetting to the method preset replaces the custom assumption; As prepared clears the oil experiment. Every food instance has its own settings and participates in the existing undo history. The 3D geometry and physics mass represent the reference food; editing oil does not restart physics or change the arrangement.
