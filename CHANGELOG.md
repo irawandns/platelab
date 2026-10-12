@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-12 — Stable canvas undo checks
+
+- Wait for the simulation revision processed after undo, and use stable canvas captures for visual comparison of dragging, stacked-food removal, and plate skins.
+- Keep restoration comparisons byte-for-byte exact while allowing the browser compositor to finish the frame. This fixes the rendering race that blocked CI after the cooking feature merged.
+
 ## 2026-10-12 — Cooking oil experiments
 
 - Added cooking method controls for tofu and chicken, with editable example oil amounts for searing, pan-frying, deep-frying, and air-frying. As prepared restores the reference food.
