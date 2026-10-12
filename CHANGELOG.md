@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — Stainless meal tray
+
+- Added a selectable 29 × 23 cm stainless meal tray with three top wells, a large lower-left well, and a round lower-right well based on the supplied reference. Well dimensions and depth are visual estimates.
+- Added tray placement, physical separators and well floors, keyboard compartment selection, and an oversized-portion note. Food retains its physical scale and nutrition.
+- Vessel switching captures the previous arrangement for undo, preserves cooking settings and portions, and refits foods to settle on the selected vessel. Ceramic size and color choices are retained.
+- Added tray geometry, placement, physics, switching, undo, and mobile browser checks. See the [meal tray guide](docs/meal-tray.md).
+
 ## 2026-10-12 — Cooking oil experiments
 
 - Added cooking method controls for tofu and chicken, with editable example oil amounts for searing, pan-frying, deep-frying, and air-frying. As prepared restores the reference food.

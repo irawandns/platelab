@@ -6,6 +6,8 @@ This update replaces fixed food placement with controlled stacking on a shallow 
 
 The plate follows the supplied Indonesian household plate reference: cream glaze, a brown rolled rim, a fine inner band, and a curved shoulder around a flat eating area. It is one continuous revolved shell with an underside foot ring. The default outer diameter is 26 cm; presets are 20, 26, and 32 cm, and custom diameters range from 18 to 36 cm. Height stays 3.5 cm when diameter changes. The flat eating area spans 70% of the outer diameter.
 
+Plate options also offers a **stainless meal tray** with five recessed compartments, matching the supplied tray's layout. It has a fixed 29 × 23 cm footprint, rounded placement bounds, and physical wells and dividers. See the [meal tray guide](meal-tray.md) for interaction, estimated dimensions, collision surfaces, and validation.
+
 The available foods are white rice, bread, egg noodles, boiled egg, chicken breast, salmon, firm tofu, tempeh, broccoli, avocado, and cheddar. Carrot, banana, apple, and whole milk have `available: false` in `src/data/foods.json`; their source records remain for later restoration. Disabled foods are excluded from the shelf, runtime lookup, and add actions. Counts and category filters use the available catalog.
 
 Restoring an archived food also requires its visible model, physical dimensions, collision definitions, and tests. Its nutrition record alone does not provide those assets.

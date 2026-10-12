@@ -1,5 +1,12 @@
 # MVP validation
 
+## Stainless meal tray — 2026-10-12
+
+- `npm test`: all 42 tests pass. Tray checks cover the five recessed wells and separators, outer footprint and estimated height, placement inside rounded wells, oversized portions, food/cooking/nutrition preservation, live-pose undo, corner wells beyond the previous circular bounds, transfer across dividers, all regular and maximum portions, and a mixed tray.
+- `npm run build`: passes using Node 22.20.0. The tray is procedural, with a locally generated environment for metal reflections; it adds no remote runtime asset request.
+- Browser suite: all 14 checks pass with local Chromium and SwiftShader. The tray scenario covers vessel selection, keyboard compartment movement, unchanged nutrition, switching back to the ceramic plate, undo, and a 390 px mobile viewport. Existing cooking, stacking, food dragging, size/skin controls, fallback, and automated accessibility checks also pass. The local preview server required approved execution outside the sandbox because sandboxed socket binding is blocked.
+- Reviewed `test-results/stainless-tray-empty.png` and `stainless-tray-mobile.png` (ignored screenshot artifacts). The tray matches the supplied five-well layout and displays a thin metallic shell. Well footprints, depth, and material thickness are estimates; the photographed tray's actual dimensions are unknown. See [meal tray dimensions and limits](docs/meal-tray.md).
+
 ## Cooking oil experiments — 2026-10-12
 
 - `npm test`: all 36 tests pass. New coverage audits the three oils against retained USDA nutrient and household-weight rows, checks canonical gram/spoon conversions, reference-plus-oil totals, preset replacement without double counting, preset versus custom portion behavior, retention at 0/50/100%, missing reference nutrients, independent instances, bounded/invalid inputs, live-pose capture, unchanged physics revision, and undo after portion/remove/reset.

@@ -15,12 +15,13 @@ import {
   useThree,
   type ThreeEvent,
 } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Environment, Lightformer, OrbitControls } from "@react-three/drei";
 import { Group, Plane, Raycaster, Vector2, Vector3, DoubleSide } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { RotateCcw, RotateCw, ZoomIn, ZoomOut, View } from "lucide-react";
 import { FoodPortion } from "./FoodPortion";
 import { PlateModel } from "./PlateModel";
+import { MealTrayModel } from "./MealTrayModel";
 import { PhysicsFood } from "./PhysicsFood";
 import { FoodPhysics, initializePhysics } from "../lib/physics";
 import {
@@ -35,6 +36,14 @@ import { foodById } from "../lib/nutrition";
 import { registerPoseReader, usePlate } from "../lib/store";
 import type { PlateItem } from "../types";
 import { plateSkins } from "../lib/plate-skins";
+import {
+  insideWell,
+  trayOutline,
+  trayWells,
+  traySupportHeight,
+  TRAY_LENGTH_CM,
+  TRAY_WIDTH_CM,
+} from "../lib/meal-tray";
 function Item({
   item,
   setDragging,
@@ -46,6 +55,7 @@ function Item({
 }) {
   const selected = usePlate((s) => s.selectedItemId === item.instanceId);
   const diameterCm = usePlate((s) => s.plateDiameterCm);
+  const plateType = usePlate((s) => s.plateType);
   const group = useRef<Group>(null);
   const pressed = useRef(false);
   const remembered = useRef(false);
@@ -56,11 +66,10 @@ function Item({
   const ratio = item.portionGrams / food.defaultPortionGrams;
   const targetScale = 1;
   const footprint = footprintRadius(item.foodId, ratio);
-  const supportY = foodSupportHeight(
-    diameterCm,
-    item,
-    food.defaultPortionGrams,
-  );
+  const supportY =
+    plateType === "meal-tray"
+      ? traySupportHeight(item, food.defaultPortionGrams)
+      : foodSupportHeight(diameterCm, item, food.defaultPortionGrams);
   const dragSurface = useMemo(
     () => new Plane(new Vector3(0, 1, 0), -supportY),
     [supportY],
@@ -149,6 +158,7 @@ function World({
   const sceneRevision = usePlate((s) => s.sceneRevision);
   const diameterCm = usePlate((s) => s.plateDiameterCm);
   const skin = usePlate((s) => s.plateSkin);
+  const plateType = usePlate((s) => s.plateType);
   const radius = plateRadius(diameterCm);
   const controls = useRef<OrbitControlsImpl>(null);
   const [dragging, setDragging] = useState(false);
@@ -184,6 +194,7 @@ function World({
       state.plateDiameterCm,
       state.items,
       state.restorePhysics,
+      state.plateType,
     );
     runtime.current = simulation;
     gl.domElement.dataset.physics = "settling";
@@ -265,14 +276,19 @@ function World({
         ),
         camera,
       );
-      // Hit the curved ceramic itself, not an invisible flat plane below it.
+      // Raycast the actual vessel surface, including the tray's recessed wells.
       const hit =
         plate.current &&
         ray
           .intersectObject(plate.current, true)
-          .find((hit) => hit.object.name === "plate-ceramic");
+          .find((hit) => hit.object.name.startsWith("plate-"));
       const point = hit?.point;
-      if (point && Math.hypot(point.x, point.z) <= radius)
+      if (
+        point &&
+        (plateType === "meal-tray"
+          ? insideWell(trayOutline, point.x, point.z)
+          : Math.hypot(point.x, point.z) <= radius)
+      )
         usePlate.getState().add(id, [point.x, point.z]);
     };
     const allow = (e: DragEvent) => {
@@ -285,17 +301,44 @@ function World({
       canvas.removeEventListener("drop", drop);
       canvas.removeEventListener("dragover", allow);
     };
-  }, [gl, camera, radius]);
+  }, [gl, camera, radius, plateType]);
   if (physicsError) throw physicsError;
   return (
     <>
       <ambientLight intensity={1.7} />
       <directionalLight position={[-3, 7, 5]} intensity={2.4} />
       <directionalLight position={[4, 3, -2]} intensity={0.6} color="#ffe4ba" />
+      {plateType === "meal-tray" && (
+        <Environment resolution={128}>
+          <color attach="background" args={["#666c73"]} />
+          <Lightformer
+            position={[0, 5, -3]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={[8, 5, 1]}
+            intensity={2}
+          />
+          <Lightformer
+            position={[-5, 2, 1]}
+            rotation={[0, Math.PI / 2, 0]}
+            scale={[3, 8, 1]}
+            intensity={3}
+          />
+          <Lightformer
+            position={[5, 3, 2]}
+            rotation={[0, -Math.PI / 2, 0]}
+            scale={[2, 6, 1]}
+            intensity={1.5}
+          />
+        </Environment>
+      )}
       <group ref={plate}>
-        <PlateModel diameterCm={diameterCm} skin={skin} />
+        {plateType === "meal-tray" ? (
+          <MealTrayModel />
+        ) : (
+          <PlateModel diameterCm={diameterCm} skin={skin} />
+        )}
       </group>
-      {(dragging || libraryDrag) && (
+      {plateType === "ceramic" && (dragging || libraryDrag) && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.608, 0]}>
           <ringGeometry args={[radius - 0.04, radius, 64]} />
           <meshBasicMaterial color="#829568" transparent opacity={0.7} />
@@ -335,18 +378,52 @@ function World({
 function Fallback() {
   const diameterCm = usePlate((s) => s.plateDiameterCm);
   const skin = usePlate((s) => s.plateSkin);
+  const plateType = usePlate((s) => s.plateType);
   const palette = plateSkins[skin];
   return (
     <div className="scene-fallback">
-      <div
-        className="fallback-plate"
-        style={{
-          width: (200 * diameterCm) / 26,
-          height: (95 * diameterCm) / 26,
-          backgroundColor: palette.base,
-          borderColor: palette.rim,
-        }}
-      />
+      {plateType === "meal-tray" ? (
+        <svg
+          width="240"
+          height="190"
+          viewBox="-14.5 -11.5 29 23"
+          aria-hidden="true"
+        >
+          <rect
+            x="-14"
+            y="-11"
+            width="28"
+            height="22"
+            rx="1.5"
+            fill="#bfc7ce"
+            stroke="#626f79"
+            strokeWidth="0.2"
+          />
+          {trayWells.map((w) => (
+            <rect
+              key={w.id}
+              x={(w.x - w.width / 2) * 5}
+              y={(w.z - w.depth / 2) * 5}
+              width={w.width * 5}
+              height={w.depth * 5}
+              rx={w.radius * 5}
+              fill="#e5e9ec"
+              stroke="#626f79"
+              strokeWidth="0.2"
+            />
+          ))}
+        </svg>
+      ) : (
+        <div
+          className="fallback-plate"
+          style={{
+            width: (200 * diameterCm) / 26,
+            height: (95 * diameterCm) / 26,
+            backgroundColor: palette.base,
+            borderColor: palette.rim,
+          }}
+        />
+      )}
       <p>3D isn’t available in this browser.</p>
       <span>
         You can still build your plate using the food library and controls
@@ -370,6 +447,7 @@ class SceneBoundary extends Component<
 export default function PlateScene() {
   const diameterCm = usePlate((s) => s.plateDiameterCm);
   const skin = usePlate((s) => s.plateSkin);
+  const plateType = usePlate((s) => s.plateType);
   const [cameraAction, setCameraAction] = useState({ action: "", nonce: 0 });
   const [reduced, setReduced] = useState(false);
   const [over, setOver] = useState(false);
@@ -390,7 +468,7 @@ export default function PlateScene() {
       <div
         className="canvas-wrap"
         role="img"
-        aria-label={`Interactive 3D plate, ${diameterCm} centimetres in diameter, ${plateSkins[skin].name} skin. Use the food list and portion controls below as a keyboard alternative.`}
+        aria-label={`${plateType === "meal-tray" ? `Interactive 3D stainless meal tray, ${TRAY_LENGTH_CM} by ${TRAY_WIDTH_CM} centimetres, 5 compartments` : `Interactive 3D plate, ${diameterCm} centimetres in diameter, ${plateSkins[skin].name} skin`}. Use the food list and portion controls below as a keyboard alternative.`}
       >
         <SceneBoundary>
           <Suspense
