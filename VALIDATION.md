@@ -7,6 +7,12 @@
 - Browser suite: all 14 checks pass with local Chromium and SwiftShader. The tray scenario covers vessel selection, keyboard compartment movement, unchanged nutrition, switching back to the ceramic plate, undo, and a 390 px mobile viewport. Existing cooking, stacking, food dragging, size/skin controls, fallback, and automated accessibility checks also pass. The local preview server required approved execution outside the sandbox because sandboxed socket binding is blocked.
 - Reviewed `test-results/stainless-tray-empty.png` and `stainless-tray-mobile.png` (ignored screenshot artifacts). The tray matches the supplied five-well layout and displays a thin metallic shell. Well footprints, depth, and material thickness are estimates; the photographed tray's actual dimensions are unknown. See [meal tray dimensions and limits](docs/meal-tray.md).
 
+## Canvas undo checks in CI — 2026-10-12
+
+- The PR #2 and subsequent main workflows passed unit tests, the production build, and formatting, but the browser job failed exact canvas comparisons after food-drag undo and plate-skin undo. CI attachments showed an intermediate empty plate instead of the expected food rendering. In local repetition, the original drag/undo check failed 3 of 6 runs.
+- Physics settling is not a rendering-completion signal. The scene now publishes the simulation revision processed by a frame, and visual undo checks wait for the new revision. Baseline, changed, and restored canvas captures must be stable across two consecutive screenshots. Restoration is compared byte-for-byte to the reference with bounded polling. The same helpers cover food movement, stacked-food removal/undo, and plate skins.
+- Both CI-failing checks pass all 6 targeted checks (each repeated three times) in the isolated main checkout. All 36 unit tests, the production Pages build, and formatting pass. All 13 production browser checks also pass with the follow-up fix at /platelab/.
+
 ## Cooking oil experiments — 2026-10-12
 
 - `npm test`: all 36 tests pass. New coverage audits the three oils against retained USDA nutrient and household-weight rows, checks canonical gram/spoon conversions, reference-plus-oil totals, preset replacement without double counting, preset versus custom portion behavior, retention at 0/50/100%, missing reference nutrients, independent instances, bounded/invalid inputs, live-pose capture, unchanged physics revision, and undo after portion/remove/reset.

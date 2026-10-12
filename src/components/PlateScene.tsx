@@ -216,6 +216,9 @@ function World({
       invalidate();
     }
     gl.domElement.dataset.physics = active ? "settling" : "settled";
+    // Identify the simulation processed by this frame. A previous simulation's
+    // settled marker can remain visible while an undo is being committed.
+    gl.domElement.dataset.physicsRevision = String(sceneRevision);
     if (!active && !idleCommitted.current) {
       idleCommitted.current = true;
       usePlate.getState().commitPoses(runtime.current.poses());

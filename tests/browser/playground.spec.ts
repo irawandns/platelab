@@ -1,4 +1,43 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
+
+async function settledCanvasScreenshot(canvas: Locator) {
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
+  let current = await canvas.screenshot();
+  // Physics can be asleep before its final frame reaches the compositor.
+  // Require two matching captures for the baseline as well as the restoration.
+  await expect
+    .poll(async () => {
+      const previous = current;
+      current = await canvas.screenshot();
+      return current.equals(previous);
+    })
+    .toBe(true);
+  return current;
+}
+
+async function undoRenderedScene(page: Page, canvas: Locator) {
+  const revision = Number(await canvas.getAttribute("data-physics-revision"));
+  await page.getByRole("button", { name: "Undo last change" }).click();
+  await expect(canvas).toHaveAttribute(
+    "data-physics-revision",
+    String(revision + 1),
+  );
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
+}
+
+async function restoredCanvasScreenshot(canvas: Locator, before: Buffer) {
+  let restored = before;
+  await expect
+    .poll(
+      async () => {
+        restored = await settledCanvasScreenshot(canvas);
+        return restored.equals(before);
+      },
+      { message: "Undo restores the original canvas image exactly" },
+    )
+    .toBe(true);
+  return restored;
+}
 test("builds a meal, adjusts portions, removes, clears and undoes", async ({
   page,
 }) => {
@@ -129,7 +168,7 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
     0,
   );
   // Rice was dropped near the origin. Drag its visible upper surface toward the right.
-  const before = await canvas.screenshot();
+  const before = await settledCanvasScreenshot(canvas);
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 - 12);
   await page.mouse.down();
   await page.mouse.move(
@@ -142,19 +181,20 @@ test("accepts library drops only on the plate and supports direct 3D movement", 
     page.getByRole("button", { name: /^Select White rice/ }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("total-calories")).toHaveText("130");
-  const after = await canvas.screenshot();
+  const after = await settledCanvasScreenshot(canvas);
   expect(after.equals(before)).toBe(false);
-  await page.getByRole("button", { name: "Undo last change" }).click();
-  await expect(page.getByTestId("total-calories")).toHaveText("130");
-  await expect(canvas).toHaveAttribute("data-physics", "settled");
-  const restored = await canvas.screenshot();
   for (const [name, body] of [
     ["before-food-drag", before],
     ["after-food-drag", after],
-    ["after-food-drag-undo", restored],
   ] as const)
     await testInfo.attach(name, { body, contentType: "image/png" });
-  expect(restored.equals(before)).toBe(true);
+  await undoRenderedScene(page, canvas);
+  await expect(page.getByTestId("total-calories")).toHaveText("130");
+  const restored = await restoredCanvasScreenshot(canvas, before);
+  await testInfo.attach("after-food-drag-undo", {
+    body: restored,
+    contentType: "image/png",
+  });
 });
 
 test("settles stacked foods and restores the arrangement after removal", async ({
@@ -184,17 +224,16 @@ test("settles stacked foods and restores the arrangement after removal", async (
     page.getByText("Drag onto another food to stack it.", { exact: false }),
   ).toBeVisible();
   const energy = await page.getByTestId("total-calories").textContent();
-  const before = await canvas.screenshot();
+  const before = await settledCanvasScreenshot(canvas);
   await page
     .getByRole("button", { name: "Remove Firm tofu", exact: true })
     .click();
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
   });
-  await page.getByRole("button", { name: "Undo last change" }).click();
-  await expect(canvas).toHaveAttribute("data-physics", "settled");
+  await undoRenderedScene(page, canvas);
   await expect(page.getByTestId("total-calories")).toHaveText(energy!);
-  expect((await canvas.screenshot()).equals(before)).toBe(true);
+  await restoredCanvasScreenshot(canvas, before);
   await canvas.screenshot({ path: "test-results/stacked-tofu.png" });
   expect(errors).toEqual([]);
 });
@@ -335,17 +374,16 @@ test("collapses plate options and changes skins without changing the meal", asyn
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
   });
-  const before = await canvas.screenshot();
+  const before = await settledCanvasScreenshot(canvas);
   await page.getByRole("radio", { name: "Sage", exact: true }).check();
   await expect(summary).toContainText("26 cm · Sage");
   await expect(
     page.getByRole("img", { name: /26 centimetres in diameter, Sage skin/ }),
   ).toBeVisible();
-  expect((await canvas.screenshot()).equals(before)).toBe(false);
-  await page.getByRole("button", { name: "Undo last change" }).click();
+  expect((await settledCanvasScreenshot(canvas)).equals(before)).toBe(false);
+  await undoRenderedScene(page, canvas);
   await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
-  await expect(canvas).toHaveAttribute("data-physics", "settled");
-  expect((await canvas.screenshot()).equals(before)).toBe(true);
+  await restoredCanvasScreenshot(canvas, before);
   await page
     .getByRole("button", { name: "Add White rice", exact: true })
     .click();
