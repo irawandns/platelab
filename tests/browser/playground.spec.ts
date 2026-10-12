@@ -331,7 +331,9 @@ test("collapses plate options and changes skins without changing the meal", asyn
   await summary.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
-  await page.getByRole("button", { name: "Add White rice", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Add White rice", exact: true })
+    .click();
   const canvas = page.locator('canvas[data-ready="true"]');
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
