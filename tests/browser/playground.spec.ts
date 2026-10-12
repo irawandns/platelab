@@ -331,9 +331,6 @@ test("collapses plate options and changes skins without changing the meal", asyn
   await summary.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
-  await page
-    .getByRole("button", { name: "Add White rice", exact: true })
-    .click();
   const canvas = page.locator('canvas[data-ready="true"]');
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
@@ -344,18 +341,21 @@ test("collapses plate options and changes skins without changing the meal", asyn
   await expect(
     page.getByRole("img", { name: /26 centimetres in diameter, Sage skin/ }),
   ).toBeVisible();
-  await expect(page.getByTestId("total-calories")).toHaveText("130");
-  await expect(page.getByTestId("portion-label")).toHaveText("100 g");
   expect((await canvas.screenshot()).equals(before)).toBe(false);
   await page.getByRole("button", { name: "Undo last change" }).click();
   await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
   await expect(canvas).toHaveAttribute("data-physics", "settled");
   expect((await canvas.screenshot()).equals(before)).toBe(true);
+  await page
+    .getByRole("button", { name: "Add White rice", exact: true })
+    .click();
   await page.getByRole("radio", { name: "Cream" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", { name: "Sage" })).toBeChecked();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", { name: "Blue" })).toBeChecked();
+  await expect(page.getByTestId("total-calories")).toHaveText("130");
+  await expect(page.getByTestId("portion-label")).toHaveText("100 g");
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("radio", { name: "Blue" })).toBeVisible();
   await page.screenshot({
