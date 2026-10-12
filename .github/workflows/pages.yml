@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: github-pages-${{ github.event_name }}-${{ github.ref }}
+  group: github-pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -48,6 +48,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
       - name: Check formatting
+        if: always()
         run: |
           npm run format:check || {
             npm run format
