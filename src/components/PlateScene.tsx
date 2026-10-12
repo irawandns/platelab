@@ -34,6 +34,7 @@ import {
 import { foodById } from "../lib/nutrition";
 import { registerPoseReader, usePlate } from "../lib/store";
 import type { PlateItem } from "../types";
+import { plateSkins } from "../lib/plate-skins";
 function Item({
   item,
   setDragging,
@@ -147,6 +148,7 @@ function World({
   const items = usePlate((s) => s.items);
   const sceneRevision = usePlate((s) => s.sceneRevision);
   const diameterCm = usePlate((s) => s.plateDiameterCm);
+  const skin = usePlate((s) => s.plateSkin);
   const radius = plateRadius(diameterCm);
   const controls = useRef<OrbitControlsImpl>(null);
   const [dragging, setDragging] = useState(false);
@@ -291,7 +293,7 @@ function World({
       <directionalLight position={[-3, 7, 5]} intensity={2.4} />
       <directionalLight position={[4, 3, -2]} intensity={0.6} color="#ffe4ba" />
       <group ref={plate}>
-        <PlateModel diameterCm={diameterCm} />
+        <PlateModel diameterCm={diameterCm} skin={skin} />
       </group>
       {(dragging || libraryDrag) && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.608, 0]}>
@@ -332,6 +334,8 @@ function World({
 }
 function Fallback() {
   const diameterCm = usePlate((s) => s.plateDiameterCm);
+  const skin = usePlate((s) => s.plateSkin);
+  const palette = plateSkins[skin];
   return (
     <div className="scene-fallback">
       <div
@@ -339,6 +343,8 @@ function Fallback() {
         style={{
           width: (200 * diameterCm) / 26,
           height: (95 * diameterCm) / 26,
+          backgroundColor: palette.base,
+          borderColor: palette.rim,
         }}
       />
       <p>3D isn’t available in this browser.</p>
@@ -363,6 +369,7 @@ class SceneBoundary extends Component<
 }
 export default function PlateScene() {
   const diameterCm = usePlate((s) => s.plateDiameterCm);
+  const skin = usePlate((s) => s.plateSkin);
   const [cameraAction, setCameraAction] = useState({ action: "", nonce: 0 });
   const [reduced, setReduced] = useState(false);
   const [over, setOver] = useState(false);
@@ -383,7 +390,7 @@ export default function PlateScene() {
       <div
         className="canvas-wrap"
         role="img"
-        aria-label={`Interactive 3D plate, ${diameterCm} centimetres in diameter. Use the food list and portion controls below as a keyboard alternative.`}
+        aria-label={`Interactive 3D plate, ${diameterCm} centimetres in diameter, ${plateSkins[skin].name} skin. Use the food list and portion controls below as a keyboard alternative.`}
       >
         <SceneBoundary>
           <Suspense

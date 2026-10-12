@@ -17,7 +17,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 
 - Eleven available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
 - A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
-- Cream glazed ceramic plate inspired by Indonesian household plates, with a curved shoulder, brown rim and fine inner band.
+- Collapsible Plate options with size presets, custom diameter, and Cream, Sage, or Blue ceramic skins. The compact summary shows your current size and skin. Skin changes support undo and preserve food positions, portions, and nutrition.
 - Controlled Rapier physics for every available food: drag onto the curved plate or another food, release to settle/tilt/stack, and undo restores positions and rotations. Removing a support lets upper food fall. Collision shapes follow the food geometry, with separate hulls for tofu blocks, broccoli florets, bread slices, and multiple eggs.
 - Search/category filtering; click, tap, keyboard, and drag-to-add.
 - Select independent instances, reposition by dragging or buttons, rotate/zoom/reset the camera.

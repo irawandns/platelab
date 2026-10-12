@@ -275,6 +275,7 @@ test("changes custom plate diameter without changing nutrition and supports undo
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
+  await page.locator(".plate-options > summary").click();
   await expect(page.getByLabel("Custom plate diameter")).toHaveValue("26");
   await page.getByRole("button", { name: "Add Broccoli", exact: true }).click();
   await page.getByLabel("Edible weight").fill("300");
@@ -310,6 +311,62 @@ test("changes custom plate diameter without changing nutrition and supports undo
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByLabel("Custom plate diameter")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("collapses plate options and changes skins without changing the meal", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./");
+  const options = page.locator(".plate-options");
+  const summary = options.locator("summary");
+  await expect(options).not.toHaveAttribute("open");
+  await expect(summary).toContainText("26 cm · Cream");
+  await expect(page.getByLabel("Custom plate diameter")).not.toBeVisible();
+  await summary.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
+  const canvas = page.locator('canvas[data-ready="true"]');
+  await expect(canvas).toHaveAttribute("data-physics", "settled", {
+    timeout: 15000,
+  });
+  const before = await canvas.screenshot();
+  await page.getByRole("radio", { name: "Sage", exact: true }).check();
+  await expect(summary).toContainText("26 cm · Sage");
+  await expect(
+    page.getByRole("img", { name: /26 centimetres in diameter, Sage skin/ }),
+  ).toBeVisible();
+  expect((await canvas.screenshot()).equals(before)).toBe(false);
+  await page.getByRole("button", { name: "Undo last change" }).click();
+  await expect(page.getByRole("radio", { name: "Cream" })).toBeChecked();
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
+  expect((await canvas.screenshot()).equals(before)).toBe(true);
+  await page
+    .getByRole("button", { name: "Add White rice", exact: true })
+    .click();
+  await page.getByRole("radio", { name: "Cream" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "Sage" })).toBeChecked();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "Blue" })).toBeChecked();
+  await expect(page.getByTestId("total-calories")).toHaveText("130");
+  await expect(page.getByTestId("portion-label")).toHaveText("100 g");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("radio", { name: "Blue" })).toBeVisible();
+  await page.screenshot({
+    path: "test-results/mobile-plate-options.png",
+    fullPage: true,
+  });
+  await summary.click();
+  await expect(page.getByRole("radio", { name: "Blue" })).not.toBeVisible();
+  await expect(summary).toContainText("26 cm · Blue");
+  await summary.click();
+  await expect(page.getByRole("radio", { name: "Blue" })).toBeChecked();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

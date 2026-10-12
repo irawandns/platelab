@@ -15,6 +15,9 @@ test("has no automated WCAG A/AA violations in empty, selected and help states",
     .getByRole("button", { name: "Add White rice", exact: true })
     .click();
   await scan();
+  await page.locator(".plate-options > summary").click();
+  await page.getByRole("radio", { name: "Blue" }).check();
+  await scan();
   await page.getByRole("button", { name: "How it works" }).click();
   await scan();
 });
