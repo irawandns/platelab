@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — Stainless meal tray
+
+- Added a selectable 29 × 23 cm stainless meal tray with three top wells, a large lower-left well, and a round lower-right well based on the supplied reference. Well dimensions and depth are visual estimates.
+- Added tray placement, physical separators and well floors, keyboard compartment selection, and an oversized-portion note. Food retains its physical scale and nutrition.
+- Vessel switching captures the previous arrangement for undo, preserves cooking settings and portions, and refits foods to settle on the selected vessel. Ceramic size and color choices are retained.
+- Added tray geometry, placement, physics, switching, undo, and mobile browser checks. See the [meal tray guide](docs/meal-tray.md).
+
 ## 2026-10-12 — Stable canvas undo checks
 
 - Wait for the simulation revision processed after undo, and use stable canvas captures for visual comparison of dragging, stacked-food removal, and plate skins.

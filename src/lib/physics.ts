@@ -11,6 +11,15 @@ import {
   wellRadius,
 } from "./scale";
 import { foodCollisionHulls } from "./food-shapes";
+import {
+  insideWell,
+  trayOutline,
+  trayPosition,
+  trayWells,
+  TRAY_FLOOR_Y,
+  type PlateType,
+} from "./meal-tray";
+import { mealTrayGeometry } from "./tray-geometry";
 
 let initialization: Promise<void> | undefined;
 export const initializePhysics = () => (initialization ??= RAPIER.init());
@@ -33,6 +42,7 @@ export class FoodPhysics {
     readonly diameterCm: number,
     items: PlateItem[],
     restore = false,
+    readonly plateType: PlateType = "ceramic",
   ) {
     // One scene unit is 5 cm. Gravity is converted from metres/s².
     this.world = new RAPIER.World({
@@ -45,40 +55,87 @@ export class FoodPhysics {
     this.world.numSolverIterations = 16;
     this.world.integrationParameters.erp = 0.7;
     const plate = this.world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
-    this.world.createCollider(
-      RAPIER.ColliderDesc.cylinder(0.04, wellRadius(diameterCm))
-        .setTranslation(0, PLATE_SURFACE_Y - 0.04, 0)
-        .setFriction(0.9),
-      plate,
-    );
-    const profile = plateTopProfile.slice(1);
-    const vertices: number[] = [],
-      indices: number[] = [];
-    const segments = 128,
-      radius = plateRadius(diameterCm);
-    for (let angle = 0; angle <= segments; angle++) {
-      const theta = (angle * Math.PI * 2) / segments;
-      profile.forEach(([r, y]) =>
-        vertices.push(
-          r * radius * Math.cos(theta),
-          y,
-          r * radius * Math.sin(theta),
-        ),
+    if (plateType === "meal-tray") {
+      const geometry = mealTrayGeometry();
+      const vertices = geometry.attributes.position.array as Float32Array;
+      const indices: number[] = [];
+      for (let i = 0; i < vertices.length / 3; i += 3) {
+        // Primitive floor slabs avoid internal triangle-edge contacts under thin food.
+        if (
+          [i, i + 1, i + 2].every(
+            (j) => Math.abs(vertices[j * 3 + 1] - TRAY_FLOOR_Y) < 1e-6,
+          )
+        )
+          continue;
+        indices.push(i, i + 1, i + 2);
+      }
+      this.world.createCollider(
+        RAPIER.ColliderDesc.trimesh(
+          vertices,
+          new Uint32Array(indices),
+        ).setFriction(0.9),
+        plate,
+      );
+      for (const w of trayWells) {
+        const radius = w.radius - 0.16;
+        const dx = w.width / 2 - w.radius;
+        const dz = w.depth / 2 - w.radius;
+        const y = TRAY_FLOOR_Y - 0.04;
+        const floor = (shape: RAPIER.ColliderDesc, x = w.x, z = w.z) =>
+          this.world.createCollider(
+            shape.setTranslation(x, y, z).setFriction(0.9),
+            plate,
+          );
+        if (dx > 0) floor(RAPIER.ColliderDesc.cuboid(dx, 0.04, dz + radius));
+        if (dz > 0) floor(RAPIER.ColliderDesc.cuboid(dx + radius, 0.04, dz));
+        if (dx === 0 && dz === 0)
+          floor(RAPIER.ColliderDesc.cylinder(0.04, radius));
+        else
+          for (const a of [-1, 1])
+            for (const b of [-1, 1])
+              floor(
+                RAPIER.ColliderDesc.cylinder(0.04, radius),
+                w.x + a * dx,
+                w.z + b * dz,
+              );
+      }
+      geometry.dispose();
+    } else {
+      this.world.createCollider(
+        RAPIER.ColliderDesc.cylinder(0.04, wellRadius(diameterCm))
+          .setTranslation(0, PLATE_SURFACE_Y - 0.04, 0)
+          .setFriction(0.9),
+        plate,
+      );
+      const profile = plateTopProfile.slice(1);
+      const vertices: number[] = [],
+        indices: number[] = [];
+      const segments = 128,
+        radius = plateRadius(diameterCm);
+      for (let angle = 0; angle <= segments; angle++) {
+        const theta = (angle * Math.PI * 2) / segments;
+        profile.forEach(([r, y]) =>
+          vertices.push(
+            r * radius * Math.cos(theta),
+            y,
+            r * radius * Math.sin(theta),
+          ),
+        );
+      }
+      for (let a = 0; a < segments; a++)
+        for (let p = 0; p < profile.length - 1; p++) {
+          const i = a * profile.length + p,
+            j = i + profile.length;
+          indices.push(i, j, i + 1, i + 1, j, j + 1);
+        }
+      this.world.createCollider(
+        RAPIER.ColliderDesc.trimesh(
+          new Float32Array(vertices),
+          new Uint32Array(indices),
+        ).setFriction(0.9),
+        plate,
       );
     }
-    for (let a = 0; a < segments; a++)
-      for (let p = 0; p < profile.length - 1; p++) {
-        const i = a * profile.length + p,
-          j = i + profile.length;
-        indices.push(i, j, i + 1, i + 1, j, j + 1);
-      }
-    this.world.createCollider(
-      RAPIER.ColliderDesc.trimesh(
-        new Float32Array(vertices),
-        new Uint32Array(indices),
-      ).setFriction(0.9),
-      plate,
-    );
     for (const item of items
       .slice()
       .sort((a, b) => Number(Boolean(b.pose)) - Number(Boolean(a.pose))))
@@ -201,18 +258,28 @@ export class FoodPhysics {
   dragTo(id: string, x: number, z: number) {
     const entry = this.entries.get(id);
     if (!entry || this.dragged !== id || !Number.isFinite(x + z)) return;
-    const limit = placementRadius(
-      this.diameterCm,
-      entry.item,
-      foodById[entry.item.foodId].defaultPortionGrams,
-    );
-    const factor = Math.min(1, limit / (Math.hypot(x, z) || 1));
-    x *= factor;
-    z *= factor;
+    const [targetX, targetZ] = this.fitPosition(entry.item, x, z);
+    x = targetX;
+    z = targetZ;
     const y = this.dropHeight(id, x, z) + clearance;
     // Keep the grabbed food above its destination support before releasing it.
     entry.body.setNextKinematicTranslation({ x, y, z });
     entry.body.setNextKinematicRotation(identity);
+  }
+  private fitPosition(item: PlateItem, x: number, z: number): [number, number] {
+    if (this.plateType === "meal-tray")
+      return trayPosition(
+        [x, z],
+        item,
+        foodById[item.foodId].defaultPortionGrams,
+      );
+    const limit = placementRadius(
+      this.diameterCm,
+      item,
+      foodById[item.foodId].defaultPortionGrams,
+    );
+    const factor = Math.min(1, limit / (Math.hypot(x, z) || 1));
+    return [x * factor, z * factor];
   }
   endDrag() {
     if (!this.dragged) return;
@@ -249,16 +316,12 @@ export class FoodPhysics {
         // losing selectable food below the scene after an unstable collision.
         if (
           entry.body.isDynamic() &&
-          (p.y < -0.5 || Math.hypot(p.x, p.z) > plateRadius(this.diameterCm))
+          (p.y < -0.5 ||
+            (this.plateType === "meal-tray"
+              ? !insideWell(trayOutline, p.x, p.z)
+              : Math.hypot(p.x, p.z) > plateRadius(this.diameterCm)))
         ) {
-          const limit = placementRadius(
-            this.diameterCm,
-            entry.item,
-            foodById[entry.item.foodId].defaultPortionGrams,
-          );
-          const factor = Math.min(1, limit / (Math.hypot(p.x, p.z) || 1));
-          const x = p.x * factor,
-            z = p.z * factor;
+          const [x, z] = this.fitPosition(entry.item, p.x, p.z);
           entry.body.setRotation(identity, true);
           entry.body.setTranslation(
             { x, y: this.dropHeight(id, x, z) + clearance, z },

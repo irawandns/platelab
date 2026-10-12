@@ -15,8 +15,15 @@ import { FoodArt } from "./FoodArt";
 import { physicsFoods } from "../lib/scale";
 import { supportsCooking } from "../lib/cooking";
 import { CookingControls } from "./CookingControls";
+import {
+  insideWell,
+  trayWells,
+  fitsTrayWell,
+  trayFootprint,
+} from "../lib/meal-tray";
 export function PortionControls() {
-  const { items, selectedItemId, setPortion, move, remove } = usePlate();
+  const { items, selectedItemId, setPortion, move, remove, plateType } =
+    usePlate();
   const item = items.find((i) => i.instanceId === selectedItemId);
   const food = item ? foodById[item.foodId] : null;
   const [grams, setGrams] = useState("");
@@ -192,6 +199,50 @@ export function PortionControls() {
           </div>
         </div>
       </div>
+      {plateType === "meal-tray" && (
+        <div className="tray-compartment-control">
+          <label htmlFor="tray-compartment">Tray compartment</label>
+          <select
+            id="tray-compartment"
+            value={
+              trayWells.find((w) => insideWell(w, ...item.position))?.id ?? ""
+            }
+            onChange={(e) => {
+              const target = trayWells.find((w) => w.id === e.target.value);
+              if (target) move(item.instanceId, [target.x, target.z]);
+            }}
+          >
+            <option value="" disabled>
+              Choose a compartment
+            </option>
+            {trayWells.map((w) => (
+              <option
+                key={w.id}
+                value={w.id}
+                disabled={
+                  w.id !== "large" &&
+                  !fitsTrayWell(
+                    w,
+                    w.x,
+                    w.z,
+                    trayFootprint(item, food.defaultPortionGrams),
+                  )
+                }
+              >
+                {
+                  {
+                    large: "Large compartment",
+                    "top-center": "Top center",
+                    round: "Round compartment",
+                    "top-left": "Top left",
+                    "top-right": "Top right",
+                  }[w.id]
+                }
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {supportsCooking(food.id) && (
         <CookingControls key={item.instanceId} item={item} food={food} />
       )}

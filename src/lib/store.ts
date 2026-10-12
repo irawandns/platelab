@@ -3,6 +3,7 @@ import { foodById } from "./nutrition";
 import { DEFAULT_PLATE_SKIN, plateSkins, type PlateSkin } from "./plate-skins";
 import type { CookingSettings, FoodPose, PlateItem } from "../types";
 import { normalizeCooking } from "./cooking";
+import { trayAddPosition, trayPosition, type PlateType } from "./meal-tray";
 import {
   DEFAULT_PLATE_CM,
   MIN_PLATE_CM,
@@ -22,6 +23,7 @@ export function clampPosition(
   return [x * factor, z * factor];
 }
 interface Snapshot {
+  plateType: PlateType;
   plateSkin: PlateSkin;
   plateDiameterCm: number;
   items: PlateItem[];
@@ -38,6 +40,7 @@ interface State extends Snapshot {
   setCooking: (id: string, cooking?: CookingSettings) => void;
   setPlateDiameter: (cm: number) => void;
   setPlateSkin: (skin: PlateSkin) => void;
+  setPlateType: (type: PlateType) => void;
   move: (id: string, position: [number, number], remember?: boolean) => void;
   beginMove: () => void;
   remove: (id: string) => void;
@@ -82,20 +85,33 @@ const remember = (state: State) => [
     selectedItemId: state.selectedItemId,
     plateDiameterCm: state.plateDiameterCm,
     plateSkin: state.plateSkin,
+    plateType: state.plateType,
   },
 ];
-const fitItem = (item: PlateItem, diameterCm: number): PlateItem => ({
+const fitItem = (
+  item: PlateItem,
+  diameterCm: number,
+  plateType: PlateType,
+): PlateItem => ({
   ...item,
-  position: clampPosition(
-    ...item.position,
-    placementRadius(
-      diameterCm,
-      item,
-      foodById[item.foodId].defaultPortionGrams,
-    ),
-  ),
+  position:
+    plateType === "meal-tray"
+      ? trayPosition(
+          item.position,
+          item,
+          foodById[item.foodId].defaultPortionGrams,
+        )
+      : clampPosition(
+          ...item.position,
+          placementRadius(
+            diameterCm,
+            item,
+            foodById[item.foodId].defaultPortionGrams,
+          ),
+        ),
 });
 export const usePlate = create<State>((set) => ({
+  plateType: "ceramic",
   plateDiameterCm: DEFAULT_PLATE_CM,
   plateSkin: DEFAULT_PLATE_SKIN,
   items: [],
@@ -121,7 +137,9 @@ export const usePlate = create<State>((set) => ({
         portionGrams: food.defaultPortionGrams,
         position: position ?? [0, 0],
       };
-      if (!position) {
+      if (!position && state.plateType === "meal-tray") {
+        item.position = trayAddPosition(item, food.defaultPortionGrams, n);
+      } else if (!position) {
         // Spread click-added portions around the eating area at their physical size.
         const angle = Math.PI / 2 + n * 2.399963;
         const radius =
@@ -135,7 +153,10 @@ export const usePlate = create<State>((set) => ({
       return {
         ...changed(state),
         history: remember(state),
-        items: [...state.items, fitItem(item, state.plateDiameterCm)],
+        items: [
+          ...state.items,
+          fitItem(item, state.plateDiameterCm, state.plateType),
+        ],
         selectedItemId: item.instanceId,
         announcement: `${food.name} added to your plate.`,
       };
@@ -180,6 +201,7 @@ export const usePlate = create<State>((set) => ({
             ? fitItem(
                 { ...i, portionGrams, pose: undefined },
                 state.plateDiameterCm,
+                state.plateType,
               )
             : i,
         ),
@@ -199,7 +221,11 @@ export const usePlate = create<State>((set) => ({
         history: remember(state),
         plateDiameterCm,
         items: state.items.map((item) =>
-          fitItem({ ...item, pose: undefined }, plateDiameterCm),
+          fitItem(
+            { ...item, pose: undefined },
+            plateDiameterCm,
+            state.plateType,
+          ),
         ),
         announcement: `Plate diameter changed to ${plateDiameterCm} centimetres. Food portions stay the same.`,
       };
@@ -219,6 +245,28 @@ export const usePlate = create<State>((set) => ({
         announcement: `Plate skin changed to ${plateSkins[plateSkin].name}. Food portions stay the same.`,
       };
     }),
+  setPlateType: (plateType) =>
+    set((state) => {
+      if (
+        !(["ceramic", "meal-tray"] as string[]).includes(plateType) ||
+        plateType === state.plateType
+      )
+        return state;
+      state = captureState(state);
+      return {
+        ...changed(state),
+        history: remember(state),
+        plateType,
+        items: state.items.map((item) =>
+          fitItem(
+            { ...item, pose: undefined },
+            state.plateDiameterCm,
+            plateType,
+          ),
+        ),
+        announcement: `${plateType === "meal-tray" ? "Stainless meal tray" : "Ceramic plate"} selected. Food portions stay the same.`,
+      };
+    }),
   beginMove: () => set((state) => ({ history: remember(captureState(state)) })),
   move: (id, position, save = true) =>
     set((state) => {
@@ -231,6 +279,7 @@ export const usePlate = create<State>((set) => ({
             ? fitItem(
                 { ...i, position, pose: undefined },
                 state.plateDiameterCm,
+                state.plateType,
               )
             : i,
         ),

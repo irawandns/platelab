@@ -545,6 +545,43 @@ button:disabled:hover {
   border: 0;
   min-width: 0;
 }
+.plate-type-controls {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.plate-type-controls legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.tray-choice-icon {
+  width: 29px;
+  height: 23px;
+  fill: #e5e9ec;
+  stroke: #626f79;
+  stroke-width: 0.8;
+  flex-shrink: 0;
+}
+.tray-compartment-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 11px;
+}
+.tray-compartment-control select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
 .plate-skin-controls legend {
   padding: 0;
   margin-bottom: 8px;
