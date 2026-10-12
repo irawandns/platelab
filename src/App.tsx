@@ -9,8 +9,6 @@ import {
   Undo2,
   X,
   MousePointer2,
-  SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { FoodLibrary } from "./components/FoodLibrary";
 import { NutritionDashboard } from "./components/NutritionDashboard";
@@ -143,28 +141,6 @@ export default function App() {
             ))}
           </div>
           <PortionControls />
-          {!items.length && (
-            <div className="discovery-steps">
-              <div>
-                <span>01</span>
-                <MousePointer2 size={18} />
-                <strong>Pick a food</strong>
-                <p>Follow your curiosity.</p>
-              </div>
-              <div>
-                <span>02</span>
-                <SlidersHorizontal size={18} />
-                <strong>Play with portions</strong>
-                <p>A little more, a little less.</p>
-              </div>
-              <div>
-                <span>03</span>
-                <Sparkles size={18} />
-                <strong>See what changes</strong>
-                <p>Make a new discovery.</p>
-              </div>
-            </div>
-          )}
           <div className="playground-footer">
             <Leaf size={14} />
             <span>There’s no perfect plate. That’s the fun of it.</span>
@@ -231,6 +207,13 @@ export default function App() {
               <strong>Try stacking.</strong> Every food settles onto the curved
               plate and other foods. Drag one onto another and release, or use
               the movement buttons. Each portion moves together as one group.
+            </li>
+            <li>
+              <strong>Explore cooking oil.</strong> Select tofu or chicken,
+              choose a cooking method, and compare the reference food with added
+              oil. Expand the details to enter grams, teaspoons, or tablespoons.
+              Method presets are example oil amounts; they do not predict frying
+              absorption or other cooking changes.
             </li>
           </ol>
           <p className="help-footnote">

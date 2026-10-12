@@ -786,39 +786,6 @@ button:disabled:hover {
   margin-top: 5px;
   line-height: 1.7;
 }
-.discovery-steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 27px;
-  gap: 18px;
-  padding: 0 7px;
-}
-.discovery-steps > div {
-  position: relative;
-}
-.discovery-steps > div > span {
-  font-family: Georgia, serif;
-  font-size: 25px;
-  color: #636e59;
-  position: absolute;
-  top: -3px;
-  right: 9px;
-}
-.discovery-steps svg {
-  color: #636e59;
-  display: block;
-  margin-bottom: 13px;
-}
-.discovery-steps strong {
-  font-size: 11px;
-  font-weight: 550;
-}
-.discovery-steps p {
-  font-size: 10px;
-  color: #636e59;
-  line-height: 1.6;
-  margin-top: 5px;
-}
 .playground-footer {
   display: flex;
   justify-content: center;
@@ -1511,15 +1478,6 @@ button:disabled:hover {
   .insight-card p {
     font-size: 15px;
   }
-  .discovery-steps {
-    gap: 9px;
-  }
-  .discovery-steps p {
-    font-size: 9px;
-  }
-  .discovery-steps strong {
-    font-size: 10px;
-  }
   .empty-plate-message strong {
     font-size: 15px;
   }
@@ -1570,9 +1528,6 @@ button:disabled:hover {
   }
   .plate-stage {
     height: 355px;
-  }
-  .discovery-steps {
-    margin-bottom: 6px;
   }
   .playground-footer {
     margin-top: 23px;
@@ -1751,20 +1706,6 @@ button:disabled:hover {
     width: 32px;
     height: 32px;
     flex-shrink: 0;
-  }
-  .discovery-steps {
-    margin-top: 22px;
-    gap: 13px;
-    padding: 0 9px;
-  }
-  .discovery-steps > div > span {
-    font-size: 23px;
-  }
-  .discovery-steps strong {
-    font-size: 10px;
-  }
-  .discovery-steps p {
-    font-size: 9px;
   }
   .playground-footer {
     margin-top: 22px;
@@ -1996,5 +1937,175 @@ button:disabled:hover {
   }
   .food-serving {
     font-size: 8px;
+  }
+}
+
+/* Cooking experiments follow the selected-food panel's sage and cream palette. */
+.cooking-panel {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 16px;
+  font-size: 12px;
+}
+.cooking-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.cooking-heading h4 {
+  margin: 0;
+  font-size: 13px;
+}
+.cooking-heading > span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+}
+.cooking-methods {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cooking-methods label {
+  position: relative;
+  cursor: pointer;
+  flex: 1 1 auto;
+}
+.cooking-methods input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.cooking-methods span {
+  display: block;
+  padding: 9px 10px;
+  border: 1px solid #dfe2d1;
+  border-radius: 6px;
+  background: #f7f8ef;
+  text-align: center;
+}
+.cooking-methods input:checked + span {
+  background: #eaf0dd;
+  color: #4b6040;
+  border-color: #8a9c74;
+  font-weight: 600;
+}
+.cooking-methods input:focus-visible + span {
+  outline: 3px solid #916440;
+  outline-offset: 3px;
+}
+.cooking-assumption {
+  margin: 13px 0 10px;
+  color: var(--muted);
+}
+.cooking-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.cooking-comparison span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+.cooking-comparison strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+.cooking-comparison small {
+  font-size: 11px;
+  font-weight: 400;
+}
+.cooking-fat {
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.cooking-details {
+  margin: 10px 0;
+}
+.cooking-details > summary {
+  cursor: pointer;
+  padding: 10px 0;
+  font-weight: 600;
+}
+.cooking-details > summary span {
+  float: right;
+  font-weight: 400;
+  color: var(--muted);
+}
+.cooking-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 10px;
+  align-items: center;
+  padding-top: 10px;
+}
+.cooking-panel select,
+.cooking-panel input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid #dfe2d1;
+  border-radius: 5px;
+  padding: 6px;
+}
+.cooking-panel select:focus-visible {
+  outline: 3px solid #916440;
+  outline-offset: 3px;
+}
+.cooking-amount {
+  display: flex;
+  gap: 5px;
+}
+.cooking-amount select {
+  flex: 0 0 65px;
+}
+.cooking-note,
+.food-oil-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.cooking-retention label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.cooking-retention input {
+  width: 100%;
+  margin: 10px 0 0;
+  accent-color: #758c5b;
+}
+.cooking-reset {
+  border: 1px solid #dfe2d1;
+  background: #f7f8ef;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.cooking-limit {
+  margin-bottom: 0;
+}
+@media (max-width: 767px) {
+  .cooking-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .cooking-fields > label:not(:first-child) {
+    margin-top: 6px;
   }
 }

@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { foodById } from "./nutrition";
 import { DEFAULT_PLATE_SKIN, plateSkins, type PlateSkin } from "./plate-skins";
-import type { FoodPose, PlateItem } from "../types";
+import type { CookingSettings, FoodPose, PlateItem } from "../types";
+import { normalizeCooking } from "./cooking";
 import {
   DEFAULT_PLATE_CM,
   MIN_PLATE_CM,
@@ -34,6 +35,7 @@ interface State extends Snapshot {
   add: (foodId: string, position?: [number, number]) => void;
   select: (id: string | null) => void;
   setPortion: (id: string, grams: number) => void;
+  setCooking: (id: string, cooking?: CookingSettings) => void;
   setPlateDiameter: (cm: number) => void;
   setPlateSkin: (skin: PlateSkin) => void;
   move: (id: string, position: [number, number], remember?: boolean) => void;
@@ -139,6 +141,26 @@ export const usePlate = create<State>((set) => ({
       };
     }),
   select: (id) => set({ selectedItemId: id }),
+  setCooking: (id, cooking) =>
+    set((state) => {
+      const item = state.items.find((i) => i.instanceId === id);
+      if (!item) return state;
+      const next = cooking ? normalizeCooking(item.foodId, cooking) : undefined;
+      if (
+        next === null ||
+        JSON.stringify(item.cooking) === JSON.stringify(next)
+      )
+        return state;
+      // Changing an oil assumption does not change geometry or restart physics.
+      state = captureState(state);
+      return {
+        history: remember(state),
+        items: state.items.map((i) =>
+          i.instanceId === id ? { ...i, cooking: next } : i,
+        ),
+        announcement: `${foodById[item.foodId].name} cooking experiment updated.`,
+      };
+    }),
   setPortion: (id, grams) =>
     set((state) => {
       state = captureState(state);

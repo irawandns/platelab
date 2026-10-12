@@ -13,6 +13,8 @@ import { foodById, portionLabel } from "../lib/nutrition";
 import { usePlate } from "../lib/store";
 import { FoodArt } from "./FoodArt";
 import { physicsFoods } from "../lib/scale";
+import { supportsCooking } from "../lib/cooking";
+import { CookingControls } from "./CookingControls";
 export function PortionControls() {
   const { items, selectedItemId, setPortion, move, remove } = usePlate();
   const item = items.find((i) => i.instanceId === selectedItemId);
@@ -23,26 +25,20 @@ export function PortionControls() {
     setGrams(item ? String(Number(item.portionGrams.toFixed(2))) : "");
     setDirty(false);
   }, [item?.instanceId, item?.portionGrams]);
-  if (!item || !food)
+  if (!item || !food) {
+    if (!items.length) return null;
     return (
       <div className="selection-placeholder">
         <span className="selection-icon">
           <MousePointer2 size={20} />
         </span>
         <div>
-          <strong>
-            {items.length
-              ? "What will you discover?"
-              : "A small experiment starts here."}
-          </strong>
-          <p>
-            {items.length
-              ? "Select a food on your plate to explore its portion."
-              : "Pick a food from the shelf. There’s no right or wrong plate."}
-          </p>
+          <strong>What will you discover?</strong>
+          <p>Select a food on your plate to explore its portion.</p>
         </div>
       </div>
     );
+  }
   const ratio = item.portionGrams / food.defaultPortionGrams;
   const commit = () => {
     if (!dirty) return;
@@ -196,6 +192,9 @@ export function PortionControls() {
           </div>
         </div>
       </div>
+      {supportsCooking(food.id) && (
+        <CookingControls key={item.instanceId} item={item} food={food} />
+      )}
       <p className="scale-note">
         {physicsFoods.has(food.id) &&
           "Drag onto another food to stack it. Release to let it settle. "}

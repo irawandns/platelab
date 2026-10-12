@@ -23,6 +23,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 - Select independent instances, reposition by dragging or buttons, rotate/zoom/reset the camera.
 - Small/regular/large portions, a slider, serving increment/decrement, and edible-gram input.
 - Live calorie, protein, carbohydrate, fat, and fiber estimates; inspect each food's preparation, serving conversion, and source.
+- Cooking oil experiments for tofu and chicken: As prepared, Sear, Pan-fry, Deep-fry, and Air-fry. Compare reference-food energy with added oil, or expand the details for grams/teaspoons/tablespoons, oil type, and how much of the oil used stays with your serving. Presets are editable example oil amounts, not measured frying absorption or full cooked-food nutrition. Custom oil stays fixed per serving; presets scale with food weight. Cooking changes support undo.
 - Remove, clear, and undo the last 30 changes; a 24-item plate capacity.
 - Rule-based learning notes without health scores or daily targets.
 - Responsive desktop/tablet/mobile layout, reduced motion, keyboard alternatives, accessible help dialog, and a non-WebGL fallback for the nutrition workflow.

@@ -1,5 +1,13 @@
 # MVP validation
 
+## Cooking oil experiments — 2026-10-12
+
+- `npm test`: all 36 tests pass. New coverage audits the three oils against retained USDA nutrient and household-weight rows, checks canonical gram/spoon conversions, reference-plus-oil totals, preset replacement without double counting, preset versus custom portion behavior, retention at 0/50/100%, missing reference nutrients, independent instances, bounded/invalid inputs, live-pose capture, unchanged physics revision, and undo after portion/remove/reset.
+- `npm run build` and `npm run build:pages`: pass using Node 22.20.0. `npm run format:check` and `git diff --check`: pass. The `/platelab/` production path is exercised by the browser suite.
+- `npm run test:e2e`: all 13 browser checks pass locally in WSL2, with Chromium and SwiftShader software rendering. The preview server and browser required approved execution outside the sandbox because sandboxed preview startup is blocked. New checks cover method presets, collapsed details, grams/teaspoons/tablespoons, oil selection, retained oil including zero, input normalization, fixed custom amounts on portion edits, reset and undo, duplicate foods, clear/undo, mobile width, and the non-WebGL workflow. Automated WCAG A/AA scans also pass with cooking details and retention controls expanded. Existing food movement, stacking, plate size, skin, help, and meal workflows remain passing.
+- Reviewed desktop and mobile screenshots (`test-results/cooking-desktop.png` and `cooking-mobile.png`, ignored artifacts). Layout fits the tested 1440 px desktop and 390 px mobile viewports. Consumer-device performance and manual assistive-technology checks remain open.
+- Method presets are editable example oil scenarios, not measured absorption rates or complete fried-food records. The reference food preparation remains visible. Water loss, coatings, and other cooking changes are outside this milestone; see the data provenance notes. No new deployment has been made for this feature.
+
 ## All-food physics and shelf update — 2026-10-11
 
 - `npm test`: 24 tests pass. The shelf and runtime lookup exclude carrot, banana, apple, and whole milk. Their source records remain archived. Real Rapier simulations cover all eleven available foods on 18/21/26/36 cm plates, minimum and maximum portions with correct edible mass, compound geometry, bread/cheese and tofu stacks, support removal, portion/diameter changes, and pose restoration. A crowded plate containing every available food settles with plate and food contacts within a 0.75 mm penetration tolerance; nutrition is unchanged.

@@ -1,4 +1,5 @@
 import foodData from "../data/foods.json";
+import { oilForItem, retainedOilGrams } from "./cooking";
 import type { Food, Nutrient, Nutrients, PlateItem } from "../types";
 export const foods = (foodData as Food[]).filter(
   (food) => food.available !== false,
@@ -33,13 +34,25 @@ export function summarize(items: PlateItem[]) {
   };
   const incomplete = new Set<Nutrient>();
   for (const item of items) {
-    const values = forPortion(foodById[item.foodId], item.portionGrams);
+    const values = forItem(item);
     for (const key of nutrientKeys) {
       if (values[key] === null) incomplete.add(key);
       else totals[key] += values[key]!;
     }
   }
   return { totals, incomplete };
+}
+export function forItem(item: PlateItem): Nutrients {
+  const base = forPortion(foodById[item.foodId], item.portionGrams);
+  const added = oilForItem(item);
+  return Object.fromEntries(
+    nutrientKeys.map((key) => [
+      key,
+      base[key] === null || added[key] === null
+        ? null
+        : base[key]! + added[key]!,
+    ]),
+  ) as Nutrients;
 }
 export function format(value: number | null, digits = 1) {
   return value === null
@@ -59,6 +72,8 @@ export function portionLabel(food: Food, grams: number) {
 export function getInsight(items: PlateItem[]) {
   if (!items.length)
     return "Every plate starts with a little curiosity. Pick a food and see what it brings to the table.";
+  if (items.some((item) => retainedOilGrams(item) > 0))
+    return "Oil in the pan and oil in your serving can differ. Explore the amount that ends up with your food and watch energy and fat change.";
   if (
     items.some(
       (i) => i.portionGrams >= foodById[i.foodId].defaultPortionGrams * 2,
