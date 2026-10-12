@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { foodById } from "./nutrition";
+import { DEFAULT_PLATE_SKIN, plateSkins, type PlateSkin } from "./plate-skins";
 import type { FoodPose, PlateItem } from "../types";
 import {
   DEFAULT_PLATE_CM,
@@ -20,6 +21,7 @@ export function clampPosition(
   return [x * factor, z * factor];
 }
 interface Snapshot {
+  plateSkin: PlateSkin;
   plateDiameterCm: number;
   items: PlateItem[];
   selectedItemId: string | null;
@@ -33,6 +35,7 @@ interface State extends Snapshot {
   select: (id: string | null) => void;
   setPortion: (id: string, grams: number) => void;
   setPlateDiameter: (cm: number) => void;
+  setPlateSkin: (skin: PlateSkin) => void;
   move: (id: string, position: [number, number], remember?: boolean) => void;
   beginMove: () => void;
   remove: (id: string) => void;
@@ -76,6 +79,7 @@ const remember = (state: State) => [
     items: state.items,
     selectedItemId: state.selectedItemId,
     plateDiameterCm: state.plateDiameterCm,
+    plateSkin: state.plateSkin,
   },
 ];
 const fitItem = (item: PlateItem, diameterCm: number): PlateItem => ({
@@ -91,6 +95,7 @@ const fitItem = (item: PlateItem, diameterCm: number): PlateItem => ({
 });
 export const usePlate = create<State>((set) => ({
   plateDiameterCm: DEFAULT_PLATE_CM,
+  plateSkin: DEFAULT_PLATE_SKIN,
   items: [],
   selectedItemId: null,
   history: [],
@@ -175,6 +180,21 @@ export const usePlate = create<State>((set) => ({
           fitItem({ ...item, pose: undefined }, plateDiameterCm),
         ),
         announcement: `Plate diameter changed to ${plateDiameterCm} centimetres. Food portions stay the same.`,
+      };
+    }),
+  setPlateSkin: (plateSkin) =>
+    set((state) => {
+      if (
+        !Object.hasOwn(plateSkins, plateSkin) ||
+        plateSkin === state.plateSkin
+      )
+        return state;
+      // Capture settled poses for undo without restarting the simulation.
+      state = captureState(state);
+      return {
+        history: remember(state),
+        plateSkin,
+        announcement: `Plate skin changed to ${plateSkins[plateSkin].name}. Food portions stay the same.`,
       };
     }),
   beginMove: () => set((state) => ({ history: remember(captureState(state)) })),

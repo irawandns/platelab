@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { LatheGeometry, Vector2 } from "three";
 import { plateRadius, plateTopProfile } from "../lib/scale";
+import { plateSkins, type PlateSkin } from "../lib/plate-skins";
 
 function ceramicGeometry(radius: number) {
   // Underside with a small foot ring, outer lip, then the glazed top back to
@@ -52,7 +53,14 @@ function ceramicGeometry(radius: number) {
   return geometry;
 }
 
-export function PlateModel({ diameterCm }: { diameterCm: number }) {
+export function PlateModel({
+  diameterCm,
+  skin,
+}: {
+  diameterCm: number;
+  skin: PlateSkin;
+}) {
+  const palette = plateSkins[skin];
   const radius = plateRadius(diameterCm);
   const geometry = useMemo(() => ceramicGeometry(radius), [radius]);
   useEffect(() => () => geometry.dispose(), [geometry]);
@@ -61,21 +69,21 @@ export function PlateModel({ diameterCm }: { diameterCm: number }) {
       <mesh name="plate-ceramic" geometry={geometry}>
         <meshPhysicalMaterial
           attach="material-0"
-          color="#e8d9ad"
+          color={palette.base}
           roughness={0.3}
           clearcoat={0.65}
           clearcoatRoughness={0.2}
         />
         <meshPhysicalMaterial
           attach="material-1"
-          color="#532c20"
+          color={palette.rim}
           roughness={0.28}
           clearcoat={0.7}
           clearcoatRoughness={0.2}
         />
         <meshPhysicalMaterial
           attach="material-2"
-          color="#936744"
+          color={palette.band}
           roughness={0.3}
           clearcoat={0.65}
           clearcoatRoughness={0.2}
