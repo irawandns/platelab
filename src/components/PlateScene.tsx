@@ -207,14 +207,16 @@ function World({
       simulation.dispose();
     };
   }, [physicsReady, sceneRevision, gl, invalidate]);
+  // Advance physics before PhysicsFood copies poses into its meshes. Negative
+  // priority preserves automatic rendering while making the final frame exact.
   useFrame((_, delta) => {
     if (!runtime.current) return;
-    const active = runtime.current.hasActivity();
+    let active = runtime.current.hasActivity();
     if (active) {
-      runtime.current.step(delta);
+      active = runtime.current.step(delta);
       idleCommitted.current = false;
-      invalidate();
     }
+    if (active) invalidate();
     gl.domElement.dataset.physics = active ? "settling" : "settled";
     // Identify the simulation processed by this frame. A previous simulation's
     // settled marker can remain visible while an undo is being committed.
@@ -223,7 +225,7 @@ function World({
       idleCommitted.current = true;
       usePlate.getState().commitPoses(runtime.current.poses());
     }
-  });
+  }, -1);
   // Keep the same camera for every diameter so a bigger plate actually looks bigger.
   // Fit the largest supported plate even in a narrow mobile viewport.
   const fitDistance = Math.max(

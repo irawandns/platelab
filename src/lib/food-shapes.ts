@@ -280,6 +280,15 @@ export function foodPartGeometry(part: FoodPart) {
 }
 
 const hullCache = new Map<string, Float32Array[]>();
+const transformCache = new Map<string, Matrix4[]>();
+
+// Instances use the same vertex-derived calibration as the collision hulls.
+// Keep cached matrices immutable; compose each instance into a new matrix.
+export function foodPartTransforms(id: string): readonly Matrix4[] {
+  if (!transformCache.has(id)) foodCollisionHulls(id, 1);
+  return transformCache.get(id)!;
+}
+
 export function foodCollisionHulls(id: string, ratio: number): Float32Array[] {
   const cached = hullCache.get(id);
   if (cached)
@@ -301,6 +310,7 @@ export function foodCollisionHulls(id: string, ratio: number): Float32Array[] {
   const parent = new Matrix4().makeRotationFromEuler(
     new Euler(...physicsFoodRotation(id)),
   );
+  const transforms: Matrix4[] = [];
   const parts = physicsFoodParts[id].map((part) => {
     const geometry = foodPartGeometry(part);
     const transform = new Matrix4().compose(
@@ -317,6 +327,7 @@ export function foodCollisionHulls(id: string, ratio: number): Float32Array[] {
         ),
       );
     transform.premultiply(parent);
+    transforms.push(transform);
     const vertices = geometry.getAttribute("position");
     const points = Array.from({ length: vertices.count }, (_, i) =>
       new Vector3().fromBufferAttribute(vertices, i).applyMatrix4(transform),
@@ -330,6 +341,13 @@ export function foodCollisionHulls(id: string, ratio: number): Float32Array[] {
     .divideScalar(CM_PER_UNIT)
     .divide(bounds.getSize(new Vector3()));
   const offset = new Vector3(center.x, bounds.min.y, center.z);
+  const calibration = new Matrix4()
+    .makeScale(scale.x, scale.y, scale.z)
+    .multiply(new Matrix4().makeTranslation(-offset.x, -offset.y, -offset.z));
+  transformCache.set(
+    id,
+    transforms.map((transform) => calibration.clone().multiply(transform)),
+  );
   const normalized = parts.map((points) =>
     points.map((point) => point.sub(offset).multiply(scale)),
   );

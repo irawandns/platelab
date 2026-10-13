@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Box3, Group, Vector3 } from "three";
 import { FoodModel } from "./FoodModel";
+import { InstancedFoodPortion } from "./InstancedFoodPortion";
 import { CM_PER_UNIT, foodDimensionsCm, portionPieces } from "../lib/scale";
 
 function CalibratedModel({ id }: { id: string }) {
@@ -48,6 +49,7 @@ function CalibratedModel({ id }: { id: string }) {
 }
 
 export function FoodPortion({ id, ratio }: { id: string; ratio: number }) {
+  if (id === "broccoli") return <InstancedFoodPortion id={id} ratio={ratio} />;
   return portionPieces(id, ratio).map((piece, index) => (
     <group
       key={index}
