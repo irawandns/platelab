@@ -64,7 +64,7 @@ Deployments run unit tests, all browser checks, and formatting validation before
 
 ## Nutrition data
 
-The app uses curated **USDA SR28 (2015)** records plus four **TKPI 2017** Indonesian food records: timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. These are historical generic composition data, not a live database or brand-specific lookup.
+The app uses curated **USDA SR28 (2015)** records plus four **TKPI 2017** Indonesian food records: timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. The data describe historical generic food composition, not a live database or brand-specific lookup.
 
 Missing nutrients remain unknown. Cooked tempeh and fresh/raw ikan kembung have unreported fiber, so a plate containing either shows a known fiber subtotal with `+`. Calories come directly from the source; the separate energy-share bar uses the approximate 4/4/9 factors and is explicitly explained. No displayed bar is a daily target.
 

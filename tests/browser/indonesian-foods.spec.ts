@@ -27,10 +27,13 @@ test("builds an Indonesian meal with TKPI sources and independent portions", asy
     });
     if ((await page.locator(".source-details").getAttribute("open")) === null)
       await page.locator(".source-details > summary").click();
-    const details = page.getByRole("region", { name: "Food nutrition details" });
+    const details = page.getByRole("region", {
+      name: "Food nutrition details",
+    });
     await expect(details).toContainText("Tabel Komposisi Pangan Indonesia");
-    await expect(details.getByRole("link", { name: "TKPI source documentation" }))
-      .toHaveAttribute("href", /#page=\d+$/);
+    await expect(
+      details.getByRole("link", { name: "TKPI source documentation" }),
+    ).toHaveAttribute("href", /#page=\d+$/);
   }
   await expect(page.getByTestId("total-calories")).toHaveText("317");
   await expect(page.locator(".data-warning")).toContainText("Ikan kembung");
@@ -68,7 +71,9 @@ test("finds Indonesian foods in the mobile shelf and adds them to a meal tray", 
   for (const name of ["Timun", "Kerupuk", "Ikan kembung", "Bakwan sayur"]) {
     await page.getByRole("button", { name: "Add food", exact: true }).click();
     await sheet.getByRole("textbox", { name: "Search foods" }).fill(name);
-    await sheet.getByRole("button", { name: `Add ${name}`, exact: true }).click();
+    await sheet
+      .getByRole("button", { name: `Add ${name}`, exact: true })
+      .click();
     await expect(sheet).not.toBeVisible();
     await expect(page.locator('canvas[data-ready="true"]')).toHaveAttribute(
       "data-physics",
@@ -78,9 +83,11 @@ test("finds Indonesian foods in the mobile shelf and adds them to a meal tray", 
   }
   await expect(page.getByTestId("total-calories")).toHaveText("317");
   await expect(page.getByTestId("portion-label")).toHaveText("50 g");
-  expect(await page.evaluate(() =>
-    document.documentElement.scrollWidth <= window.innerWidth,
-  )).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
   await page.screenshot({
     path: "test-results/indonesian-tray-mobile.png",
     fullPage: true,

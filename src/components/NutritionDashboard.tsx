@@ -94,7 +94,10 @@ export function NutritionDashboard() {
             {Array.from(
               new Set(
                 items
-                  .filter((entry) => foodById[entry.foodId].nutrientsPer100g.fiber === null)
+                  .filter(
+                    (entry) =>
+                      foodById[entry.foodId].nutrientsPer100g.fiber === null,
+                  )
                   .map((entry) => foodById[entry.foodId].name),
               ),
             ).join(", ")}

@@ -29,14 +29,15 @@ describe("auditable food data", () => {
         expect(source).toBeDefined();
         expect(food.nutrientsPer100g).toEqual(source!.nutrientsPer100g);
         expect(food.source.url).toContain(`#page=${source!.pdfPage}`);
-      } else for (const [key, id] of Object.entries(nutrientIds)) {
-        const row = rawNutrients.find(
-          (r) => r[0] === food.source.id && r[1] === id,
-        );
-        expect(food.nutrientsPer100g[key as Nutrient]).toBe(
-          row ? Number(row[2]) : null,
-        );
-      }
+      } else
+        for (const [key, id] of Object.entries(nutrientIds)) {
+          const row = rawNutrients.find(
+            (r) => r[0] === food.source.id && r[1] === id,
+          );
+          expect(food.nutrientsPer100g[key as Nutrient]).toBe(
+            row ? Number(row[2]) : null,
+          );
+        }
       expect(food.minPortionGrams).toBeGreaterThan(0);
       expect(food.maxPortionGrams).toBeGreaterThan(food.defaultPortionGrams);
     }
@@ -77,10 +78,14 @@ describe("nutrition calculations", () => {
     expect(result.totals.fiber).toBeCloseTo(2.35);
     expect(result.incomplete).toEqual(new Set(["fiber"]));
     expect(forPortion(foodById["ikan-kembung"], 100).fiber).toBeNull();
-    expect(summarize(meal.map((food) => ({
-      ...food,
-      portionGrams: food.portionGrams * 2,
-    }))).totals.calories).toBeCloseTo(633.4);
+    expect(
+      summarize(
+        meal.map((food) => ({
+          ...food,
+          portionGrams: food.portionGrams * 2,
+        })),
+      ).totals.calories,
+    ).toBeCloseTo(633.4);
   });
 
   it("computes the documented rice, chicken and broccoli experiment", () => {

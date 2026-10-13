@@ -35,8 +35,9 @@ describe("physical food scale", () => {
       expect(portionPieces(id, 2)).toHaveLength(count * 2);
       for (const ratio of [0.25, 1, 1.37, 3]) {
         const pieces = portionPieces(id, ratio);
-        expect(pieces.reduce((v, p) => v + p.scale ** 3, 0) / count)
-          .toBeCloseTo(ratio);
+        expect(
+          pieces.reduce((v, p) => v + p.scale ** 3, 0) / count,
+        ).toBeCloseTo(ratio);
         expect(pieces.every((p) => p.scale > 0 && p.scale <= 1)).toBe(true);
       }
     }

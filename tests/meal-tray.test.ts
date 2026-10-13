@@ -94,7 +94,7 @@ describe("stainless meal tray", () => {
           ),
         ),
         food.id,
-      ).toBe(!["bread", "avocado"].includes(food.id));
+      ).toBe(!["bread", "avocado", "ikan-kembung"].includes(food.id));
       expect(item.portionGrams).toBe(food.defaultPortionGrams);
     }
     const large = { ...portion("broccoli"), portionGrams: 300 };

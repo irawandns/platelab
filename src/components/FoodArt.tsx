@@ -56,10 +56,7 @@ export function FoodArt({
       <>
         <path d="m28 44-17-14 3 15-3 14Z" fill="#6d8c81" />
         <path d="m42 31 14-14 11 15m-26 20 15 14 8-14" fill="#6d8c81" />
-        <path
-          d="M24 44Q37 23 65 30Q78 33 86 44Q73 62 46 57Z"
-          fill="#8ca9a0"
-        />
+        <path d="M24 44Q37 23 65 30Q78 33 86 44Q73 62 46 57Z" fill="#8ca9a0" />
         <path d="M25 44Q54 43 86 44Q72 60 47 54Z" fill="#d5ded0" />
         <path
           d="m39 33-4 7m16-10-4 10m16-8-4 8"

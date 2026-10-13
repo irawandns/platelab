@@ -77,12 +77,12 @@ Four records use Kemenkes **TKPI 2017**, published in 2018. The [Poltekkes
 Palembang library PDF](https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf)
 is the inspected source; selected values are retained in `tkpi-foods.json`.
 
-| ID | TKPI code | PDF page (1-based) | kcal | Protein g | Carbs g | Fat g | Fiber g |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| timun | DR109 | 38 | 8 | 0.2 | 1.4 | 0.2 | 0.3 |
-| kerupuk | BP045 | 25 | 477 | 4.7 | 68.5 | 20.5 | 5 |
-| ikan-kembung | GR050 | 58 | 125 | 21.3 | 2.2 | 3.4 | Unknown |
-| bakwan-sayur | AP031 | 18 | 280 | 8.2 | 39 | 10.2 | 3.4 |
+| ID           | TKPI code | PDF page (1-based) | kcal | Protein g | Carbs g | Fat g | Fiber g |
+| ------------ | --------- | ------------------ | ---- | --------- | ------- | ----- | ------- |
+| timun        | DR109     | 38                 | 8    | 0.2       | 1.4     | 0.2   | 0.3     |
+| kerupuk      | BP045     | 25                 | 477  | 4.7       | 68.5    | 20.5  | 5       |
+| ikan-kembung | GR050     | 58                 | 125  | 21.3      | 2.2     | 3.4   | Unknown |
+| bakwan-sayur | AP031     | 18                 | 280  | 8.2       | 39      | 10.2  | 3.4     |
 
 All values are per 100 g edible food. GR050's fiber cell is blank; 1.7 is
 the adjacent ash value, not fiber. TKPI notes that its fiber measurements
