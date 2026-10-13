@@ -1,16 +1,24 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
+import { writeFile } from "node:fs/promises";
+
+async function captureCanvas(canvas: Locator) {
+  // Locator screenshots include composited page backgrounds and overlays.
+  // Start each capture from the same scroll position before automatic clipping.
+  await canvas.page().evaluate(() => window.scrollTo(0, 0));
+  return canvas.screenshot();
+}
 
 async function settledCanvasScreenshot(canvas: Locator) {
   // Font loading can change page layout after the first stable canvas frame.
   await canvas.page().evaluate(() => document.fonts.ready);
   await expect(canvas).toHaveAttribute("data-physics", "settled");
-  let current = await canvas.screenshot();
+  let current = await captureCanvas(canvas);
   // Physics can be asleep before its final frame reaches the compositor.
   // Require two matching captures for the baseline as well as the restoration.
   await expect
     .poll(async () => {
       const previous = current;
-      current = await canvas.screenshot();
+      current = await captureCanvas(canvas);
       return current.equals(previous);
     })
     .toBe(true);
@@ -29,13 +37,13 @@ async function undoRenderedScene(page: Page, canvas: Locator) {
 
 async function restoredCanvasScreenshot(canvas: Locator, before: Buffer) {
   await expect(canvas).toHaveAttribute("data-physics", "settled");
-  let restored = await canvas.screenshot();
+  let restored = await captureCanvas(canvas);
   try {
     await expect
       .poll(
         async () => {
           const previous = restored;
-          restored = await canvas.screenshot();
+          restored = await captureCanvas(canvas);
           // Each poll captures one frame. Nesting the two-capture stabilization
           // poll here can exhaust the outer deadline even when the images match.
           return restored.equals(previous) && restored.equals(before);
@@ -44,14 +52,20 @@ async function restoredCanvasScreenshot(canvas: Locator, before: Buffer) {
       )
       .toBe(true);
   } catch (error) {
+    const expectedPath = test.info().outputPath("undo-expected.png");
+    const restoredPath = test.info().outputPath("undo-restored.png");
+    await writeFile(expectedPath, before);
+    await writeFile(restoredPath, restored);
     await test.info().attach("undo-expected", {
-      body: before,
+      path: expectedPath,
       contentType: "image/png",
     });
     await test.info().attach("undo-restored", {
-      body: restored,
+      path: restoredPath,
       contentType: "image/png",
     });
+    console.log("UNDO_EXPECTED_PNG=" + before.toString("base64"));
+    console.log("UNDO_RESTORED_PNG=" + restored.toString("base64"));
     throw error;
   }
   return restored;
