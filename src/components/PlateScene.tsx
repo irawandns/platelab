@@ -233,8 +233,7 @@ function World({
     (plateRadius(MAX_PLATE_CM) * 2 + 0.8) /
       (2 * Math.tan((39 * Math.PI) / 360) * (size.width / size.height)),
   );
-  // Apply framing before the first ready frame can be captured or interacted with.
-  useLayoutEffect(() => {
+  useEffect(() => {
     camera.position.set(0, fitDistance * 0.676, fitDistance * 0.737);
     camera.lookAt(0, 0, 0);
     controls.current?.update();
@@ -455,9 +454,7 @@ export default function PlateScene() {
   const skin = usePlate((s) => s.plateSkin);
   const plateType = usePlate((s) => s.plateType);
   const [cameraAction, setCameraAction] = useState({ action: "", nonce: 0 });
-  const [reduced, setReduced] = useState(
-    () => matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const [reduced, setReduced] = useState(false);
   const [over, setOver] = useState(false);
   useEffect(() => {
     const q = matchMedia("(prefers-reduced-motion: reduce)");

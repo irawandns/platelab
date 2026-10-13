@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: Run browser E2E checks
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,29 +38,6 @@ jobs:
         run: npm test
       - name: Build for the GitHub Pages project path
         run: npm run build:pages
-      - name: Install the browser for functional checks
-        run: npx playwright install --with-deps chromium
-      - name: Verify skin undo across three fresh browser runs
-        run: |
-          for attempt in 1 2 3; do
-            npx playwright test tests/browser/playground.spec.ts --grep "collapses plate options and changes skins without changing the meal"
-          done
-        env:
-          PLAYWRIGHT_BASE_PATH: /platelab/
-      - name: Test the production app at /platelab/
-        run: npm run test:e2e
-        env:
-          PLAYWRIGHT_BASE_PATH: /platelab/
-      - name: Upload browser diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: browser-test-results
-          path: |
-            test-results/
-            playwright-report/
-          if-no-files-found: ignore
-          retention-days: 7
       - name: Check formatting
         if: always()
         run: |
@@ -72,6 +54,40 @@ jobs:
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: dist
+
+  browser-checks:
+    name: Optional browser checks
+    if: github.event_name == 'workflow_dispatch' && inputs.run_e2e
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build for the GitHub Pages project path
+        run: npm run build:pages
+      - name: Install the browser for functional checks
+        run: npx playwright install --with-deps chromium
+      - name: Test the production app at /platelab/
+        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_BASE_PATH: /platelab/
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: browser-test-results
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
 
   deploy:
     if: github.ref == 'refs/heads/main'

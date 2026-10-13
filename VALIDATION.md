@@ -1,5 +1,18 @@
 # MVP validation
 
+## Optional E2E policy — 2026-10-13
+
+At the user's request, E2E tests are now optional. The earlier mandatory
+E2E-before-PR policy in the historical entries below is superseded by the
+current `AGENTS.md`. Required checks are unit tests, the production build,
+formatting, and whitespace validation.
+
+The Pages workflow runs browser checks in a separate job only when manually
+dispatched with **Run browser E2E checks** enabled. Browser failures do not gate
+PR creation, merging, or deployment. Existing assertions remain intact, and
+intermittent screenshot/settlement failures remain follow-up work. No browser
+result is implied when that job is skipped.
+
 ## Tablet settlement and PR validation — 2026-10-13
 
 - The merged PR #5 deployment failed its tablet/all-eleven-models settlement assertion. Its earlier local suite and PR workflow had passed; this distinction and the E2E-before-PR requirement are recorded in `AGENTS.md`, with links to both workflow runs.

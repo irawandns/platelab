@@ -41,10 +41,20 @@ Read the [changelog](CHANGELOG.md) for recent changes and the [plate and food ph
 
 ```sh
 npm test
-npm run build
-npm run test:e2e
+npm run build:pages
 npm run format:check
+git diff --check
 ```
+
+Browser E2E checks are optional and do not block PR creation, merging, or deployment.
+To run them locally after the production build:
+
+```sh
+PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
+```
+
+To run them in CI, manually launch the Pages workflow with **Run browser E2E checks**
+enabled. The separate browser job reports failures and uploads diagnostics.
 
 The browser suite uses `/usr/bin/chromium` if present; otherwise install Playwright's browser with `npx playwright install chromium`. You may set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to another Chromium path. It starts a production preview on port 4173; keep that port free. Chromium uses software rendering in cloud tests, which does not establish performance on consumer hardware.
 
@@ -61,7 +71,7 @@ npm run build:pages
 PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
 ```
 
-Deployments run unit tests, all browser checks, and formatting validation before publishing. Actions are pinned to commit hashes. The build job has read-only repository access; the deployment job has Pages and OIDC permissions. Future pushes to `main` automatically update the site. If Pages is not enabled, enable it in Settings and rerun the workflow. This workflow does not require a personal token or any app secrets.
+Deployments run unit tests, the production build, formatting, and whitespace validation before publishing. Browser checks run only when explicitly enabled for a manual workflow run, and the optional browser job does not gate deployment. Actions are pinned to commit hashes. The build job has read-only repository access; the deployment job has Pages and OIDC permissions. Future pushes to `main` automatically update the site. If Pages is not enabled, enable it in Settings and rerun the workflow. This workflow does not require a personal token or any app secrets.
 
 ## Nutrition data
 

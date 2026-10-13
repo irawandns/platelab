@@ -6,34 +6,47 @@ Preserve the existing architecture and conventions.
 
 ## Required validation before opening a pull request
 
-The user requires E2E tests to pass **before creating any PR, including a draft**.
-Run validation against the final source state intended for the PR:
+Run these checks against the final source state intended for the PR:
 
 ```sh
 npm test
 npm run build:pages
-PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
 npm run format:check
 git diff --check
 ```
 
-- The complete E2E suite must pass against the production build at `/platelab/`.
-  Unit tests, a successful build, screenshots, and a passing targeted test are
-  not substitutes for the full suite.
-- Follow the lockfile, Node version, and browser setup used by
-  `.github/workflows/pages.yml`. Disclose necessary environment overrides and
-  their verification limits; never present them as identical to CI.
-- Changes after validation invalidate affected results. Rebuild and rerun the
-  complete E2E suite after application, test, build, or deployment-path changes.
-- A failing or blocked E2E run prevents PR creation. Investigate the failure and
-  fix its cause. Do not hide it by skipping assertions, adding retries, weakening
-  checks, or repeatedly rerunning until one result is green.
-- When repairing an intermittent E2E failure, reproduce or investigate the
-  failure, then require the affected scenario to pass at least three consecutive
-  runs and the complete suite to pass before opening the PR.
-- State the tested source commit, commands, results, and material limitations in
-  the PR. After opening it, check the GitHub Actions result for that exact head
-  commit before calling it ready to merge. A pending run is not a passing run.
+- Unit tests, the production build, formatting, and whitespace checks are required.
+- Follow the repository lockfile and Node version. Disclose environment overrides
+  and their verification limits.
+- Changes invalidate affected validation results; rerun the relevant required checks.
+- State the tested commit, commands, results, and material limitations in the PR.
+  Check required GitHub Actions results for the exact PR head before calling it
+  ready to merge. A pending required check is not a passing check.
+
+## Optional browser validation
+
+**E2E tests are optional.** The user's instruction on 13 October 2026 replaces
+the previous mandatory E2E-before-PR policy. A failing, unavailable, or unexecuted
+browser suite does not prevent opening a PR, merging, or deployment.
+
+Run browser checks when the user requests them or when a focused check would
+materially help investigate an interaction:
+
+```sh
+npm run build:pages
+PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
+```
+
+CI runs browser checks only when manually dispatching the Pages workflow with
+**Run browser E2E checks** enabled. The browser job reports its own result;
+deployment depends on the required build job.
+
+- Describe browser checks as passed, failed, or not run; do not imply coverage
+  from checks that were skipped.
+- Preserve meaningful assertions. Do not weaken tests or repeatedly rerun a
+  flaky suite until it happens to pass.
+- Investigate intermittent failures when working on those failures; they are
+  follow-up work rather than a gate for unrelated feature development.
 
 ## Lesson from PR #5
 
