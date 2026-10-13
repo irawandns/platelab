@@ -204,6 +204,13 @@ export default function App() {
               cleared plate.
             </li>
             <li>
+              <strong>Ask “What if?”</strong> Choose Compare changes to capture
+              your plate, then change a portion, food, or oil setting. Compare
+              Original, Current, and Change in the nutrition column. Restore
+              original brings the captured meal back; Keep changes finishes the
+              experiment. Reloading clears the comparison.
+            </li>
+            <li>
               <strong>Try stacking.</strong> Every food settles onto the curved
               plate and other foods. Drag one onto another and release, or use
               the movement buttons. Each portion moves together as one group.

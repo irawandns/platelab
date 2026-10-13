@@ -7,6 +7,14 @@
 - Show TKPI links and source codes in food details. Preserve unreported fish fiber and name every food contributing to the known fiber subtotal.
 - Extend nutrition, scale, physics, desktop, mobile, and tray checks to cover the expanded fifteen-food shelf.
 
+
+## 2026-10-13 — What if? comparison
+
+- Capture a session-only original plate and compare its nutrition with the current meal, including portions and cooking oil. Show signed differences and neutral labels; missing data produces an unknown difference.
+- Inspect the original food list, replace the baseline, restore foods, cooking settings, vessel, and arrangement with undo, or finish while keeping the current meal. Comparison capture and finish do not consume undo history or restart physics.
+- Add calculation, snapshot restoration, desktop, mobile, non-WebGL, keyboard, and accessibility regression coverage.
+- Validate feature branches before opening a PR using the existing production-path workflow; deployment remains limited to main.
+
 ## 2026-10-13 — Tablet settlement and PR validation
 
 - Batch repeated broccoli florets into seven instanced meshes per portion, sharing the same calibrated vertices as their collision hulls. This reduces draw calls from 35 at 100 g (105 at 300 g) while preserving the food's appearance and physical dimensions.

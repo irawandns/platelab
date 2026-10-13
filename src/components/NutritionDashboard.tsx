@@ -1,3 +1,4 @@
+import { PlateComparison } from "./PlateComparison";
 import { ArrowUpRight, Leaf, Lightbulb, Info } from "lucide-react";
 import {
   foodById,
@@ -122,6 +123,7 @@ export function NutritionDashboard() {
           Values are estimates, not dietary advice.
         </p>
       </section>
+      <PlateComparison />
       <section className="insight-card">
         <span className="insight-icon">
           <Lightbulb size={20} />

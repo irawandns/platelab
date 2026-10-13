@@ -33,6 +33,10 @@ interface State extends Snapshot {
   sceneRevision: number;
   restorePhysics: boolean;
   history: Snapshot[];
+  comparisonBaseline: Snapshot | null;
+  captureComparison: () => void;
+  restoreComparison: () => void;
+  endComparison: () => void;
   announcement: string;
   add: (foodId: string, position?: [number, number]) => void;
   select: (id: string | null) => void;
@@ -88,6 +92,14 @@ const remember = (state: State) => [
     plateType: state.plateType,
   },
 ];
+const snapshot = (state: State): Snapshot =>
+  structuredClone({
+    items: state.items,
+    selectedItemId: state.selectedItemId,
+    plateDiameterCm: state.plateDiameterCm,
+    plateSkin: state.plateSkin,
+    plateType: state.plateType,
+  });
 const fitItem = (
   item: PlateItem,
   diameterCm: number,
@@ -120,6 +132,34 @@ export const usePlate = create<State>((set) => ({
   sceneRevision: 0,
   restorePhysics: false,
   announcement: "",
+  comparisonBaseline: null,
+  captureComparison: () =>
+    set((state) => {
+      if (!state.items.length) return state;
+      return {
+        comparisonBaseline: snapshot(captureState(state)),
+        announcement: state.comparisonBaseline
+          ? "Original plate replaced with your current plate."
+          : "Original plate captured. Change a food, portion, or oil setting to compare.",
+      };
+    }),
+  restoreComparison: () =>
+    set((state) => {
+      if (!state.comparisonBaseline) return state;
+      state = captureState(state);
+      return {
+        ...structuredClone(state.comparisonBaseline),
+        sceneRevision: state.sceneRevision + 1,
+        restorePhysics: true,
+        history: remember(state),
+        announcement: "Original plate restored. Undo is available.",
+      };
+    }),
+  endComparison: () =>
+    set({
+      comparisonBaseline: null,
+      announcement: "Comparison finished. Your current plate is kept.",
+    }),
   add: (foodId, position) =>
     set((state) => {
       state = captureState(state);

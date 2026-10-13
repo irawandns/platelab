@@ -2,8 +2,7 @@ name: Deploy PlateLab to GitHub Pages
 
 on:
   push:
-    # Validate this feature branch before opening its pull request.
-    branches: [main, codex/indonesian-foods]
+    branches: [main, "codex/**"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -57,7 +56,7 @@ jobs:
             npm run format
             git diff --exit-code
           }
-      - name: Check patch whitespace
+      - name: Check diff whitespace
         run: |
           git diff --check
           git diff --check HEAD^ HEAD
