@@ -7,7 +7,6 @@
 - Show TKPI links and source codes in food details. Preserve unreported fish fiber and name every food contributing to the known fiber subtotal.
 - Extend nutrition, scale, physics, desktop, mobile, and tray checks to cover the expanded fifteen-food shelf.
 
-
 ## 2026-10-13 — What if? comparison
 
 - Capture a session-only original plate and compare its nutrition with the current meal, including portions and cooking oil. Show signed differences and neutral labels; missing data produces an unknown difference.
