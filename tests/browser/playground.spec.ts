@@ -1,6 +1,8 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 async function settledCanvasScreenshot(canvas: Locator) {
+  // Font loading can change page layout after the first stable canvas frame.
+  await canvas.page().evaluate(() => document.fonts.ready);
   await expect(canvas).toHaveAttribute("data-physics", "settled");
   let current = await canvas.screenshot();
   // Physics can be asleep before its final frame reaches the compositor.
@@ -28,18 +30,30 @@ async function undoRenderedScene(page: Page, canvas: Locator) {
 async function restoredCanvasScreenshot(canvas: Locator, before: Buffer) {
   await expect(canvas).toHaveAttribute("data-physics", "settled");
   let restored = await canvas.screenshot();
-  await expect
-    .poll(
-      async () => {
-        const previous = restored;
-        restored = await canvas.screenshot();
-        // Each poll captures one frame. Nesting the two-capture stabilization
-        // poll here can exhaust the outer deadline even when the images match.
-        return restored.equals(previous) && restored.equals(before);
-      },
-      { message: "Undo restores the original canvas image exactly" },
-    )
-    .toBe(true);
+  try {
+    await expect
+      .poll(
+        async () => {
+          const previous = restored;
+          restored = await canvas.screenshot();
+          // Each poll captures one frame. Nesting the two-capture stabilization
+          // poll here can exhaust the outer deadline even when the images match.
+          return restored.equals(previous) && restored.equals(before);
+        },
+        { message: "Undo restores the original canvas image exactly" },
+      )
+      .toBe(true);
+  } catch (error) {
+    await test.info().attach("undo-expected", {
+      body: before,
+      contentType: "image/png",
+    });
+    await test.info().attach("undo-restored", {
+      body: restored,
+      contentType: "image/png",
+    });
+    throw error;
+  }
   return restored;
 }
 test("builds a meal, adjusts portions, removes, clears and undoes", async ({

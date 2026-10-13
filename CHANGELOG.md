@@ -6,6 +6,7 @@
 - Add illustrative pieces as timun, kerupuk, and bakwan portions grow, using the existing instanced rendering and calibrated collision geometry.
 - Show TKPI links and source codes in food details. Preserve unreported fish fiber and name every food contributing to the known fiber subtotal.
 - Extend nutrition, scale, physics, desktop, mobile, and tray checks to cover the expanded fifteen-food shelf.
+- Apply initial camera framing before the first ready render and read reduced motion before mounting controls. Screenshot baselines wait for fonts; undo retains exact image assertions with diagnostic captures and three fresh browser regression runs.
 
 ## 2026-10-13 — What if? comparison
 

@@ -35,6 +35,13 @@ jobs:
         run: npm run build:pages
       - name: Install the browser for functional checks
         run: npx playwright install --with-deps chromium
+      - name: Verify skin undo across three fresh browser runs
+        run: |
+          for attempt in 1 2 3; do
+            npx playwright test tests/browser/playground.spec.ts --grep "collapses plate options and changes skins without changing the meal"
+          done
+        env:
+          PLAYWRIGHT_BASE_PATH: /platelab/
       - name: Test the production app at /platelab/
         run: npm run test:e2e
         env:
