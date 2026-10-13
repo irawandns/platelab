@@ -114,7 +114,7 @@ test("supports search, filtering, keyboard input, duplicate foods and source det
   await page.getByRole("button", { name: "Add Tempeh", exact: true }).click();
   await expect(page.getByTestId("total-fiber")).toContainText("+");
   await expect(
-    page.getByText("Known fiber subtotal. Tempeh’s fiber is unreported."),
+    page.getByText("Known fiber subtotal. Fiber is unreported for Tempeh."),
   ).toBeVisible();
   await expect(page.getByText("Unknown", { exact: true })).toBeVisible();
 });
