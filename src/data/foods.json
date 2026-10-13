@@ -5,13 +5,13 @@
     "category": "Carbohydrates",
     "preparation": "Cooked · long-grain",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked, edible weight.",
     "nutrientsPer100g": {
-      "calories": 130.0,
+      "calories": 130,
       "protein": 2.69,
       "carbohydrates": 28.17,
       "fat": 0.28,
@@ -37,7 +37,7 @@
     "countable": true,
     "conversionNote": "USDA household measure: 1 slice = 25 g.",
     "nutrientsPer100g": {
-      "calories": 266.0,
+      "calories": 266,
       "protein": 8.85,
       "carbohydrates": 49.42,
       "fat": 3.33,
@@ -57,13 +57,13 @@
     "category": "Carbohydrates",
     "preparation": "Cooked · with salt",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked, edible weight.",
     "nutrientsPer100g": {
-      "calories": 138.0,
+      "calories": 138,
       "protein": 4.54,
       "carbohydrates": 25.16,
       "fat": 2.07,
@@ -89,11 +89,11 @@
     "countable": true,
     "conversionNote": "USDA household measure: 1 large egg = 50 g edible weight, without shell.",
     "nutrientsPer100g": {
-      "calories": 155.0,
+      "calories": 155,
       "protein": 12.58,
       "carbohydrates": 1.12,
       "fat": 10.61,
-      "fiber": 0.0
+      "fiber": 0
     },
     "educationalDescription": "Eggs provide protein and dietary fat. Changing the number of eggs changes both.",
     "source": {
@@ -109,17 +109,17 @@
     "category": "Protein",
     "preparation": "Roasted · skinless",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked meat only, without skin or bone.",
     "nutrientsPer100g": {
-      "calories": 165.0,
+      "calories": 165,
       "protein": 31.02,
-      "carbohydrates": 0.0,
+      "carbohydrates": 0,
       "fat": 3.57,
-      "fiber": 0.0
+      "fiber": 0
     },
     "educationalDescription": "Chicken breast contributes protein. These estimates are for roasted meat without skin.",
     "source": {
@@ -135,17 +135,17 @@
     "category": "Protein",
     "preparation": "Atlantic · cooked, dry heat",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked, edible weight; farmed Atlantic salmon.",
     "nutrientsPer100g": {
-      "calories": 206.0,
+      "calories": 206,
       "protein": 22.1,
-      "carbohydrates": 0.0,
+      "carbohydrates": 0,
       "fat": 12.35,
-      "fiber": 0.0
+      "fiber": 0
     },
     "educationalDescription": "Salmon contributes both protein and fat. Preparation and species affect its composition.",
     "source": {
@@ -161,13 +161,13 @@
     "category": "Protein",
     "preparation": "Raw · calcium-set",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Raw firm tofu, prepared with calcium sulfate; edible weight.",
     "nutrientsPer100g": {
-      "calories": 144.0,
+      "calories": 144,
       "protein": 17.27,
       "carbohydrates": 2.78,
       "fat": 8.72,
@@ -187,13 +187,13 @@
     "category": "Protein",
     "preparation": "Cooked",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked, edible weight. Fiber is not reported in this USDA record.",
     "nutrientsPer100g": {
-      "calories": 195.0,
+      "calories": 195,
       "protein": 19.91,
       "carbohydrates": 7.62,
       "fat": 11.38,
@@ -213,13 +213,13 @@
     "category": "Vegetables",
     "preparation": "Boiled · drained, no salt",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Cooked and drained, edible weight.",
     "nutrientsPer100g": {
-      "calories": 35.0,
+      "calories": 35,
       "protein": 2.38,
       "carbohydrates": 7.18,
       "fat": 0.41,
@@ -240,13 +240,13 @@
     "category": "Vegetables",
     "preparation": "Raw",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Raw, edible weight.",
     "nutrientsPer100g": {
-      "calories": 41.0,
+      "calories": 41,
       "protein": 0.93,
       "carbohydrates": 9.58,
       "fat": 0.24,
@@ -266,14 +266,14 @@
     "category": "Fruits",
     "preparation": "Raw · flesh only",
     "defaultPortionGrams": 100,
-    "minPortionGrams": 25.0,
+    "minPortionGrams": 25,
     "maxPortionGrams": 300,
     "servingLabel": "100 g",
     "countable": false,
     "conversionNote": "Raw edible flesh, without peel or stone.",
     "nutrientsPer100g": {
-      "calories": 160.0,
-      "protein": 2.0,
+      "calories": 160,
+      "protein": 2,
       "carbohydrates": 8.53,
       "fat": 14.66,
       "fiber": 6.7
@@ -299,7 +299,7 @@
     "countable": true,
     "conversionNote": "USDA household measure: 1 medium banana (7–7⅞ inches) = 118 g, without peel.",
     "nutrientsPer100g": {
-      "calories": 89.0,
+      "calories": 89,
       "protein": 1.09,
       "carbohydrates": 22.84,
       "fat": 0.33,
@@ -326,7 +326,7 @@
     "countable": true,
     "conversionNote": "USDA household measure: 1 medium apple (3-inch diameter) = 182 g edible weight.",
     "nutrientsPer100g": {
-      "calories": 52.0,
+      "calories": 52,
       "protein": 0.26,
       "carbohydrates": 13.81,
       "fat": 0.17,
@@ -353,11 +353,11 @@
     "countable": false,
     "conversionNote": "USDA: 1 US cup milk = 244 g. Using 1 US cup = 236.5882365 ml, 200 ml ≈ 206.27 g.",
     "nutrientsPer100g": {
-      "calories": 61.0,
+      "calories": 61,
       "protein": 3.15,
       "carbohydrates": 4.8,
       "fat": 3.25,
-      "fiber": 0.0
+      "fiber": 0
     },
     "educationalDescription": "Milk contributes protein, carbohydrates, and fat. This estimate uses whole milk with 3.25% fat.",
     "source": {
@@ -379,11 +379,11 @@
     "countable": false,
     "conversionNote": "Edible weight.",
     "nutrientsPer100g": {
-      "calories": 404.0,
+      "calories": 404,
       "protein": 22.87,
       "carbohydrates": 3.09,
       "fat": 33.31,
-      "fiber": 0.0
+      "fiber": 0
     },
     "educationalDescription": "Cheddar contains protein and fat. Try a smaller portion and observe how each estimate changes.",
     "source": {
@@ -391,6 +391,110 @@
       "id": "01009",
       "description": "Cheese, cheddar",
       "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "timun",
+    "name": "Timun",
+    "category": "Vegetables",
+    "preparation": "Raw · cucumber slices",
+    "defaultPortionGrams": 50,
+    "minPortionGrams": 12.5,
+    "maxPortionGrams": 150,
+    "servingLabel": "50 g",
+    "countable": false,
+    "conversionNote": "Raw edible weight. Five slices per 50 g are an illustrative quantity cue, not a measured slice-to-gram conversion.",
+    "nutrientsPer100g": {
+      "calories": 8,
+      "protein": 0.2,
+      "carbohydrates": 1.4,
+      "fat": 0.2,
+      "fiber": 0.3
+    },
+    "educationalDescription": "Timun is cucumber. Adjust its edible weight to explore the contribution of a lalapan accompaniment.",
+    "source": {
+      "database": "Tabel Komposisi Pangan Indonesia, TKPI (2017)",
+      "id": "DR109",
+      "description": "Ketimun, segar · table p. 31",
+      "url": "https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf#page=38"
+    }
+  },
+  {
+    "id": "kerupuk",
+    "name": "Kerupuk",
+    "category": "Other",
+    "preparation": "Fried · shrimp crackers (kerupuk udang)",
+    "defaultPortionGrams": 10,
+    "minPortionGrams": 2.5,
+    "maxPortionGrams": 30,
+    "servingLabel": "10 g",
+    "countable": false,
+    "conversionNote": "Fried edible weight; frying oil is already included in the source record. Three crackers per 10 g are illustrative; actual pieces vary in weight.",
+    "nutrientsPer100g": {
+      "calories": 477,
+      "protein": 4.7,
+      "carbohydrates": 68.5,
+      "fat": 20.5,
+      "fiber": 5
+    },
+    "educationalDescription": "This reference is fried shrimp kerupuk. Other cracker recipes and frying methods can have different nutrient values.",
+    "source": {
+      "database": "Tabel Komposisi Pangan Indonesia, TKPI (2017)",
+      "id": "BP045",
+      "description": "Kerupuk udang goreng · table p. 18",
+      "url": "https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf#page=25"
+    }
+  },
+  {
+    "id": "ikan-kembung",
+    "name": "Ikan kembung",
+    "category": "Protein",
+    "preparation": "Fresh/raw · Indian mackerel reference",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g edible",
+    "countable": false,
+    "conversionNote": "Raw edible flesh weight, excluding bones and other discarded parts. The whole-fish silhouette is illustrative, not a one-fish weight conversion. This source does not represent fried fish.",
+    "nutrientsPer100g": {
+      "calories": 125,
+      "protein": 21.3,
+      "carbohydrates": 2.2,
+      "fat": 3.4,
+      "fiber": null
+    },
+    "educationalDescription": "Ikan kembung contributes protein. This fresh/raw reference has no reported fiber value; cooked preparations require their own composition data.",
+    "source": {
+      "database": "Tabel Komposisi Pangan Indonesia, TKPI (2017)",
+      "id": "GR050",
+      "description": "Ikan oci, kembung, segar · table p. 51",
+      "url": "https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf#page=58"
+    }
+  },
+  {
+    "id": "bakwan-sayur",
+    "name": "Bakwan sayur",
+    "category": "Other",
+    "preparation": "Fried · vegetable fritter",
+    "defaultPortionGrams": 50,
+    "minPortionGrams": 12.5,
+    "maxPortionGrams": 150,
+    "servingLabel": "50 g",
+    "countable": false,
+    "conversionNote": "Fried edible weight; frying oil is already included in the source record. One fritter per 50 g is an illustrative quantity cue, not a measured household weight.",
+    "nutrientsPer100g": {
+      "calories": 280,
+      "protein": 8.2,
+      "carbohydrates": 39,
+      "fat": 10.2,
+      "fiber": 3.4
+    },
+    "educationalDescription": "Bakwan sayur combines flour and vegetables in a fried fritter, also called bala-bala or ote-ote. Recipe and oil retention affect its composition.",
+    "source": {
+      "database": "Tabel Komposisi Pangan Indonesia, TKPI (2017)",
+      "id": "AP031",
+      "description": "Bakwan · table p. 11; vegetable-fritter glossary p. 93",
+      "url": "https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf#page=18"
     }
   }
 ]

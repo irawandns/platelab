@@ -25,6 +25,24 @@ beforeEach(() =>
 );
 
 describe("physical food scale", () => {
+  it("adds illustrated Indonesian pieces while preserving whole-piece size", () => {
+    for (const [id, count] of [
+      ["timun", 5],
+      ["kerupuk", 3],
+      ["bakwan-sayur", 1],
+    ] as const) {
+      expect(portionPieces(id, 1)).toHaveLength(count);
+      expect(portionPieces(id, 2)).toHaveLength(count * 2);
+      for (const ratio of [0.25, 1, 1.37, 3]) {
+        const pieces = portionPieces(id, ratio);
+        expect(
+          pieces.reduce((v, p) => v + p.scale ** 3, 0) / count,
+        ).toBeCloseTo(ratio);
+        expect(pieces.every((p) => p.scale > 0 && p.scale <= 1)).toBe(true);
+      }
+    }
+  });
+
   it("supplies consistent physical dimensions for all available foods", () => {
     expect([...physicsFoods].sort()).toEqual(
       foods.map((food) => food.id).sort(),

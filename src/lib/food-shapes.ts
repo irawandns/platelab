@@ -28,6 +28,129 @@ export interface FoodPart {
 }
 // Shared definitions keep collision hulls and visible models in the same scale.
 export const physicsFoodParts: Record<string, FoodPart[]> = {
+  timun: [
+    {
+      kind: "cylinder",
+      args: [0.36, 0.36, 0.1, 12],
+      color: "#477747",
+      position: [0, 0.05, 0],
+      scale: [1, 1, 1],
+    },
+    {
+      kind: "cylinder",
+      args: [0.32, 0.32, 0.024, 12],
+      color: "#dce6ad",
+      position: [0, 0.104, 0],
+      scale: [1, 1, 1],
+    },
+    ...Array.from({ length: 3 }, (_, i): FoodPart => ({
+      kind: "facet",
+      color: "#f3eed0",
+      position: [
+        Math.cos((i * Math.PI * 2) / 3) * 0.12,
+        0.11,
+        Math.sin((i * Math.PI * 2) / 3) * 0.12,
+      ],
+      rotation: [0, (i * Math.PI * 2) / 3, 0],
+      scale: [0.055, 0.006, 0.024],
+      decorative: true,
+    })),
+  ],
+  kerupuk: [
+    {
+      kind: "facet",
+      color: "#eacfa0",
+      position: [0, 0.07, 0],
+      scale: [0.5, 0.07, 0.4],
+    },
+    ...Array.from({ length: 4 }, (_, i): FoodPart => ({
+      kind: "facet",
+      color: i % 2 ? "#f7e7c5" : "#efdbb6",
+      position: [
+        Math.cos((i * Math.PI) / 2) * 0.26,
+        0.075 + (i % 2) * 0.025,
+        Math.sin((i * Math.PI) / 2) * 0.22,
+      ],
+      scale: [0.23, 0.07, 0.19],
+    })),
+  ],
+  "ikan-kembung": [
+    {
+      kind: "facet",
+      color: "#8ca9a0",
+      position: [0, 0.18, 0],
+      scale: [0.7, 0.18, 0.24],
+    },
+    {
+      kind: "facet",
+      color: "#d5ded0",
+      position: [0.02, 0.29, 0],
+      scale: [0.61, 0.065, 0.19],
+    },
+    {
+      kind: "facet",
+      color: "#738d84",
+      position: [0.6, 0.18, 0],
+      scale: [0.25, 0.15, 0.21],
+    },
+    ...[-1, 1].map((side): FoodPart => ({
+      kind: "cylinder",
+      args: [0.22, 0.22, 0.06, 3],
+      color: "#6d8c81",
+      position: [-0.83, 0.18, side * 0.15],
+      rotation: [0, side * 0.5, 0],
+      scale: [1, 1, 1],
+    })),
+    {
+      kind: "cylinder",
+      args: [0.2, 0.2, 0.04, 3],
+      color: "#6d8c81",
+      position: [-0.04, 0.18, -0.27],
+      rotation: [0, 0.5, 0],
+      scale: [1, 1, 1],
+    },
+    {
+      kind: "facet",
+      color: "#263b35",
+      position: [0.64, 0.3, 0.07],
+      scale: [0.035, 0.02, 0.035],
+      decorative: true,
+    },
+    ...[-0.3, -0.05, 0.2].map((x): FoodPart => ({
+      kind: "box",
+      color: "#577a70",
+      position: [x, 0.345, 0],
+      rotation: [0, 0.25, 0],
+      scale: [0.025, 0.008, 0.17],
+      decorative: true,
+    })),
+  ],
+  "bakwan-sayur": [
+    {
+      kind: "facet",
+      color: "#c58a43",
+      position: [0, 0.12, 0],
+      scale: [0.42, 0.12, 0.36],
+    },
+    ...Array.from({ length: 4 }, (_, i): FoodPart => ({
+      kind: "facet",
+      color: i % 2 ? "#d9a552" : "#e2b362",
+      position: [
+        Math.cos((i * Math.PI) / 2) * 0.24,
+        0.11,
+        Math.sin((i * Math.PI) / 2) * 0.2,
+      ],
+      scale: [0.19, 0.09, 0.18],
+    })),
+    ...Array.from({ length: 4 }, (_, i): FoodPart => ({
+      kind: "box",
+      color: i % 2 ? "#77934b" : "#dd8141",
+      position: [-0.18 + i * 0.11, 0.215, (i % 2 ? 1 : -1) * 0.09],
+      rotation: [0, i * 0.7, 0],
+      scale: [0.03, 0.014, 0.16],
+      decorative: true,
+    })),
+  ],
   rice: [
     {
       kind: "facet",

@@ -275,7 +275,7 @@ describe("controlled food physics", () => {
     const simulation = new FoodPhysics(26, items);
     try {
       settle(simulation);
-      expect(Object.keys(simulation.poses())).toHaveLength(11);
+      expect(Object.keys(simulation.poses())).toHaveLength(foods.length);
       for (const food of items) {
         clearOfPlate(simulation, food.instanceId);
         expect(

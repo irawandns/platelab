@@ -7,6 +7,91 @@ export function FoodArt({
   className?: string;
 }) {
   const art: Record<string, React.ReactNode> = {
+    timun: (
+      <>
+        {[
+          [29, 46],
+          [47, 39],
+          [65, 45],
+        ].map(([x, y], i) => (
+          <g key={i}>
+            <ellipse cx={x} cy={y + 5} rx="17" ry="14" fill="#477747" />
+            <ellipse cx={x} cy={y} rx="17" ry="14" fill="#649052" />
+            <ellipse cx={x} cy={y} rx="14" ry="11" fill="#dce6ad" />
+            <path
+              d={`m${x - 5} ${y} 3-3m3 5 3-3m-3-4 3 2`}
+              stroke="#f3eed0"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
+      </>
+    ),
+    kerupuk: (
+      <>
+        {[
+          [30, 47, -15],
+          [52, 33, 12],
+          [65, 52, -10],
+        ].map(([x, y, angle], i) => (
+          <g key={i} transform={`rotate(${angle} ${x} ${y})`}>
+            <path
+              d={`M${x - 19} ${y}q-6-13 4-15q8-9 17-4q15-3 18 8q8 10-2 19q-2 10-15 6q-14 5-22-14Z`}
+              fill={i % 2 ? "#f7e7c5" : "#eacfa0"}
+              stroke="#d6b88b"
+              strokeWidth="2"
+            />
+            <path
+              d={`m${x - 8} ${y - 5} 5-3m7 9 5-3m-14 6 3 2`}
+              stroke="#e3c598"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
+      </>
+    ),
+    "ikan-kembung": (
+      <>
+        <path d="m28 44-17-14 3 15-3 14Z" fill="#6d8c81" />
+        <path d="m42 31 14-14 11 15m-26 20 15 14 8-14" fill="#6d8c81" />
+        <path d="M24 44Q37 23 65 30Q78 33 86 44Q73 62 46 57Z" fill="#8ca9a0" />
+        <path d="M25 44Q54 43 86 44Q72 60 47 54Z" fill="#d5ded0" />
+        <path
+          d="m39 33-4 7m16-10-4 10m16-8-4 8"
+          stroke="#577a70"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <path d="M67 34Q62 44 68 52" stroke="#738d84" strokeWidth="2" />
+        <circle cx="76" cy="40" r="3" fill="#263b35" />
+      </>
+    ),
+    "bakwan-sayur": (
+      <>
+        <path
+          d="M17 47L23 32L39 24L55 27L70 24L81 40L78 58L65 65L46 62L31 66L18 57Z"
+          fill="#c58a43"
+        />
+        <path
+          d="M20 44L27 33L39 28L56 31L69 28L77 42L71 54L55 57L38 54L25 57Z"
+          fill="#e2b362"
+        />
+        <path
+          d="m32 39 10 9m15-15 9 10m-16 7 9 3"
+          stroke="#dd8141"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+        <path
+          d="m37 33 4 8m15-1-6 9m19-4 3 7"
+          stroke="#77934b"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </>
+    ),
     rice: (
       <>
         <path d="M16 54Q17 27 47 25Q71 25 78 54Q49 72 16 54" fill="#eee6cb" />

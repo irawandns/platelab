@@ -73,17 +73,45 @@ export const foodDimensionsCm: Record<string, [number, number, number]> = {
   broccoli: [4.5, 4.8, 4.5],
   avocado: [7, 4, 10],
   cheese: [5, 2, 4],
+  timun: [3.5, 0.6, 3.5],
+  kerupuk: [6, 0.8, 5],
+  "ikan-kembung": [16, 2.5, 5],
+  "bakwan-sayur": [6, 1.5, 5.5],
 };
 export const physicsFoods = new Set(Object.keys(foodDimensionsCm));
 const pieceFoods = new Set(["egg", "bread"]);
 // A visual quantity cue, not a measured gram-to-floret conversion.
 export const BROCCOLI_FLORETS_PER_SERVING = 5;
+// Artistic piece counts per serving; edible grams drive nutrient calculations.
+export const illustratedPiecesPerServing: Record<string, number> = {
+  timun: 5,
+  kerupuk: 3,
+  "bakwan-sayur": 1,
+};
 export interface VisualPiece {
   position: [number, number, number];
   scale: number;
   rotationY?: number;
 }
 export function portionPieces(foodId: string, ratio: number): VisualPiece[] {
+  const illustratedCount = illustratedPiecesPerServing[foodId];
+  if (illustratedCount) {
+    const quantity = ratio * illustratedCount;
+    const count = Math.ceil(quantity - 1e-8);
+    const [width, , depth] = foodDimensionsCm[foodId];
+    const columns = Math.min(count, 3);
+    const rows = Math.ceil(count / columns);
+    return Array.from({ length: count }, (_, i): VisualPiece => ({
+      position: [
+        ((i % columns) - (columns - 1) / 2) * (width / CM_PER_UNIT) * 0.6,
+        0,
+        (Math.floor(i / columns) - (rows - 1) / 2) *
+          (depth / CM_PER_UNIT) *
+          0.6,
+      ],
+      scale: Math.cbrt(Math.min(1, quantity - i)),
+    }));
+  }
   if (foodId === "broccoli") {
     const florets = ratio * BROCCOLI_FLORETS_PER_SERVING;
     const pieces = Array.from(

@@ -80,8 +80,8 @@ export function getInsight(items: PlateItem[]) {
     )
   )
     return "Twice the portion, twice the nutrients. Each estimate scales with the edible weight of your food.";
-  if (items.some((i) => i.foodId === "tempeh"))
-    return "Missing data is not zero. This tempeh record has no fiber value, so your fiber total is a known subtotal.";
+  if (items.some((i) => foodById[i.foodId].nutrientsPer100g.fiber === null))
+    return "Missing data is not zero. A food on this plate has no reported fiber value, so the fiber total is a known subtotal.";
   if (items.filter((i) => foodById[i.foodId].category === "Protein").length > 1)
     return "Different protein sources bring different amounts of fat and carbohydrates, too. Select each one to compare.";
   if (items.some((i) => foodById[i.foodId].category === "Vegetables"))

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-13 — Indonesian food objects
+
+- Add timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur with procedural models, vector thumbnails, edible-gram portions, and TKPI provenance.
+- Add illustrative pieces as timun, kerupuk, and bakwan portions grow, using the existing instanced rendering and calibrated collision geometry.
+- Show TKPI links and source codes in food details. Preserve unreported fish fiber and name every food contributing to the known fiber subtotal.
+- Extend nutrition, scale, physics, desktop, mobile, and tray checks to cover the expanded fifteen-food shelf.
+- Make E2E checks optional: run them in a separate job only when manually requested. Unit tests, production builds, formatting, and whitespace checks remain required; update contributor instructions to remove the E2E-before-PR gate.
+
 ## 2026-10-13 — What if? comparison
 
 - Capture a session-only original plate and compare its nutrition with the current meal, including portions and cooking oil. Show signed differences and neutral labels; missing data produces an unknown difference.

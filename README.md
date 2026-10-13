@@ -15,7 +15,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 
 ## What works
 
-- Eleven available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
+- Fifteen available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
 - A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
 - Collapsible Plate options with size presets, custom diameter, and Cream, Sage, or Blue ceramic skins. The compact summary shows your current size and skin. Skin changes support undo and preserve food positions, portions, and nutrition.
 - A selectable stainless meal tray with five recessed compartments and a fixed 29 × 23 cm footprint. Foods settle against its wells and dividers; a compartment selector provides keyboard movement. Vessel changes preserve portions, cooking settings, and nutrition, and support undo. See the [meal tray guide](docs/meal-tray.md) for dimensions and limits.
@@ -41,10 +41,20 @@ Read the [changelog](CHANGELOG.md) for recent changes and the [plate and food ph
 
 ```sh
 npm test
-npm run build
-npm run test:e2e
+npm run build:pages
 npm run format:check
+git diff --check
 ```
+
+Browser E2E checks are optional and do not block PR creation, merging, or deployment.
+To run them locally after the production build:
+
+```sh
+PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
+```
+
+To run them in CI, manually launch the Pages workflow with **Run browser E2E checks**
+enabled. The separate browser job reports failures and uploads diagnostics.
 
 The browser suite uses `/usr/bin/chromium` if present; otherwise install Playwright's browser with `npx playwright install chromium`. You may set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to another Chromium path. It starts a production preview on port 4173; keep that port free. Chromium uses software rendering in cloud tests, which does not establish performance on consumer hardware.
 
@@ -61,13 +71,13 @@ npm run build:pages
 PLAYWRIGHT_BASE_PATH=/platelab/ npm run test:e2e
 ```
 
-Deployments run unit tests, all browser checks, and formatting validation before publishing. Actions are pinned to commit hashes. The build job has read-only repository access; the deployment job has Pages and OIDC permissions. Future pushes to `main` automatically update the site. If Pages is not enabled, enable it in Settings and rerun the workflow. This workflow does not require a personal token or any app secrets.
+Deployments run unit tests, the production build, formatting, and whitespace validation before publishing. Browser checks run only when explicitly enabled for a manual workflow run, and the optional browser job does not gate deployment. Actions are pinned to commit hashes. The build job has read-only repository access; the deployment job has Pages and OIDC permissions. Future pushes to `main` automatically update the site. If Pages is not enabled, enable it in Settings and rerun the workflow. This workflow does not require a personal token or any app secrets.
 
 ## Nutrition data
 
-The app uses curated **USDA SR28 (2015)** records. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. This is historical generic composition data, not a live database or brand-specific lookup.
+The app uses curated **USDA SR28 (2015)** records plus four **TKPI 2017** Indonesian food records: timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. The data describe historical generic food composition, not a live database or brand-specific lookup.
 
-Missing nutrients remain unknown. Cooked tempeh's fiber is unreported, so a plate containing it shows a known fiber subtotal with `+`. Calories come directly from the source; the separate energy-share bar uses the approximate 4/4/9 factors and is explicitly explained. No displayed bar is a daily target.
+Missing nutrients remain unknown. Cooked tempeh and fresh/raw ikan kembung have unreported fiber, so a plate containing either shows a known fiber subtotal with `+`. Calories come directly from the source; the separate energy-share bar uses the approximate 4/4/9 factors and is explicitly explained. No displayed bar is a daily target.
 
 ## Project structure
 

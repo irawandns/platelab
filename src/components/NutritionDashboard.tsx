@@ -91,7 +91,18 @@ export function NutritionDashboard() {
         </div>
         {incomplete.has("fiber") && (
           <p className="data-warning">
-            Known fiber subtotal. Tempeh’s fiber is unreported.
+            Known fiber subtotal. Fiber is unreported for{" "}
+            {Array.from(
+              new Set(
+                items
+                  .filter(
+                    (entry) =>
+                      foodById[entry.foodId].nutrientsPer100g.fiber === null,
+                  )
+                  .map((entry) => foodById[entry.foodId].name),
+              ),
+            ).join(", ")}
+            .
           </p>
         )}
         <details className="chart-explainer">
@@ -177,10 +188,12 @@ export function NutritionDashboard() {
             <p>
               {food.source.database}
               <br />
-              NDB {food.source.id}: {food.source.description}
+              {food.source.database.startsWith("USDA") ? "NDB " : ""}
+              {food.source.id}: {food.source.description}
             </p>
             <a href={food.source.url} target="_blank" rel="noreferrer">
-              USDA source documentation <ArrowUpRight size={12} />
+              {food.source.database.startsWith("USDA") ? "USDA" : "TKPI"} source
+              documentation <ArrowUpRight size={12} />
             </a>
             <p>
               Exact source rows and provenance are included in this project.
