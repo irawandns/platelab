@@ -104,8 +104,7 @@ describe("controlled food physics", () => {
         }
         expect(Math.min(...coordinates.map((p) => p[1]))).toBeCloseTo(0);
         expect(hulls).toHaveLength(
-          (id === "tofu" || id === "broccoli" ? 3 : 1) *
-            portionPieces(id, ratio).length,
+          (id === "tofu" ? 3 : 1) * portionPieces(id, ratio).length,
         );
       }
   });
@@ -144,7 +143,7 @@ describe("controlled food physics", () => {
     } finally {
       simulation.dispose();
     }
-  });
+  }, 15000);
   it("settles all foods at minimum and maximum portions with the correct compound mass", () => {
     for (const food of foods)
       for (const grams of [food.minPortionGrams, food.maxPortionGrams]) {

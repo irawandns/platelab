@@ -11,6 +11,7 @@ import {
   portionPieces,
   wellRadius,
   physicsFoods,
+  BROCCOLI_FLORETS_PER_SERVING,
 } from "../src/lib/scale";
 
 beforeEach(() =>
@@ -44,6 +45,21 @@ describe("physical food scale", () => {
       expect(fractional.reduce((v, p) => v + p.scale ** 3, 0)).toBeCloseTo(2.5);
     }
     expect(portionPieces("rice", 2)[0].scale ** 3).toBeCloseTo(2);
+  });
+  it("adds broccoli florets instead of growing a fixed trio, preserving estimated portion volume", () => {
+    expect(portionPieces("broccoli", 0.5)).toHaveLength(3);
+    expect(portionPieces("broccoli", 1)).toHaveLength(5);
+    expect(portionPieces("broccoli", 2)).toHaveLength(10);
+    expect(portionPieces("broccoli", 3)).toHaveLength(15);
+    for (const ratio of [0.25, 0.5, 1, 1.37, 2, 3]) {
+      const pieces = portionPieces("broccoli", ratio);
+      expect(
+        pieces.reduce((volume, p) => volume + p.scale ** 3, 0) /
+          BROCCOLI_FLORETS_PER_SERVING,
+      ).toBeCloseTo(ratio);
+      expect(pieces.every((p) => p.scale > 0 && p.scale <= 1)).toBe(true);
+      expect(new Set(pieces.map((p) => p.rotationY)).size).toBeGreaterThan(1);
+    }
   });
 });
 

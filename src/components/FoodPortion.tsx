@@ -49,7 +49,12 @@ function CalibratedModel({ id }: { id: string }) {
 
 export function FoodPortion({ id, ratio }: { id: string; ratio: number }) {
   return portionPieces(id, ratio).map((piece, index) => (
-    <group key={index} position={piece.position} scale={piece.scale}>
+    <group
+      key={index}
+      position={piece.position}
+      rotation={[0, piece.rotationY ?? 0, 0]}
+      scale={piece.scale}
+    >
       <CalibratedModel id={id} />
     </group>
   ));
