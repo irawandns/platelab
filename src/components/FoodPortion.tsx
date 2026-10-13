@@ -49,7 +49,8 @@ function CalibratedModel({ id }: { id: string }) {
 }
 
 export function FoodPortion({ id, ratio }: { id: string; ratio: number }) {
-  if (id === "broccoli") return <InstancedFoodPortion id={id} ratio={ratio} />;
+  if (["broccoli", "timun", "kerupuk", "bakwan-sayur"].includes(id))
+    return <InstancedFoodPortion id={id} ratio={ratio} />;
   return portionPieces(id, ratio).map((piece, index) => (
     <group
       key={index}

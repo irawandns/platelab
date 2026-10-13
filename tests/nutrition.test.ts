@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { foods, foodById, forPortion, summarize } from "../src/lib/nutrition";
 import rawNutrients from "../src/data/usda-nut_data.json";
 import rawWeights from "../src/data/usda-weight.json";
+import tkpiFoods from "../src/data/tkpi-foods.json";
 import { clampPosition, MAX_ITEMS, usePlate } from "../src/lib/store";
 import { DEFAULT_PLATE_CM, placementRadius } from "../src/lib/scale";
 import type { PlateItem, Nutrient } from "../src/types";
@@ -12,9 +13,9 @@ const item = (foodId: string, grams: number): PlateItem => ({
   position: [0, 0],
 });
 describe("auditable food data", () => {
-  it("has 11 available distinct foods and exact USDA values, preserving missing data", () => {
-    expect(foods).toHaveLength(11);
-    expect(new Set(foods.map((f) => f.id)).size).toBe(11);
+  it("has 15 available distinct foods with auditable values and missing data", () => {
+    expect(foods).toHaveLength(15);
+    expect(new Set(foods.map((f) => f.id)).size).toBe(15);
     const nutrientIds: Record<Nutrient, string> = {
       calories: "208",
       protein: "203",
@@ -23,7 +24,12 @@ describe("auditable food data", () => {
       fiber: "291",
     };
     for (const food of foods) {
-      for (const [key, id] of Object.entries(nutrientIds)) {
+      if (!food.source.database.startsWith("USDA")) {
+        const source = tkpiFoods.find((row) => row.code === food.source.id);
+        expect(source).toBeDefined();
+        expect(food.nutrientsPer100g).toEqual(source!.nutrientsPer100g);
+        expect(food.source.url).toContain(`#page=${source!.pdfPage}`);
+      } else for (const [key, id] of Object.entries(nutrientIds)) {
         const row = rawNutrients.find(
           (r) => r[0] === food.source.id && r[1] === id,
         );
@@ -56,6 +62,27 @@ describe("auditable food data", () => {
   });
 });
 describe("nutrition calculations", () => {
+  it("scales the Indonesian foods and preserves unknown fish fiber", () => {
+    const meal = [
+      item("timun", 50),
+      item("kerupuk", 10),
+      item("ikan-kembung", 100),
+      item("bakwan-sayur", 50),
+    ];
+    const result = summarize(meal);
+    expect(result.totals.calories).toBeCloseTo(316.7);
+    expect(result.totals.protein).toBeCloseTo(25.97);
+    expect(result.totals.carbohydrates).toBeCloseTo(29.25);
+    expect(result.totals.fat).toBeCloseTo(10.65);
+    expect(result.totals.fiber).toBeCloseTo(2.35);
+    expect(result.incomplete).toEqual(new Set(["fiber"]));
+    expect(forPortion(foodById["ikan-kembung"], 100).fiber).toBeNull();
+    expect(summarize(meal.map((food) => ({
+      ...food,
+      portionGrams: food.portionGrams * 2,
+    }))).totals.calories).toBeCloseTo(633.4);
+  });
+
   it("computes the documented rice, chicken and broccoli experiment", () => {
     const meal = [
       item("rice", 100),

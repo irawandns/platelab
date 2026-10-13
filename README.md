@@ -15,7 +15,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 
 ## What works
 
-- Eleven available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
+- Fifteen available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
 - A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
 - Collapsible Plate options with size presets, custom diameter, and Cream, Sage, or Blue ceramic skins. The compact summary shows your current size and skin. Skin changes support undo and preserve food positions, portions, and nutrition.
 - A selectable stainless meal tray with five recessed compartments and a fixed 29 × 23 cm footprint. Foods settle against its wells and dividers; a compartment selector provides keyboard movement. Vessel changes preserve portions, cooking settings, and nutrition, and support undo. See the [meal tray guide](docs/meal-tray.md) for dimensions and limits.
@@ -64,9 +64,9 @@ Deployments run unit tests, all browser checks, and formatting validation before
 
 ## Nutrition data
 
-The app uses curated **USDA SR28 (2015)** records. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. This is historical generic composition data, not a live database or brand-specific lookup.
+The app uses curated **USDA SR28 (2015)** records plus four **TKPI 2017** Indonesian food records: timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur. See [source provenance and serving conversions](src/data/README.md), including a pinned mirror revision, file checksums, and the exact selected source rows. These are historical generic composition data, not a live database or brand-specific lookup.
 
-Missing nutrients remain unknown. Cooked tempeh's fiber is unreported, so a plate containing it shows a known fiber subtotal with `+`. Calories come directly from the source; the separate energy-share bar uses the approximate 4/4/9 factors and is explicitly explained. No displayed bar is a daily target.
+Missing nutrients remain unknown. Cooked tempeh and fresh/raw ikan kembung have unreported fiber, so a plate containing either shows a known fiber subtotal with `+`. Calories come directly from the source; the separate energy-share bar uses the approximate 4/4/9 factors and is explicitly explained. No displayed bar is a daily target.
 
 ## Project structure
 

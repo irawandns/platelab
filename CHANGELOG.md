@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-13 — Indonesian food objects
+
+- Add timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur with procedural models, vector thumbnails, edible-gram portions, and TKPI provenance.
+- Add illustrative pieces as timun, kerupuk, and bakwan portions grow, using the existing instanced rendering and calibrated collision geometry.
+- Show TKPI links and source codes in food details. Preserve unreported fish fiber and name every food contributing to the known fiber subtotal.
+- Extend nutrition, scale, physics, desktop, mobile, and tray checks to cover the expanded fifteen-food shelf.
+
 ## 2026-10-13 — Tablet settlement and PR validation
 
 - Batch repeated broccoli florets into seven instanced meshes per portion, sharing the same calibrated vertices as their collision hulls. This reduces draw calls from 35 at 100 g (105 at 300 g) while preserving the food's appearance and physical dimensions.

@@ -1,0 +1,50 @@
+[
+  {
+    "code": "DR109",
+    "name": "Ketimun, segar",
+    "pdfPage": 38,
+    "nutrientsPer100g": {
+      "calories": 8,
+      "protein": 0.2,
+      "carbohydrates": 1.4,
+      "fat": 0.2,
+      "fiber": 0.3
+    }
+  },
+  {
+    "code": "BP045",
+    "name": "Kerupuk udang goreng",
+    "pdfPage": 25,
+    "nutrientsPer100g": {
+      "calories": 477,
+      "protein": 4.7,
+      "carbohydrates": 68.5,
+      "fat": 20.5,
+      "fiber": 5
+    }
+  },
+  {
+    "code": "GR050",
+    "name": "Ikan oci, kembung, segar",
+    "pdfPage": 58,
+    "nutrientsPer100g": {
+      "calories": 125,
+      "protein": 21.3,
+      "carbohydrates": 2.2,
+      "fat": 3.4,
+      "fiber": null
+    }
+  },
+  {
+    "code": "AP031",
+    "name": "Bakwan",
+    "pdfPage": 18,
+    "nutrientsPer100g": {
+      "calories": 280,
+      "protein": 8.2,
+      "carbohydrates": 39,
+      "fat": 10.2,
+      "fiber": 3.4
+    }
+  }
+]

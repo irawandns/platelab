@@ -2,7 +2,8 @@ name: Deploy PlateLab to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Validate this feature branch before opening its pull request.
+    branches: [main, codex/indonesian-foods]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -54,6 +55,8 @@ jobs:
             npm run format
             git diff --exit-code
           }
+      - name: Check patch whitespace
+        run: git diff --check HEAD^ HEAD
       - name: Upload the site
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3

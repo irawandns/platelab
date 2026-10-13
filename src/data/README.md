@@ -1,8 +1,8 @@
 # Nutrition data provenance
 
-The 15 food records in `foods.json` use the **USDA National Nutrient Database for Standard Reference, Release 28 (2015)**. Values are per 100 g of edible food, in the preparation state shown in each record. This is historical reference data, not live FoodData Central data or brand-specific advice.
+The original 15 food records in `foods.json` use the **USDA National Nutrient Database for Standard Reference, Release 28 (2015)**. Values are per 100 g of edible food, in the preparation state shown in each record. This is historical reference data, not live FoodData Central data or brand-specific advice.
 
-Eleven foods are currently available. Carrot, banana, apple, and whole milk have `available: false` and are excluded from the shelf and runtime food lookup. Their records and source rows remain here for later restoration; the fruit weights and milk conversion below describe those archived records.
+Fifteen foods are currently available, including four TKPI additions described below. Carrot, banana, apple, and whole milk have `available: false` and are excluded from the shelf and runtime food lookup. Their records and source rows remain here for later restoration; the fruit weights and milk conversion below describe those archived records.
 
 Original documentation: https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf
 
@@ -70,3 +70,33 @@ These amounts are editable starting scenarios for comparing oil contributions. T
 In details, the default input is oil in the serving. Alternatively, the user may enter oil used **for this portion** and specify the percentage ending up in the serving. That percentage is a user assumption, displayed alongside the counted grams; switching to this mode starts at an explicit 100%, and the control allows 0–100%. It is not a default empirical absorption estimate. Whole-pan or batch amounts must be allocated to the portion before entering them.
 
 Preset oil scales with reference-food weight. A custom oil amount stays fixed for this serving when the portion changes. Unit changes only change the display, retaining canonical gram precision. Changing oil type preserves the canonical gram amount. Switching methods or resetting to the method preset replaces the custom assumption; As prepared clears the oil experiment. Every food instance has its own settings and participates in the existing undo history. The 3D geometry and physics mass represent the reference food; editing oil does not restart physics or change the arrangement.
+
+## Indonesian foods
+
+Four records use Kemenkes **TKPI 2017**, published in 2018. The [Poltekkes
+Palembang library PDF](https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf)
+is the inspected source; selected values are retained in `tkpi-foods.json`.
+
+| ID | TKPI code | PDF page (1-based) | kcal | Protein g | Carbs g | Fat g | Fiber g |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| timun | DR109 | 38 | 8 | 0.2 | 1.4 | 0.2 | 0.3 |
+| kerupuk | BP045 | 25 | 477 | 4.7 | 68.5 | 20.5 | 5 |
+| ikan-kembung | GR050 | 58 | 125 | 21.3 | 2.2 | 3.4 | Unknown |
+| bakwan-sayur | AP031 | 18 | 280 | 8.2 | 39 | 10.2 | 3.4 |
+
+All values are per 100 g edible food. GR050's fiber cell is blank; 1.7 is
+the adjacent ash value, not fiber. TKPI notes that its fiber measurements
+are not uniformly identifiable as total or dietary fiber (PDF page 11).
+The generic Fiber display preserves the source values with that limitation.
+
+AP031's glossary (PDF page 100) identifies a fried flour-and-vegetable
+fritter. BP045 specifically describes fried shrimp crackers. Their oil is
+already part of the record; no extra oil experiment is applied. GR050 is a
+fresh/raw fish record, displayed as such, with edible flesh grams excluding
+discarded bones. It must not stand in for fried fish.
+
+Default weights are app examples: timun 50 g, kerupuk 10 g, fish 100 g,
+and bakwan 50 g. Piece counts and whole-fish dimensions are visual estimates,
+not database household conversions. Users enter edible grams; increasing
+timun, kerupuk, or bakwan portions adds illustrative pieces. Nutrition remains
+weight-based. Prepared recipes and individual piece weights vary.
