@@ -127,6 +127,10 @@ test("works on mobile, with reduced motion and an accessible help dialog", async
   await expect(
     page.getByRole("button", { name: "How it works" }),
   ).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Add food", exact: true }),
+  ).toBeInViewport();
+  await page.getByRole("button", { name: "Add food", exact: true }).click();
   await page
     .getByRole("button", { name: "Add Boiled egg", exact: true })
     .click();

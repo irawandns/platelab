@@ -1651,7 +1651,7 @@ button:disabled:hover {
     width: 15px;
   }
   .page-intro {
-    padding: 27px 20px 20px;
+    padding: 18px 20px 16px;
   }
   .page-intro .eyebrow {
     font-size: 8px;
@@ -1681,6 +1681,146 @@ button:disabled:hover {
     order: 1;
     width: 100%;
     padding: 20px 16px 0;
+  }
+  body {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  .mobile-food-bar {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 24px #333d320a;
+  }
+  .mobile-meal-summary {
+    display: grid;
+    gap: 3px;
+  }
+  .mobile-meal-summary strong {
+    font-size: 18px;
+  }
+  .mobile-meal-summary span {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .mobile-add-food {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: #475b43;
+    color: white;
+    font-weight: 650;
+    font-size: 14px;
+  }
+  .food-sheet {
+    position: fixed;
+    inset: auto 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    height: min(640px, calc(100dvh - 24px));
+    max-height: calc(100dvh - 24px);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 22px 22px 0 0;
+    background: var(--surface);
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .food-sheet::backdrop {
+    background: #28342566;
+  }
+  .food-sheet .library {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px 20px calc(12px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+  }
+  .food-sheet .panel-heading {
+    flex-shrink: 0;
+  }
+  .food-sheet .eyebrow,
+  .food-sheet .panel-intro,
+  .food-sheet .library-foot {
+    display: none;
+  }
+  .food-sheet-close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f1f2e8;
+    flex-shrink: 0;
+  }
+  .food-sheet .search-box {
+    flex-shrink: 0;
+    height: 44px;
+    margin-top: 12px;
+  }
+  .food-sheet .search-box input {
+    font-size: 16px;
+  }
+  .food-sheet .search-box button {
+    min-width: 32px;
+    min-height: 40px;
+  }
+  .food-sheet .filters {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 4px;
+    margin: 8px -4px;
+    scrollbar-width: thin;
+  }
+  .food-sheet .filters button {
+    flex-shrink: 0;
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .food-sheet .food-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-content: start;
+    scroll-snap-type: none;
+    overscroll-behavior: contain;
+    padding: 4px;
+    margin: 0 -4px;
+  }
+  .food-sheet .food-card {
+    flex: initial;
+  }
+  .food-sheet .food-card:hover:not(:disabled) {
+    transform: none;
+  }
+  .food-sheet .food-serving {
+    flex-wrap: wrap;
+    white-space: normal;
+    font-size: 10px;
+  }
+  .food-sheet .library-full {
+    display: flex;
+    flex-shrink: 0;
+    margin: 8px 0 0;
+    border: 0;
+    padding: 8px 0;
   }
   .nutrition-column {
     order: 2;

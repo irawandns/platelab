@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-13 — Broccoli and mobile food picking
+
+- Replaced the fixed three-piece broccoli with compact florets featuring shorter branching stems and lobed crowns. Larger portions add florets, while fractional portions use a smaller final floret. The count is a visual estimate; nutrient calculations still use edible grams.
+- Matched each floret's rendered position, quarter-turn rotation, and scale to its collision hull. The whole portion remains one selectable, undoable rigid body.
+- Added an always-reachable mobile Add food button and meal summary. The existing searchable shelf opens in a bottom sheet, scrolls independently, and closes after picking a food without changing the page scroll position. Escape, backdrop dismissal, focus restoration, and resizing back to the desktop shelf are supported.
+- Added portion-volume, mobile interaction, and drawer accessibility regression checks, and updated the existing mobile workflow.
+
 ## 2026-10-12 — Stainless meal tray
 
 - Added a selectable 29 × 23 cm stainless meal tray with three top wells, a large lower-left well, and a round lower-right well based on the supplied reference. Well dimensions and depth are visual estimates.

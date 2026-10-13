@@ -190,8 +190,8 @@ export default function App() {
           <ol>
             <li>
               <strong>Pick something from the shelf.</strong> Click or tap any
-              food, or drag it onto the plate. Add it more than once if you
-              like.
+              food, or drag it onto the plate. On mobile, tap Add food at the
+              bottom to open the shelf. Add it more than once if you like.
             </li>
             <li>
               <strong>Make it your own.</strong> Select a food to change its

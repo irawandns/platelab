@@ -2,25 +2,25 @@
 
 One scene unit equals **5 cm**. Plate diameter is measured across the outer rim: default **26 cm**, presets **20/26/32 cm**, custom **18–36 cm** in 0.1 cm steps. The flat eating area is 70% of the outer diameter. A continuous revolved ceramic shell has a shallow curved shoulder, rolled brown outer rim, fine inner brown line, cream glaze, and an underside foot ring, inspired by the supplied Indonesian household plate reference. Total height is 3.5 cm; diameter changes affect width and depth while height stays fixed. Camera framing fits the largest supported plate at each viewport size and does not change when selecting a new diameter.
 
-The eleven available procedural models are normalized to the following regular-serving bounding dimensions, including decorations such as stems. Width and depth lie along the plate; height is vertical. These are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight. Carrot, banana, apple, and whole milk are currently unavailable.
+The eleven available procedural models are normalized to the following bounding dimensions, including decorations such as stems. Most rows describe a regular serving; broccoli describes one illustrative floret. Width and depth lie along the plate; height is vertical. These are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight. Carrot, banana, apple, and whole milk are currently unavailable.
 
-| Food           | Regular serving     | Width × height × depth (cm) |
-| -------------- | ------------------- | --------------------------- |
-| White rice     | 100 g cooked        | 9 × 3.5 × 8                 |
-| Bread          | 25 g slice          | 10 × 1.2 × 10               |
-| Egg noodles    | 100 g cooked        | 10 × 3.5 × 9                |
-| Boiled egg     | 50 g, one large egg | 4.4 × 5.7 × 4.4             |
-| Chicken breast | 100 g cooked        | 10 × 2.8 × 6                |
-| Salmon         | 100 g cooked        | 9 × 2.5 × 4.5               |
-| Firm tofu      | 100 g               | 7 × 4.5 × 6                 |
-| Tempeh         | 100 g cooked        | 8 × 2.5 × 5                 |
-| Broccoli       | 100 g cooked        | 10 × 6 × 9                  |
-| Avocado        | 100 g edible flesh  | 7 × 4 × 10                  |
-| Cheddar        | 30 g                | 5 × 2 × 4                   |
+| Food           | Regular serving                         | Width × height × depth (cm) |
+| -------------- | --------------------------------------- | --------------------------- |
+| White rice     | 100 g cooked                            | 9 × 3.5 × 8                 |
+| Bread          | 25 g slice                              | 10 × 1.2 × 10               |
+| Egg noodles    | 100 g cooked                            | 10 × 3.5 × 9                |
+| Boiled egg     | 50 g, one large egg                     | 4.4 × 5.7 × 4.4             |
+| Chicken breast | 100 g cooked                            | 10 × 2.8 × 6                |
+| Salmon         | 100 g cooked                            | 9 × 2.5 × 4.5               |
+| Firm tofu      | 100 g                                   | 7 × 4.5 × 6                 |
+| Tempeh         | 100 g cooked                            | 8 × 2.5 × 5                 |
+| Broccoli       | One illustrative floret; five per 100 g | 4.5 × 4.8 × 4.5             |
+| Avocado        | 100 g edible flesh                      | 7 × 4 × 10                  |
+| Cheddar        | 30 g                                    | 5 × 2 × 4                   |
 
-Eggs and bread retain their whole-piece dimensions when quantity increases. Bread stacks; eggs form a small group. Fractional remainders use cube-root scaling of a smaller model, an approximate quantity cue rather than a physically cut portion. For weighed solids and mounds, multiplying grams by two multiplies model volume by two using cube-root scaling in each axis.
+Eggs and bread retain their whole-piece dimensions when quantity increases. Bread stacks; eggs form a small group. Broccoli uses five illustrative florets per regular 100 g serving, distributed in a compact cluster and rotated by quarter turns. Increasing grams adds florets; full florets retain their dimensions. The regular cluster spans approximately 9.6 × 4.8 × 9.2 cm. Five florets per 100 g is an artistic quantity cue, not a measured weight conversion. Fractional remainders use cube-root scaling of a smaller model, an approximate quantity cue rather than a physically cut portion. For other weighed solids and mounds, multiplying grams by two multiplies model volume by two using cube-root scaling in each axis.
 
-Every available food uses controlled Rapier rigid-body physics. Placement bounds use the outer diameter, so foods can reach the curved shoulder. The plate has a fixed flat-well collider and a simplified triangle-mesh shoulder following the visible ceramic profile. Convex food hulls derive from the same mesh definitions and vertex calibration as the visible models. Tofu has three block hulls and broccoli has three floret hulls, preserving gaps between them. Repeated bread slices and eggs have a hull per piece. Other foods use a convex envelope; flat decorative cheese markings do not obstruct contact. Collider mass is distributed by volume and totals the portion's edible grams. Each portion remains one selectable rigid body, so its pieces move together. Rice and noodles remain cohesive mounds.
+Every available food uses controlled Rapier rigid-body physics. Placement bounds use the outer diameter, so foods can reach the curved shoulder. The plate has a fixed flat-well collider and a simplified triangle-mesh shoulder following the visible ceramic profile. Convex food hulls derive from the same mesh definitions and vertex calibration as the visible models. Tofu has three block hulls. Broccoli has one hull per floret, using the same placement, scale, and rotation as the visible cluster. Repeated bread slices and eggs have a hull per piece. Other foods use a convex envelope; flat decorative cheese markings do not obstruct contact. Collider mass is distributed by volume and totals the portion's edible grams. Each portion remains one selectable rigid body, so its pieces move together. Rice and noodles remain cohesive mounds.
 
 Adding/moving a food sweeps its hulls down from above to find support on the plate or existing foods. The sweep starts above the rotation-independent reach of existing portions, including tilted bread slices. During dragging it is controlled by the pointer above that support, without imparting pointer-speed impulses into other foods; release resumes normal contact, gravity, friction, damping, and tilt. Physics steps at 120 Hz with sixteen solver iterations and at most 0.1 seconds of catch-up per rendered frame. Sleeping bodies stop further frame requests. Food that spills outside the scene is returned to the plate. Portion changes rebuild the affected collision hull and settle the arrangement. Diameter changes re-place foods on the resized surface. Undo captures live positions and quaternions before a user edit and restores those poses asleep, including edits made during settling. Simulation frames do not consume undo history.
 

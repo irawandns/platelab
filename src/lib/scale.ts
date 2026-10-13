@@ -59,6 +59,7 @@ export function foodSupportHeight(
 }
 
 // Width × height × depth of a regular serving, including its silhouette.
+// Broccoli is calibrated per illustrative floret, then assembled into a serving.
 // Dimensions are explicit visual estimates, not USDA measurements.
 export const foodDimensionsCm: Record<string, [number, number, number]> = {
   rice: [9, 3.5, 8],
@@ -69,17 +70,47 @@ export const foodDimensionsCm: Record<string, [number, number, number]> = {
   salmon: [9, 2.5, 4.5],
   tofu: [7, 4.5, 6],
   tempeh: [8, 2.5, 5],
-  broccoli: [10, 6, 9],
+  broccoli: [4.5, 4.8, 4.5],
   avocado: [7, 4, 10],
   cheese: [5, 2, 4],
 };
 export const physicsFoods = new Set(Object.keys(foodDimensionsCm));
 const pieceFoods = new Set(["egg", "bread"]);
+// A visual quantity cue, not a measured gram-to-floret conversion.
+export const BROCCOLI_FLORETS_PER_SERVING = 5;
 export interface VisualPiece {
   position: [number, number, number];
   scale: number;
+  rotationY?: number;
 }
 export function portionPieces(foodId: string, ratio: number): VisualPiece[] {
+  if (foodId === "broccoli") {
+    const florets = ratio * BROCCOLI_FLORETS_PER_SERVING;
+    const pieces = Array.from(
+      { length: Math.ceil(florets - 1e-8) },
+      (_, i): VisualPiece => {
+        const angle = i * 2.399963;
+        const radius = Math.sqrt(i) * 0.34;
+        return {
+          position: [Math.cos(angle) * radius, 0, Math.sin(angle) * radius],
+          scale: Math.cbrt(Math.min(1, florets - i)),
+          rotationY: (i % 4) * (Math.PI / 2),
+        };
+      },
+    );
+    // Center the whole cluster, including the smaller fractional floret.
+    for (const axis of [0, 2] as const) {
+      const halfSize = foodDimensionsCm.broccoli[axis] / CM_PER_UNIT / 2;
+      const center =
+        (Math.min(...pieces.map((p) => p.position[axis] - halfSize * p.scale)) +
+          Math.max(
+            ...pieces.map((p) => p.position[axis] + halfSize * p.scale),
+          )) /
+        2;
+      pieces.forEach((piece) => (piece.position[axis] -= center));
+    }
+    return pieces;
+  }
   if (!pieceFoods.has(foodId))
     return [{ position: [0, 0, 0], scale: Math.cbrt(ratio) }];
   const count = Math.ceil(ratio - 1e-8);

@@ -40,12 +40,12 @@ The visible food meshes and collision hulls share procedural definitions and cal
 | Food shape                         | Collision representation                      |
 | ---------------------------------- | --------------------------------------------- |
 | Tofu                               | Three block hulls, preserving gaps            |
-| Broccoli                           | Three floret hulls, preserving gaps           |
+| Broccoli                           | One hull per illustrative floret              |
 | Multiple eggs or bread slices      | One hull per repeated piece                   |
 | Other foods                        | A convex envelope around the portion geometry |
 | Flat decorative markings on cheese | Excluded from collision obstacles             |
 
-Each portion is one selectable rigid body. Its blocks, florets, eggs, or slices stay together when moved. Eggs and bread repeat whole pieces as quantity increases; fractional pieces use an estimated smaller model. Other solids and mounds grow by cube-root scaling, so visual volume follows the portion ratio. Regular-serving dimensions are [documented separately](../src/data/visual-scale.md) and remain estimates.
+Each portion is one selectable rigid body. Its blocks, florets, eggs, or slices stay together when moved. Eggs and bread repeat whole pieces as quantity increases; fractional pieces use an estimated smaller model. Broccoli adds full-size florets at five illustrative florets per 100 g, with a smaller fractional floret between steps. The cluster's rendered positions, quarter-turn rotations, and scales match its collision hulls. This count is a visual estimate, not a measured weight conversion. Other solids and mounds grow by cube-root scaling, so visual volume follows the portion ratio. Model dimensions are [documented separately](../src/data/visual-scale.md) and remain estimates.
 
 Rapier runs at a fixed 120 Hz timestep with sixteen solver iterations, gravity converted to scene units, friction, damping, and continuous collision detection. Catch-up is capped at 0.1 seconds per rendered frame. Bodies sleep when settled, and the scene stops requesting simulation frames. Portions that fall below or leave the plate are returned to a supported position.
 

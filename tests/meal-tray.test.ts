@@ -238,5 +238,5 @@ describe("stainless meal tray", () => {
         sim.dispose();
       }
     }
-  });
+  }, 15000);
 });

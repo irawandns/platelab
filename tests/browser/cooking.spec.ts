@@ -131,11 +131,13 @@ test("keeps experiments independent on mobile and without WebGL", async ({
   await expect(
     page.getByText("3D isn’t available in this browser."),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Add food", exact: true }).click();
   await page
     .getByRole("button", { name: "Add Firm tofu", exact: true })
     .click();
   await page.getByRole("radio", { name: "Pan-fry", exact: true }).check();
   await expect(page.getByTestId("total-calories")).toHaveText("188");
+  await page.getByRole("button", { name: "Add food", exact: true }).click();
   await page
     .getByRole("button", { name: "Add Firm tofu", exact: true })
     .click();
@@ -167,6 +169,7 @@ test("keeps experiments independent on mobile and without WebGL", async ({
   await page.getByRole("button", { name: "Clear plate", exact: true }).click();
   await page.getByRole("button", { name: "Undo last change" }).click();
   await expect(page.getByTestId("total-calories")).toHaveText("348");
+  await page.getByRole("button", { name: "Add food", exact: true }).click();
   await page
     .getByRole("button", { name: "Add White rice", exact: true })
     .click();

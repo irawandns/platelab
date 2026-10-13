@@ -1,5 +1,13 @@
 # MVP validation
 
+## Broccoli and mobile food picking — 2026-10-13
+
+- `npm test`: all 43 tests pass. New checks verify that broccoli portions add florets without enlarging whole florets and preserve estimated volume for fractional portions. Existing checks verify matching model/collision bounds, settling on plates and trays, mass, portion changes, and undo. The two exhaustive physics sweeps have a 15-second runner timeout to accommodate the additional floret hulls; their assertions and simulation step limits are unchanged.
+- `npm run build` and `npm run build:pages`: pass using Node 24.19.0. Formatting and whitespace checks pass.
+- All 17 browser checks pass against the production `/platelab/` path using Chromium 153 and SwiftShader. A temporary local Playwright configuration overrides only the browser executable and the preview host (`127.0.0.1`), because this execution environment cannot resolve network interfaces for the default all-interface host. The repository's browser scenarios, viewport defaults, and production path are retained.
+- Mobile checks cover 390 × 844 and 360 × 640 viewports, food picking from the initial screen without page scrolling, reachability after scrolling, search/filter/reset, close-on-add, Escape/backdrop dismissal, focus restoration, desktop resizing, and the non-WebGL cooking workflow. Automated WCAG A/AA scans pass with the mobile drawer open.
+- Visually reviewed the original and updated broccoli, a 200 g cluster, and the mobile initial screen and shelf. Broccoli counts and dimensions remain artistic estimates. Hardware frame-rate/startup benchmarks and physical-device keyboard/screen-reader validation remain outside these automated checks.
+
 ## Stainless meal tray — 2026-10-12
 
 - `npm test`: all 42 tests pass. Tray checks cover the five recessed wells and separators, outer footprint and estimated height, placement inside rounded wells, oversized portions, food/cooking/nutrition preservation, live-pose undo, corner wells beyond the previous circular bounds, transfer across dividers, all regular and maximum portions, and a mixed tray.

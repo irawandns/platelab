@@ -172,42 +172,36 @@ export const physicsFoodParts: Record<string, FoodPart[]> = {
     })),
   ],
   broccoli: [
-    [-0.21, 0, 0.12],
-    [0.2, 0, 0.05],
-    [0, 0.05, -0.18],
-  ].flatMap((p, i): FoodPart[] => {
-    const parent = {
-      position: p as [number, number, number],
-      rotation: [0, i, 0.15] as [number, number, number],
-    };
-    return [
-      {
-        kind: "cylinder",
-        args: [0.07, 0.09, 0.45, 6],
-        color: "#91ad6b",
-        position: [0, 0.2, 0],
-        scale: [1, 1, 1],
-        parent,
-        collisionGroup: i,
-      },
-      {
-        kind: "facet",
-        color: ["#658c4b", "#4f7c43", "#789953"][i],
-        position: [0, 0.45, 0],
-        scale: [0.28, 0.23, 0.26],
-        parent,
-        collisionGroup: i,
-      },
-      {
-        kind: "facet",
-        color: "#83a361",
-        position: [-0.13, 0.44, 0.04],
-        scale: [0.16, 0.15, 0.15],
-        parent,
-        collisionGroup: i,
-      },
-    ];
-  }),
+    {
+      kind: "cylinder",
+      args: [0.065, 0.095, 0.3, 6],
+      color: "#94b775",
+      position: [0.025, 0.14, 0.015],
+      rotation: [0.12, 0, -0.22],
+      scale: [1, 1, 1],
+    },
+    {
+      kind: "cylinder",
+      args: [0.04, 0.055, 0.2, 5],
+      color: "#a2c184",
+      position: [-0.065, 0.24, 0.025],
+      rotation: [0, 0, 0.6],
+      scale: [1, 1, 1],
+    },
+    ...[
+      [-0.13, 0.33, 0.02, 0.16, 0.14, 0.17],
+      [0.12, 0.35, 0.03, 0.18, 0.15, 0.17],
+      [0.01, 0.4, -0.1, 0.18, 0.16, 0.17],
+      [-0.04, 0.36, 0.15, 0.16, 0.14, 0.16],
+      [0.04, 0.46, 0.04, 0.17, 0.13, 0.16],
+    ].map(([x, y, z, sx, sy, sz], i): FoodPart => ({
+      kind: "facet",
+      color: ["#477b42", "#568a46", "#3e703c", "#648f4b", "#739d53"][i],
+      position: [x, y, z],
+      rotation: [0, i * 0.7, 0],
+      scale: [sx, sy, sz],
+    })),
+  ],
   avocado: [
     {
       kind: "facet",
@@ -289,14 +283,21 @@ const hullCache = new Map<string, Float32Array[]>();
 export function foodCollisionHulls(id: string, ratio: number): Float32Array[] {
   const cached = hullCache.get(id);
   if (cached)
-    return portionPieces(id, ratio).flatMap((piece) =>
-      cached.map((hull) =>
-        Float32Array.from(
-          hull,
-          (value, i) => value * piece.scale + piece.position[i % 3],
-        ),
-      ),
-    );
+    return portionPieces(id, ratio).flatMap((piece) => {
+      const transform = new Matrix4().compose(
+        new Vector3(...piece.position),
+        new Quaternion().setFromEuler(new Euler(0, piece.rotationY ?? 0, 0)),
+        new Vector3().setScalar(piece.scale),
+      );
+      const point = new Vector3();
+      return cached.map((hull) => {
+        const vertices = new Float32Array(hull.length);
+        for (let i = 0; i < hull.length; i += 3) {
+          point.fromArray(hull, i).applyMatrix4(transform).toArray(vertices, i);
+        }
+        return vertices;
+      });
+    });
   const parent = new Matrix4().makeRotationFromEuler(
     new Euler(...physicsFoodRotation(id)),
   );
