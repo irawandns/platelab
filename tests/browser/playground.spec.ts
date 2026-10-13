@@ -26,12 +26,16 @@ async function undoRenderedScene(page: Page, canvas: Locator) {
 }
 
 async function restoredCanvasScreenshot(canvas: Locator, before: Buffer) {
-  let restored = before;
+  await expect(canvas).toHaveAttribute("data-physics", "settled");
+  let restored = await canvas.screenshot();
   await expect
     .poll(
       async () => {
-        restored = await settledCanvasScreenshot(canvas);
-        return restored.equals(before);
+        const previous = restored;
+        restored = await canvas.screenshot();
+        // Each poll captures one frame. Nesting the two-capture stabilization
+        // poll here can exhaust the outer deadline even when the images match.
+        return restored.equals(previous) && restored.equals(before);
       },
       { message: "Undo restores the original canvas image exactly" },
     )
@@ -217,6 +221,10 @@ test("settles stacked foods and restores the arrangement after removal", async (
       .dragTo(canvas, {
         targetPosition: { x: box.width / 2, y: box.height / 2 },
       });
+    await expect(canvas).toHaveAttribute(
+      "data-physics-revision",
+      String(i + 1),
+    );
     await expect(canvas).toHaveAttribute("data-physics", "settled", {
       timeout: 15000,
     });
@@ -232,13 +240,13 @@ test("settles stacked foods and restores the arrangement after removal", async (
   await page
     .getByRole("button", { name: "Remove Firm tofu", exact: true })
     .click();
+  await expect(canvas).toHaveAttribute("data-physics-revision", "4");
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
   });
   await undoRenderedScene(page, canvas);
   await expect(page.getByTestId("total-calories")).toHaveText(energy!);
   await restoredCanvasScreenshot(canvas, before);
-  await canvas.screenshot({ path: "test-results/stacked-tofu.png" });
   expect(errors).toEqual([]);
 });
 
@@ -285,17 +293,18 @@ test("renders all eleven models on tablet without overflow or runtime errors", a
   await expect(addButtons).toHaveCount(11);
   for (let index = 0; index < 11; index++) await addButtons.nth(index).click();
   await expect(page.getByRole("button", { name: /^Select / })).toHaveCount(11);
-  await expect(page.locator("canvas")).toBeVisible();
+  const canvas = page.locator('canvas[data-ready="true"]');
+  await expect(canvas).toBeVisible();
+  // The DOM controls and the canvas use separate React roots. Confirm that the
+  // renderer processed all eleven additions before testing the next edit.
+  await expect(canvas).toHaveAttribute("data-physics-revision", "11");
   await page.getByLabel("Edible weight").fill("999");
   await page.getByLabel("Edible weight").press("Enter");
   await expect(page.getByLabel("Edible weight")).toHaveValue("90");
-  await expect(page.locator("canvas")).toHaveAttribute(
-    "data-physics",
-    "settled",
-    {
-      timeout: 15000,
-    },
-  );
+  await expect(canvas).toHaveAttribute("data-physics-revision", "12");
+  await expect(canvas).toHaveAttribute("data-physics", "settled", {
+    timeout: 15000,
+  });
   // Repeating an out-of-range value must still normalize the input when state is unchanged.
   await page.getByLabel("Edible weight").fill("999");
   await page.getByLabel("Edible weight").press("Enter");
@@ -305,11 +314,6 @@ test("renders all eleven models on tablet without overflow or runtime errors", a
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({
-    path: "test-results/tablet-all-foods.png",
-    fullPage: true,
-  });
   expect(errors).toEqual([]);
 });
 

@@ -2,7 +2,13 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { FoodPhysics, initializePhysics } from "../src/lib/physics";
 import { foodById, foods, summarize } from "../src/lib/nutrition";
 import { registerPoseReader, usePlate } from "../src/lib/store";
-import { foodCollisionHulls } from "../src/lib/food-shapes";
+import {
+  foodCollisionHulls,
+  foodPartGeometry,
+  foodPartTransforms,
+  physicsFoodParts,
+} from "../src/lib/food-shapes";
+import { Box3, Euler, Matrix4, Quaternion, Vector3 } from "three";
 import {
   CM_PER_UNIT,
   foodDimensionsCm,
@@ -66,6 +72,67 @@ function clearOfPlate(simulation: FoodPhysics, id: string) {
 }
 
 describe("controlled food physics", () => {
+  it("keeps instanced broccoli vertices aligned with its collision hulls across portions", () => {
+    const geometries = physicsFoodParts.broccoli.map((part, index) =>
+      foodPartGeometry(part).applyMatrix4(
+        foodPartTransforms("broccoli")[index],
+      ),
+    );
+    try {
+      for (const ratio of [0.25, 1, 2, 3]) {
+        const rendered = new Box3();
+        for (const piece of portionPieces("broccoli", ratio)) {
+          const matrix = new Matrix4().compose(
+            new Vector3(...piece.position),
+            new Quaternion().setFromEuler(
+              new Euler(0, piece.rotationY ?? 0, 0),
+            ),
+            new Vector3().setScalar(piece.scale),
+          );
+          for (const geometry of geometries) {
+            const vertices = geometry.getAttribute("position");
+            for (let index = 0; index < vertices.count; index++)
+              rendered.expandByPoint(
+                new Vector3()
+                  .fromBufferAttribute(vertices, index)
+                  .applyMatrix4(matrix),
+              );
+          }
+        }
+        const collisions = new Box3();
+        for (const hull of foodCollisionHulls("broccoli", ratio))
+          for (let index = 0; index < hull.length; index += 3)
+            collisions.expandByPoint(new Vector3().fromArray(hull, index));
+        for (const axis of ["x", "y", "z"] as const) {
+          expect(rendered.min[axis]).toBeCloseTo(collisions.min[axis], 5);
+          expect(rendered.max[axis]).toBeCloseTo(collisions.max[axis], 5);
+        }
+      }
+    } finally {
+      geometries.forEach((geometry) => geometry.dispose());
+    }
+  });
+  it("lets a demand render loop stop on the frame that finishes settling", () => {
+    const simulation = new FoodPhysics(26, [item("rice")]);
+    try {
+      let requestFrame = true;
+      let frames = 0;
+      while (requestFrame && frames < 900) {
+        requestFrame = simulation.step(1 / 60);
+        frames++;
+      }
+      expect(frames).toBeGreaterThan(1);
+      expect(requestFrame).toBe(false);
+      expect(simulation.hasActivity()).toBe(false);
+      expect(simulation.pose("rice")!.position[1]).toBeCloseTo(
+        PLATE_SURFACE_Y,
+        1,
+      );
+      clearOfPlate(simulation, "rice");
+    } finally {
+      simulation.dispose();
+    }
+  });
   it("uses the same calibrated food dimensions for convex collision shapes", () => {
     for (const id of foods.map((food) => food.id))
       for (const ratio of [0.25, 1, 3]) {

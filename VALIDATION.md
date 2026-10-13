@@ -1,5 +1,15 @@
 # MVP validation
 
+## Tablet settlement and PR validation — 2026-10-13
+
+- The merged PR #5 deployment failed its tablet/all-eleven-models settlement assertion. Its earlier local suite and PR workflow had passed; this distinction and the E2E-before-PR requirement are recorded in `AGENTS.md`, with links to both workflow runs.
+- `npm test`: all 45 tests pass. New regressions compare actual instanced broccoli vertices with collision hull bounds at fractional, regular, large, and maximum portions, and exercise a demand loop that stops on the step that puts its food to sleep.
+- `npm run build:pages`: passes with Node 24.19.0. Broccoli now uses seven instanced meshes per portion instead of 35 at 100 g or 105 at 300 g. Physics advances before pose readers and reports activity after stepping; collider calibration and simulation parameters are preserved.
+- All 20 browser tests pass against the production `/platelab/` build. The tablet scenario, stack/removal/exact-image undo scenario, and each of four accessibility states also pass three consecutive targeted runs. Settlement assertions retain their 15-second deadlines, and undo still requires two identical consecutive captures matching the original byte for byte.
+- Trace investigation found optional artifact captures exceeding the workflow budget and a nested screenshot poll expiring while its inner captures eventually matched. Redundant artifact captures were removed, screenshot polling now captures one frame per attempt, and stack edits wait for their current canvas revisions. Accessibility scans have separate cases with unchanged WCAG tags and assertions.
+- Local browser execution uses Chromium 153 with SwiftShader, a temporary preview-host override to `127.0.0.1`, and a 60-second overall test budget for the fallback browser's capture overhead. Individual assertion deadlines, retry settings, and repository CI configuration are unchanged. The official Playwright browser download was unavailable in this environment; these local results do not establish equivalence to GitHub CI, which must pass at the exact PR head with the original configuration before merge.
+- Reviewed the crowded-tablet rendering. Hardware frame-rate benchmarks and physical-device validation remain pending; the draw-call reduction is not a measured consumer-device performance result.
+
 ## Broccoli and mobile food picking — 2026-10-13
 
 - `npm test`: all 43 tests pass. New checks verify that broccoli portions add florets without enlarging whole florets and preserve estimated volume for fractional portions. Existing checks verify matching model/collision bounds, settling on plates and trays, mass, portion changes, and undo. The two exhaustive physics sweeps have a 15-second runner timeout to accommodate the additional floret hulls; their assertions and simulation step limits are unchanged.

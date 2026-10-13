@@ -332,6 +332,9 @@ export class FoodPhysics {
         }
       }
     }
+    // The render loop must publish the state after the last substep, without
+    // requiring another animation frame just to notice that all bodies sleep.
+    return this.hasActivity();
   }
   pose(id: string): FoodPose | undefined {
     const entry = this.entries.get(id);

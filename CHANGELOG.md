@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-13 — Tablet settlement and PR validation
+
+- Batch repeated broccoli florets into seven instanced meshes per portion, sharing the same calibrated vertices as their collision hulls. This reduces draw calls from 35 at 100 g (105 at 300 g) while preserving the food's appearance and physical dimensions.
+- Publish physics activity after stepping the simulation, so the demand render loop commits sleeping poses on the final frame instead of scheduling another frame to discover settlement.
+- Wait for the current canvas revision in the tablet regression before checking settlement. Keep its 15-second assertion deadline, overflow, input normalization, and runtime-error checks. Remove optional tablet and stacked-tofu artifact captures from the timed workflows; byte-for-byte undo comparisons, failure screenshots, and traces remain available.
+- Give the existing empty, selected-food, plate-options, and help-dialog accessibility scans separate test cases, preserving their WCAG tags and assertions without making four scans compete for one test's runtime budget.
+- Synchronize each stack edit with its canvas revision and avoid nesting screenshot polling loops. Undo still requires two consecutive identical captures that match the original image byte for byte, with the original assertion deadlines.
+- Add regression checks for render/collision alignment across broccoli portions and final-frame settlement. Record the requirement to pass full production-path E2E tests before creating a PR in `AGENTS.md`.
+
 ## 2026-10-13 — Broccoli and mobile food picking
 
 - Replaced the fixed three-piece broccoli with compact florets featuring shorter branching stems and lobed crowns. Larger portions add florets, while fractional portions use a smaller final floret. The count is a visual estimate; nutrient calculations still use edible grams.
