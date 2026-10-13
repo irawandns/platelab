@@ -2286,3 +2286,94 @@ button:disabled:hover {
     margin-top: 6px;
   }
 }
+
+.comparison-panel {
+  min-width: 0;
+  padding: 20px 14px;
+}
+.comparison-panel h2 {
+  margin-top: 6px;
+  font-size: 18px;
+}
+.comparison-intro,
+.comparison-hint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.comparison-capture {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #475b43;
+  border-radius: 7px;
+  background: #475b43;
+  color: white;
+  font-size: 12px;
+}
+.comparison-capture:hover:not(:disabled) {
+  background: #374932;
+}
+.comparison-table {
+  width: 100%;
+  margin-top: 16px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.comparison-table th,
+.comparison-table td {
+  padding: 10px 3px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+.comparison-table th:first-child {
+  text-align: left;
+}
+.comparison-table thead th {
+  color: var(--muted);
+  font-weight: 500;
+}
+.comparison-table small {
+  font-size: inherit;
+}
+.comparison-original {
+  margin-top: 14px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.comparison-original summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.comparison-original ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.comparison-original li + li {
+  margin-top: 10px;
+}
+.comparison-original li span {
+  display: block;
+  color: var(--muted);
+}
+.comparison-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.comparison-actions button {
+  flex: 1;
+  padding: 10px 8px;
+  border: 1px solid #dadcd0;
+  border-radius: 7px;
+  font-size: 11px;
+}
+.comparison-actions button:hover {
+  background: #ebece2;
+}
