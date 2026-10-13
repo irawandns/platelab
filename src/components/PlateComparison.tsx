@@ -123,8 +123,8 @@ export function PlateComparison() {
                     {item.cooking && (
                       <span>
                         {cookingMethods[item.cooking.method].label} oil
-                        experiment · {format(retainedOilGrams(item), 2)} g
-                        added oil
+                        experiment · {format(retainedOilGrams(item), 2)} g added
+                        oil
                       </span>
                     )}
                   </li>

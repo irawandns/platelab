@@ -25,31 +25,39 @@ describe("nutrition comparison", () => {
       current: 460,
       difference: 130,
     });
-    expect(rows.find((row) => row.key === "carbohydrates")?.difference)
-      .toBeCloseTo(28.17, 8);
+    expect(
+      rows.find((row) => row.key === "carbohydrates")?.difference,
+    ).toBeCloseTo(28.17, 8);
     expect(comparePlates(current, original)[0].difference).toBe(-130);
-    expect(comparePlates(original, original).every((row) => row.difference === 0))
-      .toBe(true);
-    expect(comparePlates([], [item("rice", 17.3)])[0].difference)
-      .toBeCloseTo(22.49, 8);
+    expect(
+      comparePlates(original, original).every((row) => row.difference === 0),
+    ).toBe(true);
+    expect(comparePlates([], [item("rice", 17.3)])[0].difference).toBeCloseTo(
+      22.49,
+      8,
+    );
   });
 
   it("includes custom retained oil exactly once and supports an empty current plate", () => {
     const original = [item("chicken", 100)];
-    const current: PlateItem[] = [{
-      ...original[0],
-      cooking: {
-        method: "pan-fry",
-        oilId: "olive",
-        oil: { grams: 10, basis: "used", retainedPercent: 50 },
+    const current: PlateItem[] = [
+      {
+        ...original[0],
+        cooking: {
+          method: "pan-fry",
+          oilId: "olive",
+          oil: { grams: 10, basis: "used", retainedPercent: 50 },
+        },
       },
-    }];
+    ];
     const rows = comparePlates(original, current);
     expect(rows.find((row) => row.key === "fat")?.difference).toBeCloseTo(5, 8);
     expect(rows[0].difference).toBeCloseTo(44.2, 8);
     expect(comparePlates(current, [])[0].current).toBe(0);
-    expect(comparePlates(current, [])[0].difference)
-      .toBeCloseTo(-summarize(current).totals.calories, 8);
+    expect(comparePlates(current, [])[0].difference).toBeCloseTo(
+      -summarize(current).totals.calories,
+      8,
+    );
   });
 
   it("never subtracts incomplete subtotals, even when both sides have missing fiber", () => {
@@ -61,16 +69,19 @@ describe("nutrition comparison", () => {
       [tempeh, tempeh],
       [tempeh, []],
     ]) {
-      const fiber = comparePlates(before, after).find((row) => row.key === "fiber");
+      const fiber = comparePlates(before, after).find(
+        (row) => row.key === "fiber",
+      );
       expect(fiber?.difference).toBeNull();
     }
-    expect(comparePlates(tempeh, broccoli).find((row) => row.key === "fiber"))
-      .toMatchObject({
-        original: 0,
-        originalIncomplete: true,
-        current: 3.3,
-        currentIncomplete: false,
-      });
+    expect(
+      comparePlates(tempeh, broccoli).find((row) => row.key === "fiber"),
+    ).toMatchObject({
+      original: 0,
+      originalIncomplete: true,
+      current: 3.3,
+      currentIncomplete: false,
+    });
     expect(comparePlates([], [])[4].difference).toBe(0);
   });
 });
@@ -124,7 +135,9 @@ describe("comparison snapshots", () => {
     expect(baseline.items[0].position).toEqual([0.2, -0.3]);
     expect(baseline.items[0].pose).toEqual(pose);
     expect(baseline.items[0].pose).not.toBe(pose);
-    expect(baseline.items[0].cooking).not.toBe(usePlate.getState().items[0].cooking);
+    expect(baseline.items[0].cooking).not.toBe(
+      usePlate.getState().items[0].cooking,
+    );
     expect(usePlate.getState().sceneRevision).toBe(revision);
     expect(usePlate.getState().history).toHaveLength(historyLength);
     pose.position[0] = 99;
@@ -179,7 +192,9 @@ describe("comparison snapshots", () => {
     const id = usePlate.getState().selectedItemId!;
     usePlate.getState().setPortion(id, 200);
     usePlate.getState().captureComparison();
-    expect(usePlate.getState().comparisonBaseline?.items[0].portionGrams).toBe(200);
+    expect(usePlate.getState().comparisonBaseline?.items[0].portionGrams).toBe(
+      200,
+    );
     const state = usePlate.getState();
     usePlate.getState().endComparison();
     expect(usePlate.getState().comparisonBaseline).toBeNull();

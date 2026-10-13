@@ -22,7 +22,9 @@ for (const state of [
     if (state === "help dialog")
       await page.getByRole("button", { name: "How it works" }).click();
     if (state === "comparison") {
-      await page.getByRole("button", { name: "Compare changes", exact: true }).click();
+      await page
+        .getByRole("button", { name: "Compare changes", exact: true })
+        .click();
       await page.getByRole("button", { name: "Large 2×" }).click();
     }
     const result = await new AxeBuilder({ page })
