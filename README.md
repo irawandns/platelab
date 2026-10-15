@@ -94,3 +94,5 @@ Missing nutrients remain unknown. Cooked tempeh and fresh/raw ikan kembung have 
 ## Remaining release validation
 
 Read [VALIDATION.md](VALIDATION.md) for executed checks and limits. The 60 FPS target and sub-three-second broadband startup target need measurement on a named reference laptop. Automated accessibility checks are useful coverage, not a replacement for screen-reader and touch-device testing. The app is a working MVP implementation; check the repository's Actions tab to confirm GitHub Pages deployment status.
+
+See the [performance notes and possible improvements](docs/performance.md) for the measured bundle sizes, rendering and physics baselines, benchmark limits, and prioritized optimization ideas.
