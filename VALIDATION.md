@@ -1,5 +1,15 @@
 # MVP validation
 
+## Performance analysis — 2026-10-15
+
+The [performance notes](docs/performance.md) record production bundle sizes,
+focused browser rendering and memory probes, synthetic CPU physics measurements,
+and possible improvements against source commit
+`b11848c26dce74ac25c352d88cc49c187cfb131a`. The Pages build passed with Node
+24.19.0 and direct dependencies matching the lockfile. Focused browser probes
+ran with SwiftShader; the full E2E suite was not run for this analysis.
+Reference-device FPS and broadband startup targets remain unverified.
+
 ## Optional E2E policy — 2026-10-13
 
 At the user's request, E2E tests are now optional. The earlier mandatory
