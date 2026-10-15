@@ -42,6 +42,7 @@ interface State extends Snapshot {
   select: (id: string | null) => void;
   setPortion: (id: string, grams: number) => void;
   setCooking: (id: string, cooking?: CookingSettings) => void;
+  setForm: (id: string, form: "sliced" | "whole") => void;
   setPlateDiameter: (cm: number) => void;
   setPlateSkin: (skin: PlateSkin) => void;
   setPlateType: (type: PlateType) => void;
@@ -187,7 +188,9 @@ export const usePlate = create<State>((set) => ({
             state.plateDiameterCm,
             item,
             food.defaultPortionGrams,
-          ) * 0.93;
+          ) * (foodId === "bakwan-sayur" ? 0.75 : 0.93);
+        // The lobed fritter needs an inward starting point instead of balancing
+        // across the ceramic shoulder when added with a click.
         item.position = [Math.cos(angle) * radius, Math.sin(angle) * radius];
       }
       return {
@@ -202,6 +205,32 @@ export const usePlate = create<State>((set) => ({
       };
     }),
   select: (id) => set({ selectedItemId: id }),
+  setForm: (id, form) =>
+    set((state) => {
+      state = captureState(state);
+      const item = state.items.find((i) => i.instanceId === id);
+      if (
+        !item ||
+        item.foodId !== "timun" ||
+        !["sliced", "whole"].includes(form) ||
+        (item.form ?? "sliced") === form
+      )
+        return state;
+      return {
+        ...changed(state),
+        history: remember(state),
+        items: state.items.map((i) =>
+          i.instanceId === id
+            ? fitItem(
+                { ...i, form, pose: undefined },
+                state.plateDiameterCm,
+                state.plateType,
+              )
+            : i,
+        ),
+        announcement: `Timun shown ${form}. Weight and nutrition stay the same.`,
+      };
+    }),
   setCooking: (id, cooking) =>
     set((state) => {
       const item = state.items.find((i) => i.instanceId === id);

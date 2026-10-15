@@ -99,4 +99,4 @@ Default weights are app examples: timun 50 g, kerupuk 10 g, fish 100 g,
 and bakwan 50 g. Piece counts and whole-fish dimensions are visual estimates,
 not database household conversions. Users enter edible grams; increasing
 timun, kerupuk, or bakwan portions adds illustrative pieces. Nutrition remains
-weight-based. Prepared recipes and individual piece weights vary.
+weight-based. Timun also offers a whole form that scales by estimated volume; switching forms preserves edible grams and nutrition. Its silhouette is not a measured whole-cucumber weight. Prepared recipes and individual piece weights vary.

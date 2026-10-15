@@ -34,6 +34,7 @@ export interface PlateItem {
   position: [number, number];
   pose?: FoodPose;
   cooking?: CookingSettings;
+  form?: "sliced" | "whole";
 }
 export type CookingMethod = "sear" | "pan-fry" | "deep-fry" | "air-fry";
 export type OilId = "soybean" | "olive" | "palm";

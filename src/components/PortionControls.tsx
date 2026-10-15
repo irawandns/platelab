@@ -12,7 +12,7 @@ import {
 import { foodById, portionLabel } from "../lib/nutrition";
 import { usePlate } from "../lib/store";
 import { FoodArt } from "./FoodArt";
-import { physicsFoods } from "../lib/scale";
+import { foodModelId, physicsFoods } from "../lib/scale";
 import { supportsCooking } from "../lib/cooking";
 import { CookingControls } from "./CookingControls";
 import {
@@ -22,8 +22,15 @@ import {
   trayFootprint,
 } from "../lib/meal-tray";
 export function PortionControls() {
-  const { items, selectedItemId, setPortion, move, remove, plateType } =
-    usePlate();
+  const {
+    items,
+    selectedItemId,
+    setPortion,
+    setForm,
+    move,
+    remove,
+    plateType,
+  } = usePlate();
   const item = items.find((i) => i.instanceId === selectedItemId);
   const food = item ? foodById[item.foodId] : null;
   const [grams, setGrams] = useState("");
@@ -63,7 +70,7 @@ export function PortionControls() {
   return (
     <section className="portion-panel" aria-label="Selected food controls">
       <div className="selected-heading">
-        <FoodArt id={food.id} />
+        <FoodArt id={foodModelId(item)} />
         <div>
           <span className="eyebrow">ON YOUR PLATE</span>
           <h3>{food.name}</h3>
@@ -78,6 +85,29 @@ export function PortionControls() {
           <Trash2 size={17} />
         </button>
       </div>
+      {food.id === "timun" && (
+        <div className="food-form-control">
+          <span id="timun-form-label">Timun form</span>
+          <div
+            className="portion-presets"
+            role="group"
+            aria-labelledby="timun-form-label"
+          >
+            {(["sliced", "whole"] as const).map((form) => (
+              <button
+                key={form}
+                aria-pressed={(item.form ?? "sliced") === form}
+                onClick={() => setForm(item.instanceId, form)}
+              >
+                {form === "sliced" ? "Sliced" : "Whole"}
+              </button>
+            ))}
+          </div>
+          <p className="muted">
+            Same edible weight and nutrition in either form.
+          </p>
+        </div>
+      )}
       <div className="portion-topline">
         <label htmlFor="portion-range">Make it your portion</label>
         <strong data-testid="portion-label">

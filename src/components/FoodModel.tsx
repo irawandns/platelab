@@ -20,6 +20,7 @@ function Part({ part }: { part: FoodPart }) {
     >
       <meshStandardMaterial
         color={part.color}
+        vertexColors={!!part.colors}
         flatShading={part.kind !== "torus" && part.kind !== "circle"}
         roughness={part.kind === "facet" ? 0.95 : 0.9}
       />

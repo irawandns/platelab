@@ -26,6 +26,7 @@ beforeAll(async () => {
 beforeEach(() =>
   usePlate.setState({
     items: [],
+    plateType: "ceramic",
     history: [],
     plateDiameterCm: 26,
     selectedItemId: null,
@@ -61,7 +62,10 @@ function clearOfPlate(simulation: FoodPhysics, id: string) {
   for (const point of points) {
     if (Math.hypot(point.x, point.z) <= plateRadius(simulation.diameterCm)) {
       // Allow the solver's sub-millimetre contact tolerance.
-      expect(point.y).toBeGreaterThan(
+      expect(
+        point.y,
+        `${simulation.entries.get(id)!.item.foodId} vertex ${point.toArray()}`,
+      ).toBeGreaterThan(
         plateSurfaceHeight(
           simulation.diameterCm,
           Math.hypot(point.x, point.z),
@@ -72,44 +76,91 @@ function clearOfPlate(simulation: FoodPhysics, id: string) {
 }
 
 describe("controlled food physics", () => {
-  it("keeps instanced broccoli vertices aligned with its collision hulls across portions", () => {
-    const geometries = physicsFoodParts.broccoli.map((part, index) =>
-      foodPartGeometry(part).applyMatrix4(
-        foodPartTransforms("broccoli")[index],
-      ),
-    );
-    try {
-      for (const ratio of [0.25, 1, 2, 3]) {
-        const rendered = new Box3();
-        for (const piece of portionPieces("broccoli", ratio)) {
-          const matrix = new Matrix4().compose(
-            new Vector3(...piece.position),
-            new Quaternion().setFromEuler(
-              new Euler(0, piece.rotationY ?? 0, 0),
-            ),
-            new Vector3().setScalar(piece.scale),
-          );
-          for (const geometry of geometries) {
-            const vertices = geometry.getAttribute("position");
-            for (let index = 0; index < vertices.count; index++)
-              rendered.expandByPoint(
-                new Vector3()
-                  .fromBufferAttribute(vertices, index)
-                  .applyMatrix4(matrix),
-              );
+  it.each(["broccoli", "timun", "timun-whole", "kerupuk", "ikan-kembung"])(
+    "keeps %s render vertices aligned with its collision hulls across portions",
+    (id) => {
+      const geometries = physicsFoodParts[id].map((part, index) =>
+        foodPartGeometry(part).applyMatrix4(foodPartTransforms(id)[index]),
+      );
+      try {
+        for (const ratio of [0.25, 1, 2, 3]) {
+          const rendered = new Box3();
+          for (const piece of portionPieces(id, ratio)) {
+            const matrix = new Matrix4().compose(
+              new Vector3(...piece.position),
+              new Quaternion().setFromEuler(
+                new Euler(0, piece.rotationY ?? 0, 0),
+              ),
+              new Vector3().setScalar(piece.scale),
+            );
+            for (const geometry of geometries) {
+              const vertices = geometry.getAttribute("position");
+              for (let index = 0; index < vertices.count; index++)
+                rendered.expandByPoint(
+                  new Vector3()
+                    .fromBufferAttribute(vertices, index)
+                    .applyMatrix4(matrix),
+                );
+            }
+          }
+          const collisions = new Box3();
+          for (const hull of foodCollisionHulls(id, ratio))
+            for (let index = 0; index < hull.length; index += 3)
+              collisions.expandByPoint(new Vector3().fromArray(hull, index));
+          for (const axis of ["x", "y", "z"] as const) {
+            expect(rendered.min[axis]).toBeCloseTo(collisions.min[axis], 5);
+            expect(rendered.max[axis]).toBeCloseTo(collisions.max[axis], 5);
           }
         }
-        const collisions = new Box3();
-        for (const hull of foodCollisionHulls("broccoli", ratio))
-          for (let index = 0; index < hull.length; index += 3)
-            collisions.expandByPoint(new Vector3().fromArray(hull, index));
-        for (const axis of ["x", "y", "z"] as const) {
-          expect(rendered.min[axis]).toBeCloseTo(collisions.min[axis], 5);
-          expect(rendered.max[axis]).toBeCloseTo(collisions.max[axis], 5);
+      } finally {
+        geometries.forEach((geometry) => geometry.dispose());
+      }
+    },
+  );
+  it("settles both timun forms at minimum and maximum portions on each vessel", () => {
+    for (const plateType of ["ceramic", "meal-tray"] as const)
+      for (const form of ["sliced", "whole"] as const)
+        for (const grams of [12.5, 50, 150]) {
+          usePlate.setState({ items: [], history: [], plateType });
+          usePlate.getState().add("timun");
+          const id = usePlate.getState().items[0].instanceId;
+          usePlate.getState().setForm(id, form);
+          usePlate.getState().setPortion(id, grams);
+          const simulation = new FoodPhysics(
+            26,
+            usePlate.getState().items,
+            false,
+            plateType,
+          );
+          try {
+            settle(simulation);
+            expect(simulation.entries.get(id)!.body.mass()).toBeCloseTo(
+              grams / 1000,
+              6,
+            );
+            if (plateType === "ceramic") clearOfPlate(simulation, id);
+          } finally {
+            simulation.dispose();
+          }
         }
+  });
+  it("settles the Indonesian meal when foods are added one at a time with live poses", () => {
+    usePlate.setState({ plateType: "ceramic" });
+    let simulation: FoodPhysics | undefined;
+    const unregister = registerPoseReader(() => simulation?.poses() ?? {});
+    try {
+      for (const id of ["timun", "kerupuk", "ikan-kembung", "bakwan-sayur"]) {
+        usePlate.getState().add(id);
+        const items = usePlate.getState().items;
+        simulation?.dispose();
+        simulation = new FoodPhysics(26, items);
+        settle(simulation);
+        for (const food of items) clearOfPlate(simulation, food.instanceId);
+        usePlate.getState().commitPoses(simulation.poses());
       }
     } finally {
-      geometries.forEach((geometry) => geometry.dispose());
+      unregister();
+      simulation?.dispose();
     }
   });
   it("lets a demand render loop stop on the frame that finishes settling", () => {

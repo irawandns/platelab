@@ -15,6 +15,7 @@ import { NutritionDashboard } from "./components/NutritionDashboard";
 import { PortionControls } from "./components/PortionControls";
 import { PlateSizeControls } from "./components/PlateSizeControls";
 import { FoodArt } from "./components/FoodArt";
+import { foodModelId } from "./lib/scale";
 import { usePlate } from "./lib/store";
 import { foodById, portionLabel } from "./lib/nutrition";
 const PlateScene = lazy(() => import("./components/PlateScene"));
@@ -135,7 +136,7 @@ export default function App() {
                 aria-pressed={selectedItemId === item.instanceId}
                 onClick={() => select(item.instanceId)}
               >
-                <FoodArt id={item.foodId} />
+                <FoodArt id={foodModelId(item)} />
                 <span>{foodById[item.foodId].name}</span>
               </button>
             ))}

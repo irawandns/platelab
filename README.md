@@ -23,6 +23,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 - Search/category filtering; click, tap, keyboard, and drag-to-add.
 - Select independent instances, reposition by dragging or buttons, rotate/zoom/reset the camera.
 - Small/regular/large portions, a slider, serving increment/decrement, and edible-gram input.
+- Timun offers Sliced and Whole forms per portion, with undo. Slices lie separately without intersecting; the whole cucumber has rounded ends and mottled green skin. Changing form preserves edible grams and nutrition.
 - Broccoli uses compact, lobed florets with short branching stems. Portions add florets instead of enlarging a fixed trio: five illustrative florets at 100 g, ten at 200 g, with a smaller fractional floret between steps. This is a visual quantity cue, not a measured floret-weight conversion.
 - Live calorie, protein, carbohydrate, fat, and fiber estimates; inspect each food's preparation, serving conversion, and source.
 - Cooking oil experiments for tofu and chicken: As prepared, Sear, Pan-fry, Deep-fry, and Air-fry. Compare reference-food energy with added oil, or expand the details for grams/teaspoons/tablespoons, oil type, and how much of the oil used stays with your serving. Presets are editable example oil amounts, not measured frying absorption or full cooked-food nutrition. Custom oil stays fixed per serving; presets scale with food weight. Cooking changes support undo.

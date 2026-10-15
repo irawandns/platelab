@@ -10,62 +10,134 @@ export function FoodArt({
     timun: (
       <>
         {[
-          [29, 46],
-          [47, 39],
-          [65, 45],
-        ].map(([x, y], i) => (
-          <g key={i}>
-            <ellipse cx={x} cy={y + 5} rx="17" ry="14" fill="#477747" />
-            <ellipse cx={x} cy={y} rx="17" ry="14" fill="#649052" />
-            <ellipse cx={x} cy={y} rx="14" ry="11" fill="#dce6ad" />
-            <path
-              d={`m${x - 5} ${y} 3-3m3 5 3-3m-3-4 3 2`}
-              stroke="#f3eed0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
+          [20, 49, -12],
+          [48, 30, 8],
+          [76, 49, -7],
+        ].map(([x, y, angle], i) => (
+          <g key={i} transform={`rotate(${angle} ${x} ${y})`}>
+            <ellipse cx={x} cy={y + 4} rx="14" ry="11" fill="#356b35" />
+            <ellipse cx={x} cy={y} rx="14" ry="11" fill="#4b8240" />
+            <ellipse cx={x} cy={y} rx="12.8" ry="9.8" fill="#e2edc9" />
+            {[0, 120, 240].map((rotation) => (
+              <g key={rotation} transform={`rotate(${rotation} ${x} ${y})`}>
+                <ellipse cx={x + 5} cy={y} rx="4.5" ry="2.8" fill="#d4e5b2" />
+                {[0, 1, 2].map((seed) => (
+                  <g key={seed}>
+                    <ellipse
+                      cx={x + 3 + seed * 2}
+                      cy={y - 1.2}
+                      rx="1.2"
+                      ry=".65"
+                      fill="#fff8d8"
+                    />
+                    <ellipse
+                      cx={x + 3 + seed * 2}
+                      cy={y + 1.2}
+                      rx="1.2"
+                      ry=".65"
+                      fill="#fff8d8"
+                    />
+                  </g>
+                ))}
+              </g>
+            ))}
           </g>
         ))}
       </>
     ),
+    "timun-whole": (
+      <g transform="rotate(-24 48 44)">
+        <path
+          d="M14 44C14 32 22 27 35 27L66 29C78 30 84 36 84 44C84 53 77 59 64 59L33 61C20 61 14 55 14 44Z"
+          fill="#56883b"
+        />
+        <path
+          d="M17 39Q26 29 40 32L65 34Q76 35 81 41Q64 37 39 37Q23 36 17 43Z"
+          fill="#a2be6d"
+        />
+        <path
+          d="M18 48Q35 44 62 48L81 46M24 55Q47 50 72 53"
+          stroke="#7fa450"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <ellipse
+            key={i}
+            cx={25 + i * 6}
+            cy={40 + (i % 3) * 4}
+            rx="1.2"
+            ry=".7"
+            fill="#b4ca7c"
+          />
+        ))}
+        <path d="m83 42 0 4" stroke="#c1b384" strokeWidth="2" />
+      </g>
+    ),
     kerupuk: (
       <>
         {[
-          [30, 47, -15],
-          [52, 33, 12],
-          [65, 52, -10],
+          [29, 48, -24],
+          [50, 32, 16],
+          [65, 53, -13],
         ].map(([x, y, angle], i) => (
           <g key={i} transform={`rotate(${angle} ${x} ${y})`}>
             <path
-              d={`M${x - 19} ${y}q-6-13 4-15q8-9 17-4q15-3 18 8q8 10-2 19q-2 10-15 6q-14 5-22-14Z`}
-              fill={i % 2 ? "#f7e7c5" : "#eacfa0"}
-              stroke="#d6b88b"
-              strokeWidth="2"
+              d={`M${x - 20} ${y - 2}q-3-8 4-11q4-7 11-5q9-5 15 2q10-1 12 8q5 7-1 13q-3 8-12 7q-9 4-16-2q-10 1-13-12Z`}
+              fill="#f5e7c5"
+              stroke="#d8b47e"
+              strokeWidth="1.4"
             />
             <path
-              d={`m${x - 8} ${y - 5} 5-3m7 9 5-3m-14 6 3 2`}
-              stroke="#e3c598"
-              strokeWidth="3"
-              strokeLinecap="round"
+              d={`M${x - 19} ${y - 4}q8 18 24 14q9-1 15-10q-3 15-17 17q-18 3-22-21Z`}
+              fill="#e5cea3"
             />
+            {[
+              [-10, -5],
+              [-3, 3],
+              [5, -7],
+              [12, 0],
+              [-1, -9],
+              [7, 7],
+              [-12, 2],
+            ].map(([dx, dy], j) => (
+              <ellipse
+                key={j}
+                cx={x + dx}
+                cy={y + dy}
+                rx="2.1"
+                ry="1.4"
+                fill={j % 2 ? "#fff3d5" : "#e6d1a9"}
+              />
+            ))}
           </g>
         ))}
       </>
     ),
     "ikan-kembung": (
       <>
-        <path d="m28 44-17-14 3 15-3 14Z" fill="#6d8c81" />
-        <path d="m42 31 14-14 11 15m-26 20 15 14 8-14" fill="#6d8c81" />
-        <path d="M24 44Q37 23 65 30Q78 33 86 44Q73 62 46 57Z" fill="#8ca9a0" />
-        <path d="M25 44Q54 43 86 44Q72 60 47 54Z" fill="#d5ded0" />
+        <path d="m27 44-19-16 6 16-6 16 19-12Z" fill="#718579" />
+        <path d="m35 35 7-14 19 12m-27 17-7 12 25-7" fill="#6e8574" />
         <path
-          d="m39 33-4 7m16-10-4 10m16-8-4 8"
-          stroke="#577a70"
-          strokeWidth="3"
-          strokeLinecap="round"
+          d="M22 44Q39 24 62 31Q78 33 89 43Q75 55 58 57Q35 58 22 46Z"
+          fill="#afc5c2"
         />
-        <path d="M67 34Q62 44 68 52" stroke="#738d84" strokeWidth="2" />
-        <circle cx="76" cy="40" r="3" fill="#263b35" />
+        <path
+          d="M22 44Q41 24 62 31Q76 33 89 43Q68 35 49 37Q34 37 22 44Z"
+          fill="#426965"
+        />
+        <path d="M23 46Q51 53 87 44Q72 57 54 56Q35 55 23 46Z" fill="#e0e5d8" />
+        <path
+          d="M31 40Q47 30 65 36M30 42Q47 35 62 38"
+          stroke="#809e93"
+          strokeWidth="1"
+        />
+        <path d="M68 35Q61 44 68 52" stroke="#6d8881" strokeWidth="1.5" />
+        <path d="m62 45-14 5 10-8Z" fill="#91a391" />
+        <circle cx="77" cy="41" r="4.2" fill="#e4e7d6" />
+        <circle cx="77" cy="41" r="3" fill="#b4a764" />
+        <circle cx="77" cy="41" r="2.1" fill="#243a34" />
+        <path d="m85 44 3-.6" stroke="#6d827b" strokeWidth="1" />
       </>
     ),
     "bakwan-sayur": (

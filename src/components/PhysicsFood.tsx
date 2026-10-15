@@ -5,7 +5,7 @@ import { FoodPortion } from "./FoodPortion";
 import { FoodPhysics } from "../lib/physics";
 import { usePlate } from "../lib/store";
 import { foodById } from "../lib/nutrition";
-import { footprintRadius } from "../lib/scale";
+import { footprintRadius, foodModelId } from "../lib/scale";
 import type { PlateItem } from "../types";
 
 export function PhysicsFood({
@@ -29,7 +29,8 @@ export function PhysicsFood({
   const point = useMemo(() => new Vector3(), []);
   const { invalidate } = useThree();
   const ratio = item.portionGrams / foodById[item.foodId].defaultPortionGrams;
-  const footprint = footprintRadius(item.foodId, ratio);
+  const modelId = foodModelId(item);
+  const footprint = footprintRadius(modelId, ratio);
   useEffect(
     () => () => {
       // Clear/undo/portion edits can interrupt a drag before pointer-up arrives.
@@ -103,7 +104,7 @@ export function PhysicsFood({
       onPointerUp={up}
       onPointerCancel={up}
     >
-      <FoodPortion id={item.foodId} ratio={ratio} />
+      <FoodPortion key={modelId} id={modelId} ratio={ratio} />
       {selected && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
           <ringGeometry args={[footprint, footprint + 0.025, 40]} />
