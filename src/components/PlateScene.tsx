@@ -26,6 +26,7 @@ import { PhysicsFood } from "./PhysicsFood";
 import { FoodPhysics, initializePhysics } from "../lib/physics";
 import {
   footprintRadius,
+  foodModelId,
   plateRadius,
   MAX_PLATE_CM,
   PLATE_SURFACE_Y,
@@ -65,7 +66,8 @@ function Item({
   const food = foodById[item.foodId];
   const ratio = item.portionGrams / food.defaultPortionGrams;
   const targetScale = 1;
-  const footprint = footprintRadius(item.foodId, ratio);
+  const modelId = foodModelId(item);
+  const footprint = footprintRadius(modelId, ratio);
   const supportY =
     plateType === "meal-tray"
       ? traySupportHeight(item, food.defaultPortionGrams)
@@ -140,7 +142,7 @@ function Item({
         </mesh>
       )}
       <group ref={group}>
-        <FoodPortion id={item.foodId} ratio={ratio} />
+        <FoodPortion key={modelId} id={modelId} ratio={ratio} />
       </group>
     </group>
   );

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-15 — Refined Indonesian food models
+
+- Add independent Sliced/Whole controls for timun with undo, preserving edible grams and nutrition. Separate the slices to remove intersections, soften their seed details, and add a tapered green whole cucumber. Use each form’s geometry for rendering, placement, and physics.
+- Give thin bread contacts extra solver iterations to preserve plate clearance under the wider sliced serving in crowded meals.
+
+- Give fresh/raw ikan kembung a tapered silver body, darker dorsal edge, forked tail, gill cover, and clear eye.
+- Replace the kerupuk lumps with thin cupped shells, irregular wavy edges, and small raised pores. Give timun a thinner rind and three distinct seed chambers.
+- Match the shelf thumbnails to the new shapes while retaining serving dimensions, piece counts, and nutrition. Shared mesh vertices still drive rendering and collision calibration.
+- Keep crackers in a compact level cluster with explicitly triangulated hulls and tuned damping. Start click-added bakwan farther inside the ceramic shoulder after reproducing sustained rocking at its previous starting position.
+
 ## 2026-10-13 — Indonesian food objects
 
 - Add timun, fried shrimp kerupuk, fresh/raw ikan kembung, and bakwan sayur with procedural models, vector thumbnails, edible-gram portions, and TKPI provenance.

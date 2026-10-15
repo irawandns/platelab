@@ -1,9 +1,12 @@
 import RAPIER from "@dimforge/rapier3d-compat";
 import { Quaternion, Vector3 } from "three";
+import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import type { FoodPose, PlateItem } from "../types";
 import { foodById } from "./nutrition";
 import {
   CM_PER_UNIT,
+  foodModelId,
   placementRadius,
   plateRadius,
   plateTopProfile,
@@ -147,11 +150,16 @@ export class FoodPhysics {
   private add(item: PlateItem, restore: boolean) {
     const food = foodById[item.foodId];
     const ratio = item.portionGrams / food.defaultPortionGrams;
-    const hulls = foodCollisionHulls(item.foodId, ratio);
+    const hulls = foodCollisionHulls(foodModelId(item), ratio);
+    // Light, broad cracker shells lose motion faster than dense solid foods.
+    const cracker = item.foodId === "kerupuk";
     const descriptor = RAPIER.RigidBodyDesc.dynamic()
-      .setLinearDamping(2)
-      .setAngularDamping(4)
+      .setLinearDamping(cracker ? 8 : 2)
+      .setAngularDamping(cracker ? 12 : 4)
       .setCcdEnabled(true);
+    // A wider sliced serving can load thin bread in a crowded stack. Resolve
+    // that contact island more accurately so the bread stays above the plate.
+    if (item.foodId === "bread") descriptor.setAdditionalSolverIterations(4);
     const pose = item.pose;
     descriptor.setTranslation(
       pose?.position[0] ?? item.position[0],
@@ -168,7 +176,24 @@ export class FoodPhysics {
     if (restore && pose) descriptor.setSleeping(true);
     const body = this.world.createRigidBody(descriptor);
     for (const hull of hulls) {
-      const collider = RAPIER.ColliderDesc.convexHull(hull);
+      let collider: RAPIER.ColliderDesc | null;
+      if (cracker) {
+        // Explicit hull faces avoid a second nearly-coplanar hull reconstruction
+        // in Rapier for this thin shell. The underlying points stay identical.
+        const surface = new ConvexGeometry(
+          Array.from({ length: hull.length / 3 }, (_, i) =>
+            new Vector3().fromArray(hull, i * 3),
+          ),
+        );
+        surface.deleteAttribute("normal");
+        const indexed = mergeVertices(surface);
+        collider = RAPIER.ColliderDesc.convexMesh(
+          indexed.getAttribute("position").array as Float32Array,
+          new Uint32Array(indexed.getIndex()!.array),
+        );
+        indexed.dispose();
+        surface.dispose();
+      } else collider = RAPIER.ColliderDesc.convexHull(hull);
       if (!collider)
         throw new Error(`Unable to create ${item.foodId} collision hull`);
       this.world.createCollider(

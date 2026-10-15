@@ -12,6 +12,7 @@ import {
   wellRadius,
   physicsFoods,
   BROCCOLI_FLORETS_PER_SERVING,
+  foodModelId,
 } from "../src/lib/scale";
 
 beforeEach(() =>
@@ -25,6 +26,48 @@ beforeEach(() =>
 );
 
 describe("physical food scale", () => {
+  it("keeps cucumber slices separated at every supported slider portion", () => {
+    const [width, , depth] = foodDimensionsCm.timun.map(
+      (cm) => cm / CM_PER_UNIT,
+    );
+    for (let ratio = 0.25; ratio <= 3; ratio += 0.25) {
+      const pieces = portionPieces("timun", ratio);
+      pieces.forEach((a, index) => {
+        for (const b of pieces.slice(index + 1)) {
+          const radii = (a.scale + b.scale) / 2;
+          expect(
+            Math.abs(a.position[0] - b.position[0]) > width * radii ||
+              Math.abs(a.position[2] - b.position[2]) > depth * radii,
+          ).toBe(true);
+        }
+      });
+    }
+  });
+
+  it("switches each timun form without changing grams or nutrients and restores it with undo", () => {
+    const s = usePlate.getState();
+    s.add("timun", [0, 0]);
+    s.add("timun", [0, 0]);
+    const original = usePlate.getState().items;
+    const id = original[0].instanceId;
+    s.setForm(id, "whole");
+    const whole = usePlate.getState().items[0];
+    expect(foodModelId(whole)).toBe("timun-whole");
+    expect(foodModelId(usePlate.getState().items[1])).toBe("timun");
+    expect(whole.portionGrams).toBe(50);
+    expect(summarize(usePlate.getState().items)).toEqual(summarize(original));
+    s.setPortion(id, 100);
+    expect(foodModelId(usePlate.getState().items[0])).toBe("timun-whole");
+    expect(portionPieces("timun-whole", 2)[0].scale ** 3).toBeCloseTo(2);
+    s.undo();
+    s.undo();
+    expect(usePlate.getState().items).toEqual(original);
+    s.add("rice");
+    const rice = usePlate.getState().items.at(-1)!;
+    s.setForm(rice.instanceId, "whole");
+    expect(usePlate.getState().items.at(-1)).toEqual(rice);
+  });
+
   it("adds illustrated Indonesian pieces while preserving whole-piece size", () => {
     for (const [id, count] of [
       ["timun", 5],

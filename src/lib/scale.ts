@@ -1,5 +1,11 @@
 import type { PlateItem } from "../types";
 
+// Form changes the geometry only; foodId remains the nutrition source key.
+export const foodModelId = (item: PlateItem) =>
+  item.foodId === "timun" && item.form === "whole"
+    ? "timun-whole"
+    : item.foodId;
+
 // Physical coordinates are shared by food models, plate geometry and placement.
 export const CM_PER_UNIT = 5;
 export const DEFAULT_PLATE_CM = 26;
@@ -48,7 +54,7 @@ export function foodSupportHeight(
 ) {
   const outer =
     Math.hypot(...item.position) +
-    footprintRadius(item.foodId, item.portionGrams / defaultGrams);
+    footprintRadius(foodModelId(item), item.portionGrams / defaultGrams);
   const radius = plateRadius(diameterCm);
   return (
     Math.max(
@@ -74,11 +80,14 @@ export const foodDimensionsCm: Record<string, [number, number, number]> = {
   avocado: [7, 4, 10],
   cheese: [5, 2, 4],
   timun: [3.5, 0.6, 3.5],
+  "timun-whole": [8, 2.8, 2.8],
   kerupuk: [6, 0.8, 5],
   "ikan-kembung": [16, 2.5, 5],
   "bakwan-sayur": [6, 1.5, 5.5],
 };
-export const physicsFoods = new Set(Object.keys(foodDimensionsCm));
+export const physicsFoods = new Set(
+  Object.keys(foodDimensionsCm).filter((id) => id !== "timun-whole"),
+);
 const pieceFoods = new Set(["egg", "bread"]);
 // A visual quantity cue, not a measured gram-to-floret conversion.
 export const BROCCOLI_FLORETS_PER_SERVING = 5;
@@ -99,15 +108,22 @@ export function portionPieces(foodId: string, ratio: number): VisualPiece[] {
     const quantity = ratio * illustratedCount;
     const count = Math.ceil(quantity - 1e-8);
     const [width, , depth] = foodDimensionsCm[foodId];
-    const columns = Math.min(count, 3);
+    // Cucumber rounds lie flat with a visible gap, including at maximum portion.
+    const spacing = foodId === "timun" ? 1.06 : 0.6;
+    // Crackers form an overlapping cluster rather than a long rigid row.
+    const columns = Math.min(count, foodId === "kerupuk" && count <= 3 ? 2 : 3);
     const rows = Math.ceil(count / columns);
     return Array.from({ length: count }, (_, i): VisualPiece => ({
       position: [
-        ((i % columns) - (columns - 1) / 2) * (width / CM_PER_UNIT) * 0.6,
+        (foodId === "kerupuk" && i === count - 1 && count % columns === 1
+          ? 0
+          : (i % columns) - (columns - 1) / 2) *
+          (width / CM_PER_UNIT) *
+          spacing,
         0,
         (Math.floor(i / columns) - (rows - 1) / 2) *
           (depth / CM_PER_UNIT) *
-          0.6,
+          spacing,
       ],
       scale: Math.cbrt(Math.min(1, quantity - i)),
     }));
@@ -174,7 +190,7 @@ export function placementRadius(
   defaultGrams = 1,
 ) {
   const footprint = item
-    ? footprintRadius(item.foodId, item.portionGrams / defaultGrams)
+    ? footprintRadius(foodModelId(item), item.portionGrams / defaultGrams)
     : 0;
   const usableRadius =
     item && physicsFoods.has(item.foodId)

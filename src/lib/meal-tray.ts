@@ -1,5 +1,10 @@
 import type { PlateItem } from "../types";
-import { CM_PER_UNIT, foodDimensionsCm, portionPieces } from "./scale";
+import {
+  CM_PER_UNIT,
+  foodDimensionsCm,
+  foodModelId,
+  portionPieces,
+} from "./scale";
 
 export type PlateType = "ceramic" | "meal-tray";
 export const TRAY_LENGTH_CM = 29;
@@ -78,8 +83,9 @@ export function trayFootprint(
   item: PlateItem,
   defaultGrams: number,
 ): [number, number] {
-  const [width, , depth] = foodDimensionsCm[item.foodId];
-  const pieces = portionPieces(item.foodId, item.portionGrams / defaultGrams);
+  const modelId = foodModelId(item);
+  const [width, , depth] = foodDimensionsCm[modelId];
+  const pieces = portionPieces(modelId, item.portionGrams / defaultGrams);
   return [
     Math.max(
       ...pieces.map(

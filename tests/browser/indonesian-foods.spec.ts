@@ -93,3 +93,69 @@ test("finds Indonesian foods in the mobile shelf and adds them to a meal tray", 
     fullPage: true,
   });
 });
+
+for (const vessel of ["ceramic", "meal-tray"] as const) {
+  test(`switches timun between separated slices and whole on ${vessel}`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const mobile = vessel === "meal-tray";
+    if (mobile) await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("./");
+    if (mobile) {
+      await page.locator(".plate-options > summary").click();
+      await page.getByRole("radio", { name: "Meal tray", exact: true }).check();
+      await page.getByRole("button", { name: "Add food", exact: true }).click();
+    }
+    await page.getByRole("textbox", { name: "Search foods" }).fill("Timun");
+    await page.getByRole("button", { name: "Add Timun", exact: true }).click();
+    const canvas = page.locator('canvas[data-ready="true"]');
+    const forms = page.getByRole("group", { name: "Timun form" });
+    const sliced = forms.getByRole("button", { name: "Sliced", exact: true });
+    const whole = forms.getByRole("button", { name: "Whole", exact: true });
+    await expect(canvas).toHaveAttribute("data-physics", "settled", {
+      timeout: 15000,
+    });
+    await expect(sliced).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("total-calories")).toHaveText("4");
+    await whole.focus();
+    await page.keyboard.press("Space");
+    await expect(whole).toHaveAttribute("aria-pressed", "true");
+    await expect(canvas).toHaveAttribute(
+      "data-physics-revision",
+      mobile ? "3" : "2",
+    );
+    await expect(canvas).toHaveAttribute("data-physics", "settled", {
+      timeout: 15000,
+    });
+    await expect(page.getByTestId("portion-label")).toHaveText("50 g");
+    await expect(page.getByTestId("total-calories")).toHaveText("4");
+    await canvas.screenshot({ path: `test-results/timun-whole-${vessel}.png` });
+    await page.getByRole("button", { name: "Large 2×" }).click();
+    await expect(whole).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("portion-label")).toHaveText("100 g");
+    await expect(page.getByTestId("total-calories")).toHaveText("8");
+    await sliced.click();
+    await expect(sliced).toHaveAttribute("aria-pressed", "true");
+    await expect(canvas).toHaveAttribute(
+      "data-physics-revision",
+      mobile ? "5" : "4",
+    );
+    await expect(canvas).toHaveAttribute("data-physics", "settled", {
+      timeout: 15000,
+    });
+    await expect(page.getByTestId("total-calories")).toHaveText("8");
+    await canvas.screenshot({
+      path: `test-results/timun-sliced-${vessel}.png`,
+    });
+    await page.getByRole("button", { name: "Undo last change" }).click();
+    await expect(whole).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("portion-label")).toHaveText("100 g");
+    await expect(page.getByTestId("total-calories")).toHaveText("8");
+    await expect(canvas).toHaveAttribute("data-physics", "settled", {
+      timeout: 15000,
+    });
+    expect(errors).toEqual([]);
+  });
+}
