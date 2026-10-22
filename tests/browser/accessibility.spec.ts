@@ -4,7 +4,8 @@ for (const state of [
   "empty",
   "selected food",
   "plate options",
-  "comparison",
+  "save dialog",
+  "saved plates dialog",
   "help dialog",
 ]) {
   test(`has no automated WCAG A/AA violations in the ${state} state`, async ({
@@ -21,12 +22,14 @@ for (const state of [
     }
     if (state === "help dialog")
       await page.getByRole("button", { name: "How it works" }).click();
-    if (state === "comparison") {
+    if (state === "save dialog")
       await page
-        .getByRole("button", { name: "Compare changes", exact: true })
+        .getByRole("button", { name: "Save plate", exact: true })
         .click();
-      await page.getByRole("button", { name: "Large 2×" }).click();
-    }
+    if (state === "saved plates dialog")
+      await page
+        .getByRole("button", { name: "Saved plates 0", exact: true })
+        .click();
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .analyze();

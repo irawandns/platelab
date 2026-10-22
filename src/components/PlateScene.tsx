@@ -37,6 +37,7 @@ import { foodById } from "../lib/nutrition";
 import { registerPoseReader, usePlate } from "../lib/store";
 import type { PlateItem } from "../types";
 import { plateSkins } from "../lib/plate-skins";
+import { registerPhotoCameraReader } from "../lib/photo";
 import {
   insideWell,
   trayOutline,
@@ -176,6 +177,20 @@ function World({
   const [physicsReady, setPhysicsReady] = useState(false);
   const [physicsError, setPhysicsError] = useState<Error | null>(null);
   const { camera, gl, invalidate, size } = useThree();
+  useEffect(
+    () =>
+      registerPhotoCameraReader(() => ({
+        position: camera.position.toArray() as [number, number, number],
+        target: (controls.current?.target.toArray() as [
+          number,
+          number,
+          number,
+        ]) ?? [0, 0, 0],
+        fov: "fov" in camera ? Number(camera.fov) : 39,
+      })),
+    [camera],
+  );
+
   useEffect(() => {
     let active = true;
     initializePhysics()

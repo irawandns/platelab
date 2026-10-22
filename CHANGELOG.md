@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-22 — Photo mode
+
+- Add Take photo beside Save plate with Warm table, Studio, and Dark lighting, real soft shadows, and Angled, Top view, or Current view framing.
+- Render the actual meal and vessel into a clean 2048 × 2048 PNG, preserving food forms, portions, live poses, and nutrition. Keep photo lighting and framing separate from the editor and release the photo scene on close.
+- Handle unavailable WebGL without enabling blank exports, and add camera, download, mobile, tray, and accessibility checks.
+
+## 2026-10-22 — Simpler saving
+
+- Remove the What if? comparison section and its instructions.
+- Place a prominent Save plate action and a Saved plates button above the plate. Save the current meal directly, with a suggested editable name.
+- Simplify saved-meal copy, retain loading with undo and confirmed deletion, and keep existing saved experiments readable as their changed plates.
+
+## 2026-10-22 — Experiment notebook
+
+- Save up to ten named original/current plate pairs in local browser storage and reopen them after reload. Preserve portions, cooking oil, food forms, vessels, selection, and live arrangements; recalculate nutrition with the bundled data.
+- Undo opening an experiment to restore the previous plate and comparison. Confirm deletion, retain unsupported entries, and report unavailable or full storage without silently discarding work.
+- Keep the current plate when clicking the home logo. Replace the doubling-only learning hint with an explanation that also fits larger portions.
+- Add persistence, malformed-data, recovery, undo, mobile, keyboard, and non-WebGL regression coverage.
+
 ## 2026-10-15 — Refined Indonesian food models
 
 - Add independent Sliced/Whole controls for timun with undo, preserving edible grams and nutrition. Separate the slices to remove intersections, soften their seed details, and add a tapered green whole cucumber. Use each form’s geometry for rendering, placement, and physics.
