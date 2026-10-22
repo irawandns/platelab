@@ -3,6 +3,7 @@ import { foodById } from "./nutrition";
 import { DEFAULT_PLATE_SKIN, plateSkins, type PlateSkin } from "./plate-skins";
 import type { CookingSettings, FoodPose, PlateItem } from "../types";
 import { normalizeCooking } from "./cooking";
+import type { ExperimentPlates } from "./notebook";
 import { trayAddPosition, trayPosition, type PlateType } from "./meal-tray";
 import {
   DEFAULT_PLATE_CM,
@@ -22,7 +23,7 @@ export function clampPosition(
   const factor = length > radius ? radius / length : 1;
   return [x * factor, z * factor];
 }
-interface Snapshot {
+export interface Snapshot {
   plateType: PlateType;
   plateSkin: PlateSkin;
   plateDiameterCm: number;
@@ -32,11 +33,15 @@ interface Snapshot {
 interface State extends Snapshot {
   sceneRevision: number;
   restorePhysics: boolean;
-  history: Snapshot[];
+  history: (Snapshot & { comparisonBaseline?: Snapshot | null })[];
   comparisonBaseline: Snapshot | null;
   captureComparison: () => void;
   restoreComparison: () => void;
   endComparison: () => void;
+  capturePlate: () => Snapshot;
+  openPlate: (plate: Snapshot) => void;
+  captureExperiment: () => ExperimentPlates | null;
+  openExperiment: (plates: ExperimentPlates) => void;
   announcement: string;
   add: (foodId: string, position?: [number, number]) => void;
   select: (id: string | null) => void;
@@ -83,7 +88,7 @@ const changed = (state: State) => ({
   sceneRevision: state.sceneRevision + 1,
   restorePhysics: false,
 });
-const remember = (state: State) => [
+const remember = (state: State, includeComparison = false) => [
   ...state.history.slice(-29),
   {
     items: state.items,
@@ -91,6 +96,9 @@ const remember = (state: State) => [
     plateDiameterCm: state.plateDiameterCm,
     plateSkin: state.plateSkin,
     plateType: state.plateType,
+    ...(includeComparison
+      ? { comparisonBaseline: structuredClone(state.comparisonBaseline) }
+      : {}),
   },
 ];
 const snapshot = (state: State): Snapshot =>
@@ -123,7 +131,7 @@ const fitItem = (
           ),
         ),
 });
-export const usePlate = create<State>((set) => ({
+export const usePlate = create<State>((set, get) => ({
   plateType: "ceramic",
   plateDiameterCm: DEFAULT_PLATE_CM,
   plateSkin: DEFAULT_PLATE_SKIN,
@@ -134,6 +142,41 @@ export const usePlate = create<State>((set) => ({
   restorePhysics: false,
   announcement: "",
   comparisonBaseline: null,
+  capturePlate: () => snapshot(captureState(get())),
+  openPlate: (plate) =>
+    set((state) => {
+      state = captureState(state);
+      return {
+        ...structuredClone(plate),
+        comparisonBaseline: null,
+        history: remember(state, true),
+        sceneRevision: state.sceneRevision + 1,
+        restorePhysics: true,
+        announcement: "Plate loaded. Undo restores your previous plate.",
+      };
+    }),
+  captureExperiment: () => {
+    const state = get();
+    return state.comparisonBaseline
+      ? {
+          original: structuredClone(state.comparisonBaseline),
+          current: snapshot(captureState(state)),
+        }
+      : null;
+  },
+  openExperiment: (plates) =>
+    set((state) => {
+      state = captureState(state);
+      return {
+        ...structuredClone(plates.current),
+        comparisonBaseline: structuredClone(plates.original),
+        history: remember(state, true),
+        sceneRevision: state.sceneRevision + 1,
+        restorePhysics: true,
+        announcement:
+          "Experiment opened. Undo restores your previous plate and comparison.",
+      };
+    }),
   captureComparison: () =>
     set((state) => {
       if (!state.items.length) return state;

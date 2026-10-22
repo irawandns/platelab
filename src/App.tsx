@@ -15,6 +15,7 @@ import { NutritionDashboard } from "./components/NutritionDashboard";
 import { PortionControls } from "./components/PortionControls";
 import { PlateSizeControls } from "./components/PlateSizeControls";
 import { FoodArt } from "./components/FoodArt";
+import { PlateSaveControls } from "./components/PlateSaveControls";
 import { foodModelId } from "./lib/scale";
 import { usePlate } from "./lib/store";
 import { foodById, portionLabel } from "./lib/nutrition";
@@ -29,7 +30,7 @@ export default function App() {
         Skip to your plate
       </a>
       <header className="site-header">
-        <a className="brand" href="./" aria-label="PlateLab home">
+        <a className="brand" href="#/" aria-label="PlateLab home">
           <span className="brand-icon">
             <span />
           </span>
@@ -102,6 +103,7 @@ export default function App() {
               </button>
             </div>
           </div>
+          <PlateSaveControls />
           <PlateSizeControls />
           <div className="plate-stage">
             <span className="plate-counter">
@@ -205,11 +207,9 @@ export default function App() {
               cleared plate.
             </li>
             <li>
-              <strong>Ask “What if?”</strong> Choose Compare changes to capture
-              your plate, then change a portion, food, or oil setting. Compare
-              Original, Current, and Change in the nutrition column. Restore
-              original brings the captured meal back; Keep changes finishes the
-              experiment. Reloading clears the comparison.
+              <strong>Save your plate.</strong> Choose Save plate above the
+              plate, give it a name, and save. Find it later in Saved plates.
+              Loading a plate can be undone.
             </li>
             <li>
               <strong>Try stacking.</strong> Every food settles onto the curved
@@ -229,7 +229,8 @@ export default function App() {
             unknown. Start with a 26 cm plate or enter your own diameter. Food
             dimensions are approximate; plate size changes never change
             nutrition. This experience does not give medical or dietary advice.
-            Your plate stays in this session and resets on reload.
+            Your current plate resets on reload. Saved plates stay in this
+            browser until you delete them or clear site data.
           </p>
           <button
             className="primary-button"

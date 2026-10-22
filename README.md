@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-The app has no backend, required credentials, analytics, or runtime data requests. Models, fonts, and nutrition data are bundled. A fresh page starts with an empty plate; reloading clears the current session. This is not yet an installable offline PWA.
+The app has no backend, required credentials, analytics, or runtime data requests. Models, fonts, and nutrition data are bundled. A fresh page starts with an empty plate; reloading clears the current session. Plates saved with **Save plate** remain in this browser and can be loaded from **Saved plates**. This is not yet an installable offline PWA.
 
 ## What works
 
@@ -27,12 +27,13 @@ The app has no backend, required credentials, analytics, or runtime data request
 - Broccoli uses compact, lobed florets with short branching stems. Portions add florets instead of enlarging a fixed trio: five illustrative florets at 100 g, ten at 200 g, with a smaller fractional floret between steps. This is a visual quantity cue, not a measured floret-weight conversion.
 - Live calorie, protein, carbohydrate, fat, and fiber estimates; inspect each food's preparation, serving conversion, and source.
 - Cooking oil experiments for tofu and chicken: As prepared, Sear, Pan-fry, Deep-fry, and Air-fry. Compare reference-food energy with added oil, or expand the details for grams/teaspoons/tablespoons, oil type, and how much of the oil used stays with your serving. Presets are editable example oil amounts, not measured frying absorption or full cooked-food nutrition. Custom oil stays fixed per serving; presets scale with food weight. Cooking changes support undo.
-- “What if?” comparison: capture one original plate per session, experiment with foods, portions, and cooking oil, and compare original/current nutrition with signed differences. Inspect the original food list, replace the baseline, restore the entire original arrangement with undo, or keep your changes. Missing data stays unknown; no plate is scored. Works with keyboard controls and without WebGL.
+- Take photo: open a clean preview of your current plate, choose Warm table, Studio, or Dark lighting, and use Angled, Top view, or Current view. Download a 2048 × 2048 PNG with real shadows and no interface. Photo settings leave the meal unchanged; WebGL is required. See the [photo guide](docs/photo-mode.md).
+- Save plate: a prominent button above the plate saves your current meal with a name. Open Saved plates to load or delete up to ten meals stored in this browser. Loading is undoable and preserves portions, oil settings, vessel, forms, and arrangement. Existing saved experiments load their changed plate. See the [saved plates guide](docs/saved-plates.md).
 - Remove, clear, and undo the last 30 changes; a 24-item plate capacity.
 - Rule-based learning notes without health scores or daily targets.
 - Responsive desktop/tablet/mobile layout, reduced motion, keyboard alternatives, accessible help dialog, and a non-WebGL fallback for the nutrition workflow. On mobile, a persistent Add food button opens the searchable shelf in a bottom sheet; picking food closes it and returns to the plate without page scrolling. The sheet supports keyboard dismissal, focus restoration, and its own scroll area.
 
-Food models share a centimetre scale and plausible regular-serving dimensions. Eggs and bread repeat whole pieces; fractional pieces use estimated size. Mounds and weighed solids grow by volume. See [visual dimensions and limits](src/data/visual-scale.md). Save/load and guided lessons remain future improvements.
+Food models share a centimetre scale and plausible regular-serving dimensions. Eggs and bread repeat whole pieces; fractional pieces use estimated size. Mounds and weighed solids grow by volume. See [visual dimensions and limits](src/data/visual-scale.md). Guided lessons remain a future improvement.
 
 To try stacking, drag two or three tofu portions from the shelf onto the same spot, place cheese on bread, or drag chicken onto rice. Every portion moves as one rigid group, including its repeated pieces. Rice and noodles stay cohesive mounds; soft-food deformation and independently tumbling pieces remain future improvements.
 

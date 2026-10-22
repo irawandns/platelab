@@ -79,7 +79,7 @@ export function getInsight(items: PlateItem[]) {
       (i) => i.portionGrams >= foodById[i.foodId].defaultPortionGrams * 2,
     )
   )
-    return "Twice the portion, twice the nutrients. Each estimate scales with the edible weight of your food.";
+    return "A larger portion contributes more nutrients. Each food’s estimates scale with its edible weight.";
   if (items.some((i) => foodById[i.foodId].nutrientsPer100g.fiber === null))
     return "Missing data is not zero. A food on this plate has no reported fiber value, so the fiber total is a known subtotal.";
   if (items.filter((i) => foodById[i.foodId].category === "Protein").length > 1)

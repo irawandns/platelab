@@ -56,9 +56,11 @@ function ceramicGeometry(radius: number) {
 export function PlateModel({
   diameterCm,
   skin,
+  showShadow = true,
 }: {
   diameterCm: number;
   skin: PlateSkin;
+  showShadow?: boolean;
 }) {
   const palette = plateSkins[skin];
   const radius = plateRadius(diameterCm);
@@ -89,15 +91,17 @@ export function PlateModel({
           clearcoatRoughness={0.2}
         />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.105, 0]}>
-        <circleGeometry args={[radius * 1.025, 80]} />
-        <meshBasicMaterial
-          color="#555b38"
-          transparent
-          opacity={0.06}
-          depthWrite={false}
-        />
-      </mesh>
+      {showShadow && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.105, 0]}>
+          <circleGeometry args={[radius * 1.025, 80]} />
+          <meshBasicMaterial
+            color="#555b38"
+            transparent
+            opacity={0.06}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
     </group>
   );
 }

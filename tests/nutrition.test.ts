@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { foods, foodById, forPortion, summarize } from "../src/lib/nutrition";
+import {
+  foods,
+  foodById,
+  forPortion,
+  summarize,
+  getInsight,
+} from "../src/lib/nutrition";
 import rawNutrients from "../src/data/usda-nut_data.json";
 import rawWeights from "../src/data/usda-weight.json";
 import tkpiFoods from "../src/data/tkpi-foods.json";
@@ -63,6 +69,14 @@ describe("auditable food data", () => {
   });
 });
 describe("nutrition calculations", () => {
+  it("never describes a 2.5× or 3× portion as doubled", () => {
+    for (const grams of [200, 250, 300]) {
+      const meal = [item("rice", grams), item("broccoli", 100)];
+      expect(getInsight(meal)).not.toContain("Twice");
+      expect(getInsight(meal)).toContain("Each food");
+      expect(summarize(meal).totals.calories).toBe(grams * 1.3 + 35);
+    }
+  });
   it("scales the Indonesian foods and preserves unknown fish fiber", () => {
     const meal = [
       item("timun", 50),

@@ -733,7 +733,7 @@ Avoid:
 - Meal insights
 - Extended undo/redo history (basic undo is P0)
 - Food comparison
-- Save/load plate
+- Save/load plate (implemented: Save plate and Saved plates beside the plate)
 - Improved animations
 - Additional food models
 - Guided first-time experience
@@ -869,7 +869,23 @@ These refinements preserve the product's educational focus while resolving ambig
 - **Data model:** The actual interfaces are in `src/types.ts`. Plate coordinates use `[x, z]` on a fixed-height plane; nutrition is independent of position. Model IDs match food IDs. Data source metadata and food-specific serving conversions are explicit.
 - **Capacity:** Limit the plate to 24 independently selectable instances to bound render cost. The UI explains when the plate is full. Food positions are clamped with a conservative footprint for each current portion; larger portions and smaller plates reclamp existing positions. Oversized portions are centered and may extend past the eating area, with a visible explanation. Overlap is permitted; the food list always allows selecting obscured objects.
 - **Accessibility:** Every canvas action has ordinary button/input alternatives. Use native controls and a modal dialog, visible focus styles, reduced-motion handling, and live action announcements. If WebGL fails, nutrition and non-canvas controls remain usable.
-- **Session behavior:** The first visit starts with an empty plate. The current meal stays in memory and resets on reload; save/load and persistent plates remain P1. No telemetry is collected.
+- **Session behavior:** Each page load starts with an empty plate. Save plate, above the 3D plate, stores a named copy of the current meal in browser storage. Saved plates lists up to ten meals and supports loading and confirmed deletion. Loading can be undone. Portions, oil settings, vessel, selection, forms, and live arrangements are retained; nutrition is recalculated. Existing saved experiments remain readable and load their changed plate. Unsupported entries and unreadable storage are preserved with an explanation. Clearing site data removes saved plates. No telemetry is collected.
 - **Mobile food picking:** A persistent bottom Add food button opens the existing searchable, filterable food library in a modal bottom sheet. Its food grid scrolls independently, and choosing a food closes the sheet and restores focus to the trigger without scrolling the page. Desktop and tablet retain the sidebar shelf.
 - **Broccoli portions:** Use a compact cluster of five illustrative florets per regular 100 g serving. Larger portions add full-size florets; fractional remainders use a smaller floret. Short branching stems and lobed crowns preserve the low-poly style. The five-floret conversion and dimensions are visual estimates; edible grams remain authoritative. Rendered pieces and their collision hulls share their layout, scale, and quarter-turn rotations.
 - **Validation:** Automated functional and calculation checks are separate from usability studies and hardware benchmarks. A software-rendered cloud browser cannot establish the 60 FPS mid-range laptop target or the broadband startup target. Those release acceptance criteria remain open until measured on a named reference device.
+
+## 19. Photo mode
+
+Take photo sits beside Save plate. It opens a separate, lazy-loaded photo scene
+from a copy of the current meal, including its live positions and rotations.
+Warm table with Angled framing is the default. Warm table, Studio, and Dark
+presets set the surface, lighting, and shadows; Angled, Top view, and Current
+view set the camera. Preset cameras fit the entire meal; Current view uses the
+editor camera position, target, and field of view in a square frame.
+
+The photo contains no interface, selection ring, or nutrition labels. Download
+PNG renders 2048 × 2048 pixels on demand and restores preview resolution after
+capture. No meal state, portions, camera, or undo history is changed by photo
+settings. Closing releases the photo scene. Without WebGL, explain the limit
+and disable export rather than offering a blank photo. No external image or
+lighting assets, account, or server are required.
