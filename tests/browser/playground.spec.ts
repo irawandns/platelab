@@ -48,7 +48,7 @@ test("builds a meal, adjusts portions, removes, clears and undoes", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(15);
+  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(23);
   await expect(page.getByTestId("total-calories")).toHaveText("0");
   await expect(page.locator("canvas")).toBeVisible();
   await page.screenshot({
@@ -87,7 +87,7 @@ test("supports search, filtering, keyboard input, duplicate foods and source det
 }) => {
   await page.goto("./");
   await page.getByRole("button", { name: "Fruits", exact: true }).click();
-  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(1);
+  await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(3);
   await page.getByRole("textbox", { name: "Search foods" }).fill("avocado");
   await expect(page.getByRole("button", { name: /^Add / })).toHaveCount(1);
   const avocado = page.getByRole("button", {
@@ -281,7 +281,7 @@ test("keeps the nutrition workflow usable without WebGL", async ({ page }) => {
   await expect(page.getByTestId("total-calories")).toHaveText("260");
 });
 
-test("renders all fifteen models on tablet without overflow or runtime errors", async ({
+test("renders all twenty-three models on tablet without overflow or runtime errors", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -290,19 +290,19 @@ test("renders all fifteen models on tablet without overflow or runtime errors", 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   const addButtons = page.getByRole("button", { name: /^Add / });
-  await expect(addButtons).toHaveCount(15);
-  for (let index = 0; index < 15; index++) await addButtons.nth(index).click();
-  await expect(page.getByRole("button", { name: /^Select / })).toHaveCount(15);
+  await expect(addButtons).toHaveCount(23);
+  for (let index = 0; index < 23; index++) await addButtons.nth(index).click();
+  await expect(page.getByRole("button", { name: /^Select / })).toHaveCount(23);
   const canvas = page.locator('canvas[data-ready="true"]');
   await expect(canvas).toBeVisible();
   // The DOM controls and the canvas use separate React roots. Confirm that the
-  // renderer processed all fifteen additions before testing the next edit.
-  await expect(canvas).toHaveAttribute("data-physics-revision", "15");
+  // renderer processed all twenty-three additions before testing the next edit.
+  await expect(canvas).toHaveAttribute("data-physics-revision", "23");
   await page.getByRole("button", { name: /^Select Cheddar/ }).click();
   await page.getByLabel("Edible weight").fill("999");
   await page.getByLabel("Edible weight").press("Enter");
   await expect(page.getByLabel("Edible weight")).toHaveValue("90");
-  await expect(canvas).toHaveAttribute("data-physics-revision", "16");
+  await expect(canvas).toHaveAttribute("data-physics-revision", "24");
   await expect(canvas).toHaveAttribute("data-physics", "settled", {
     timeout: 15000,
   });

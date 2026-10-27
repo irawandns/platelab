@@ -19,9 +19,9 @@ const item = (foodId: string, grams: number): PlateItem => ({
   position: [0, 0],
 });
 describe("auditable food data", () => {
-  it("has 15 available distinct foods with auditable values and missing data", () => {
-    expect(foods).toHaveLength(15);
-    expect(new Set(foods.map((f) => f.id)).size).toBe(15);
+  it("has 23 available distinct foods with auditable values and missing data", () => {
+    expect(foods).toHaveLength(23);
+    expect(new Set(foods.map((f) => f.id)).size).toBe(23);
     const nutrientIds: Record<Nutrient, string> = {
       calories: "208",
       protein: "203",

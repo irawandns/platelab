@@ -1,3 +1,5 @@
+import { FoodFamilyArt } from "./FoodFamilyArt";
+
 // Small vector thumbnails share the geometry and colors of the procedural 3D foods.
 export function FoodArt({
   id,
@@ -375,7 +377,7 @@ export function FoodArt({
       aria-hidden="true"
     >
       <ellipse cx="48" cy="72" rx="29" ry="5" fill="#524e36" opacity=".07" />
-      {art[id]}
+      {art[id] ?? <FoodFamilyArt id={id} />}
     </svg>
   );
 }

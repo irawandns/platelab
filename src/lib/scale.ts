@@ -84,6 +84,14 @@ export const foodDimensionsCm: Record<string, [number, number, number]> = {
   kerupuk: [6, 0.8, 5],
   "ikan-kembung": [16, 2.5, 5],
   "bakwan-sayur": [6, 1.5, 5.5],
+  potato: [4.5, 2.5, 4],
+  "sweet-potato": [4.5, 2.5, 4],
+  corn: [8, 2.8, 7],
+  peas: [8, 2.8, 7],
+  "green-beans": [9, 2, 7],
+  tomato: [6, 1.2, 6],
+  orange: [5, 2.5, 3],
+  strawberry: [3.5, 3.5, 3],
 };
 export const physicsFoods = new Set(
   Object.keys(foodDimensionsCm).filter((id) => id !== "timun-whole"),
@@ -96,6 +104,11 @@ export const illustratedPiecesPerServing: Record<string, number> = {
   timun: 5,
   kerupuk: 3,
   "bakwan-sayur": 1,
+  potato: 3,
+  "sweet-potato": 3,
+  tomato: 3,
+  orange: 4,
+  strawberry: 5,
 };
 export interface VisualPiece {
   position: [number, number, number];
