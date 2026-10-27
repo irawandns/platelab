@@ -177,3 +177,74 @@ test("keeps experiments independent on mobile and without WebGL", async ({
     page.getByRole("region", { name: "Cooking experiment" }),
   ).toHaveCount(0);
 });
+
+for (const mobile of [false, true]) {
+  test(`offers cooking methods for the protein category on ${mobile ? "mobile" : "desktop"}`, async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+    if (mobile) await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("./");
+    const panel = page.getByRole("region", {
+      name: "Cooking experiment",
+      exact: true,
+    });
+    for (const food of [
+      { name: "Boiled egg", calories: 77.5, grams: 50 },
+      { name: "Chicken breast", calories: 165, grams: 100 },
+      { name: "Salmon", calories: 206, grams: 100 },
+      { name: "Firm tofu", calories: 144, grams: 100 },
+      { name: "Tempeh", calories: 195, grams: 100 },
+      { name: "Ikan kembung", calories: 125, grams: 100 },
+    ]) {
+      if (mobile)
+        await page
+          .getByRole("button", { name: "Add food", exact: true })
+          .click();
+      await page
+        .getByRole("button", { name: `Add ${food.name}`, exact: true })
+        .click();
+      await expect(
+        panel.getByRole("radio", { name: "As prepared", exact: true }),
+      ).toBeChecked();
+      for (const [method, oilPer100g] of [
+        ["Sear", 2],
+        ["Pan-fry", 5],
+        ["Deep-fry", 10],
+        ["Air-fry", 1],
+      ] as const) {
+        await panel.getByRole("radio", { name: method, exact: true }).check();
+        await expect(page.getByTestId("total-calories")).toHaveText(
+          Math.round(
+            food.calories + ((oilPer100g * food.grams) / 100) * 8.84,
+          ).toString(),
+        );
+      }
+      await panel
+        .getByRole("radio", { name: "As prepared", exact: true })
+        .check();
+      await expect(page.getByTestId("total-calories")).toHaveText(
+        Math.round(food.calories).toString(),
+      );
+      await page.getByRole("button", { name: "Undo last change" }).click();
+      await expect(
+        panel.getByRole("radio", { name: "Air-fry", exact: true }),
+      ).toBeChecked();
+      await expect(panel).toContainText("not measured frying absorption");
+      await page
+        .getByRole("button", { name: "Clear plate", exact: true })
+        .click();
+    }
+    if (mobile)
+      await page.getByRole("button", { name: "Add food", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Add White rice", exact: true })
+      .click();
+    await expect(panel).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+  });
+}

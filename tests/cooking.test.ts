@@ -5,10 +5,18 @@ import {
   oilForItem,
   oils,
   retainedOilGrams,
+  supportsCooking,
 } from "../src/lib/cooking";
-import { foodById, forItem, forPortion, summarize } from "../src/lib/nutrition";
+import {
+  foods,
+  foodById,
+  forItem,
+  forPortion,
+  summarize,
+} from "../src/lib/nutrition";
 import { registerPoseReader, usePlate } from "../src/lib/store";
 import source from "../src/data/usda-oils.json";
+import { parseSnapshot } from "../src/lib/notebook";
 import type {
   CookingSettings,
   FoodPose,
@@ -120,6 +128,62 @@ describe("oil data and calculations", () => {
 });
 
 describe("cooking state", () => {
+  it("offers cooking experiments across the protein shelf only", () => {
+    for (const food of foods)
+      expect(supportsCooking(food.id)).toBe(food.category === "Protein");
+    for (const id of ["missing", "__proto__", "milk"])
+      expect(supportsCooking(id)).toBe(false);
+  });
+
+  it.each(["egg", "chicken", "salmon", "tofu", "tempeh", "ikan-kembung"])(
+    "supports methods, portions, saved plates, and undo for %s",
+    (foodId) => {
+      const actions = usePlate.getState();
+      actions.add(foodId);
+      actions.add(foodId);
+      const item = usePlate.getState().items[0];
+      const base = forItem(item);
+      for (const [method, preset] of Object.entries(cookingMethods)) {
+        actions.setCooking(item.instanceId, {
+          method: method as CookingSettings["method"],
+          oilId: "soybean",
+        });
+        const updated = usePlate.getState().items[0];
+        const oilGrams = (preset.oilGramsPer100g * item.portionGrams) / 100;
+        expect(forItem(updated).calories).toBeCloseTo(
+          base.calories! + oilGrams * 8.84,
+        );
+        expect(forItem(updated).fat).toBeCloseTo(base.fat! + oilGrams);
+        for (const key of ["protein", "carbohydrates", "fiber"] as const)
+          expect(forItem(updated)[key]).toBe(base[key]);
+        expect(usePlate.getState().items[1].cooking).toBeUndefined();
+      }
+      actions.setPortion(item.instanceId, item.portionGrams * 2);
+      expect(retainedOilGrams(usePlate.getState().items[0])).toBe(
+        (item.portionGrams * 2) / 100,
+      );
+      actions.setCooking(item.instanceId, {
+        method: "pan-fry",
+        oilId: "olive",
+        oil: { grams: 3, basis: "used", retainedPercent: 50 },
+      });
+      const saved = JSON.parse(JSON.stringify(actions.capturePlate()));
+      const restored = parseSnapshot(saved)!;
+      expect(restored).not.toBeNull();
+      actions.reset();
+      actions.openPlate(restored);
+      expect(usePlate.getState().items[0].cooking).toEqual(
+        saved.items[0].cooking,
+      );
+      expect(retainedOilGrams(usePlate.getState().items[0])).toBe(1.5);
+      actions.setCooking(item.instanceId);
+      expect(forItem(usePlate.getState().items[0])).toEqual(
+        forPortion(foodById[foodId], item.portionGrams * 2),
+      );
+      actions.undo();
+      expect(retainedOilGrams(usePlate.getState().items[0])).toBe(1.5);
+    },
+  );
   it("replaces presets without accumulating oil and supports undo to the reference", () => {
     const actions = usePlate.getState();
     actions.add("chicken");

@@ -1,4 +1,5 @@
 import oilData from "../data/cooking-oils.json";
+import foodData from "../data/foods.json";
 import type {
   CookingMethod,
   CookingSettings,
@@ -19,8 +20,12 @@ export const cookingMethods: Record<
 };
 export const MAX_OIL_GRAMS = 100;
 export const DEFAULT_OIL: OilId = "soybean";
-export const supportsCooking = (foodId: string) =>
-  ["tofu", "chicken"].includes(foodId);
+const cookingFoodIds = new Set(
+  foodData
+    .filter((food) => food.available !== false && food.category === "Protein")
+    .map((food) => food.id),
+);
+export const supportsCooking = (foodId: string) => cookingFoodIds.has(foodId);
 export const oils = oilData as {
   id: OilId;
   name: string;
