@@ -1,5 +1,24 @@
 # MVP validation
 
+## Crowded-plate unit runtime budget — 2026-10-27
+
+The [merged food-release run](https://github.com/irawandns/platelab/actions/runs/40447773108)
+failed because the 23-food unit scenario took 5,153 ms, exceeding Vitest's
+implicit 5,000 ms wall-clock timeout. The failure was a test-runner timeout;
+no settlement, penetration, or nutrition assertion reported a failure.
+
+Local profiling attributed approximately 4.1 seconds to simulation and
+0.18 seconds to vertex assertions. The two 23/24-food cases now use an explicit
+15-second runtime budget, consistent with the other large physics scenarios.
+Their fixed 900 calls to `step(1 / 60)`, sleeping-body assertion, contact and
+plate tolerances, finite positions, and nutrition invariance remain unchanged.
+The global default timeout and application physics are unchanged.
+
+Both crowded cases passed in three fresh focused runs. Local validation uses
+README-supported Node 22.20.0 and the existing unchanged dependencies; GitHub CI
+uses the pinned Node 24.19.0. Browser E2E is optional and was not rerun for this
+unit-test-only change.
+
 ## Food variety release preparation — 2026-10-27
 
 - Prepared the eight-food collection on an isolated checkout of main

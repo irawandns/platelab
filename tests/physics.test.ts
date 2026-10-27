@@ -389,6 +389,9 @@ describe("controlled food physics", () => {
         simulation.dispose();
       }
     },
+    // The full 23/24-food simulation can exceed Vitest's default five-second
+    // wall-clock budget on CI. settle() still enforces its 900-step limit.
+    15000,
   );
   it("stacks three tofu portions and drops upper food after its support is removed", () => {
     let simulation = new FoodPhysics(26, [
