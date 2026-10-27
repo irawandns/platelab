@@ -163,6 +163,33 @@ describe("controlled food physics", () => {
       simulation?.dispose();
     }
   });
+  it("settles every intermediate arrangement while adding the expanded food collection", () => {
+    let simulation: FoodPhysics | undefined;
+    const unregister = registerPoseReader(() => simulation?.poses() ?? {});
+    try {
+      for (const id of [
+        "potato",
+        "sweet-potato",
+        "corn",
+        "peas",
+        "green-beans",
+        "tomato",
+        "orange",
+        "strawberry",
+      ]) {
+        usePlate.getState().add(id);
+        const items = usePlate.getState().items;
+        simulation?.dispose();
+        simulation = new FoodPhysics(26, items);
+        settle(simulation);
+        for (const food of items) clearOfPlate(simulation, food.instanceId);
+        usePlate.getState().commitPoses(simulation.poses());
+      }
+    } finally {
+      unregister();
+      simulation?.dispose();
+    }
+  });
   it("lets a demand render loop stop on the frame that finishes settling", () => {
     const simulation = new FoodPhysics(26, [item("rice")]);
     try {
@@ -319,44 +346,50 @@ describe("controlled food physics", () => {
       simulation.dispose();
     }
   });
-  it("settles a mixed plate containing every available food", () => {
-    for (const food of foods) usePlate.getState().add(food.id);
-    const items = usePlate.getState().items;
-    const nutrition = summarize(items);
-    const simulation = new FoodPhysics(26, items);
-    try {
-      settle(simulation);
-      expect(Object.keys(simulation.poses())).toHaveLength(foods.length);
-      for (const food of items) {
-        clearOfPlate(simulation, food.instanceId);
+  it.each([false, true])(
+    "settles a mixed plate containing every available food (extra rice: %s)",
+    (extraRice) => {
+      for (const food of foods) usePlate.getState().add(food.id);
+      if (extraRice) usePlate.getState().add("rice");
+      const items = usePlate.getState().items;
+      const nutrition = summarize(items);
+      const simulation = new FoodPhysics(26, items);
+      try {
+        settle(simulation);
+        expect(Object.keys(simulation.poses())).toHaveLength(
+          foods.length + Number(extraRice),
+        );
+        for (const food of items) {
+          clearOfPlate(simulation, food.instanceId);
+          expect(
+            simulation.pose(food.instanceId)!.position.every(Number.isFinite),
+          ).toBe(true);
+        }
+        const bodies = [...simulation.entries.values()].map(
+          (entry) => entry.body,
+        );
+        for (let a = 0; a < bodies.length; a++)
+          for (let b = a + 1; b < bodies.length; b++)
+            for (let i = 0; i < bodies[a].numColliders(); i++)
+              for (let j = 0; j < bodies[b].numColliders(); j++) {
+                const contact = bodies[a]
+                  .collider(i)
+                  .contactCollider(bodies[b].collider(j), 0.02);
+                if (contact) expect(contact.distance).toBeGreaterThan(-0.015);
+              }
         expect(
-          simulation.pose(food.instanceId)!.position.every(Number.isFinite),
-        ).toBe(true);
+          summarize(
+            items.map((food) => ({
+              ...food,
+              pose: simulation.pose(food.instanceId),
+            })),
+          ),
+        ).toEqual(nutrition);
+      } finally {
+        simulation.dispose();
       }
-      const bodies = [...simulation.entries.values()].map(
-        (entry) => entry.body,
-      );
-      for (let a = 0; a < bodies.length; a++)
-        for (let b = a + 1; b < bodies.length; b++)
-          for (let i = 0; i < bodies[a].numColliders(); i++)
-            for (let j = 0; j < bodies[b].numColliders(); j++) {
-              const contact = bodies[a]
-                .collider(i)
-                .contactCollider(bodies[b].collider(j), 0.02);
-              if (contact) expect(contact.distance).toBeGreaterThan(-0.015);
-            }
-      expect(
-        summarize(
-          items.map((food) => ({
-            ...food,
-            pose: simulation.pose(food.instanceId),
-          })),
-        ),
-      ).toEqual(nutrition);
-    } finally {
-      simulation.dispose();
-    }
-  });
+    },
+  );
   it("stacks three tofu portions and drops upper food after its support is removed", () => {
     let simulation = new FoodPhysics(26, [
       item("tofu", [0, 0], "base"),

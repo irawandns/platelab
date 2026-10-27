@@ -14,6 +14,7 @@ import {
 } from "three";
 import { CM_PER_UNIT, foodDimensionsCm, portionPieces } from "./scale";
 import { indonesianFoodParts } from "./indonesian-food-shapes";
+import { familyFoodParts } from "./food-families";
 
 export interface FoodPart {
   kind: "facet" | "box" | "torus" | "cylinder" | "circle" | "mesh";
@@ -35,6 +36,7 @@ export interface FoodPart {
 // Shared definitions keep collision hulls and visible models in the same scale.
 export const physicsFoodParts: Record<string, FoodPart[]> = {
   ...indonesianFoodParts,
+  ...familyFoodParts,
   "bakwan-sayur": [
     {
       kind: "facet",
@@ -309,7 +311,7 @@ export function foodPartGeometry(part: FoodPart) {
       return geometry;
     }
     case "facet":
-      return new IcosahedronGeometry(1, 1);
+      return new IcosahedronGeometry(1, part.args?.[1] ?? 1);
     case "box":
       return new BoxGeometry();
     case "torus":

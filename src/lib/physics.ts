@@ -55,7 +55,7 @@ export class FoodPhysics {
     });
     this.world.timestep = 1 / 120;
     // Compound foods and thin bread need extra iterations in crowded stacks.
-    this.world.numSolverIterations = 16;
+    this.world.numSolverIterations = items.length > 15 ? 24 : 16;
     this.world.integrationParameters.erp = 0.7;
     const plate = this.world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
     if (plateType === "meal-tray") {
@@ -153,13 +153,26 @@ export class FoodPhysics {
     const hulls = foodCollisionHulls(foodModelId(item), ratio);
     // Light, broad cracker shells lose motion faster than dense solid foods.
     const cracker = item.foodId === "kerupuk";
+    const sliced = [
+      "tomato",
+      "potato",
+      "sweet-potato",
+      "orange",
+      "strawberry",
+      "corn",
+      "peas",
+      "green-beans",
+    ].includes(item.foodId);
     const descriptor = RAPIER.RigidBodyDesc.dynamic()
-      .setLinearDamping(cracker ? 8 : 2)
-      .setAngularDamping(cracker ? 12 : 4)
+      .setLinearDamping(cracker || sliced ? 8 : 2)
+      .setAngularDamping(cracker || sliced ? 12 : 4)
       .setCcdEnabled(true);
     // A wider sliced serving can load thin bread in a crowded stack. Resolve
     // that contact island more accurately so the bread stays above the plate.
-    if (item.foodId === "bread") descriptor.setAdditionalSolverIterations(4);
+    if (item.foodId === "bread") descriptor.setAdditionalSolverIterations(8);
+    else if (cracker) descriptor.setAdditionalSolverIterations(12);
+    else if (item.foodId === "green-beans")
+      descriptor.setAdditionalSolverIterations(4);
     const pose = item.pose;
     descriptor.setTranslation(
       pose?.position[0] ?? item.position[0],
@@ -177,7 +190,7 @@ export class FoodPhysics {
     const body = this.world.createRigidBody(descriptor);
     for (const hull of hulls) {
       let collider: RAPIER.ColliderDesc | null;
-      if (cracker) {
+      if (cracker || item.foodId === "tomato") {
         // Explicit hull faces avoid a second nearly-coplanar hull reconstruction
         // in Rapier for this thin shell. The underlying points stay identical.
         const surface = new ConvexGeometry(
@@ -346,7 +359,9 @@ export class FoodPhysics {
               ? !insideWell(trayOutline, p.x, p.z)
               : Math.hypot(p.x, p.z) > plateRadius(this.diameterCm)))
         ) {
-          const [x, z] = this.fitPosition(entry.item, p.x, p.z);
+          // Return spilled food farther inside the vessel. Landing repeatedly
+          // on the same crowded rim can create an endless fall/return cycle.
+          const [x, z] = this.fitPosition(entry.item, p.x * 0.5, p.z * 0.5);
           entry.body.setRotation(identity, true);
           entry.body.setTranslation(
             { x, y: this.dropHeight(id, x, z) + clearance, z },

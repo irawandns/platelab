@@ -496,5 +496,213 @@
       "description": "Bakwan · table p. 11; vegetable-fritter glossary p. 93",
       "url": "https://lib.poltekkespalembang.ac.id/index.php?bid=15003&fid=94&p=fstream-pdf#page=18"
     }
+  },
+  {
+    "id": "potato",
+    "name": "Potato",
+    "category": "Carbohydrates",
+    "preparation": "Boiled flesh, without skin or salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 86.0,
+      "protein": 1.71,
+      "carbohydrates": 20.01,
+      "fat": 0.1,
+      "fiber": 1.8
+    },
+    "educationalDescription": "Potato provides carbohydrate; this reference describes boiled potato without added oil.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11367",
+      "description": "Potatoes, boiled, cooked without skin, flesh, without salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "sweet-potato",
+    "name": "Sweet potato",
+    "category": "Carbohydrates",
+    "preparation": "Boiled, without skin or salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 76.0,
+      "protein": 1.37,
+      "carbohydrates": 17.72,
+      "fat": 0.14,
+      "fiber": 2.5
+    },
+    "educationalDescription": "Sweet potato contributes carbohydrate and fiber. This serving uses edible boiled flesh.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11510",
+      "description": "Sweet potato, cooked, boiled, without skin",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "corn",
+    "name": "Sweet corn",
+    "category": "Carbohydrates",
+    "preparation": "Boiled yellow kernels, drained, without salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 96.0,
+      "protein": 3.41,
+      "carbohydrates": 20.98,
+      "fat": 1.5,
+      "fiber": 2.4
+    },
+    "educationalDescription": "Corn contributes carbohydrate and fiber. Edible grams refer to kernels, excluding the cob.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11168",
+      "description": "Corn, sweet, yellow, cooked, boiled, drained, without salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "peas",
+    "name": "Green peas",
+    "category": "Vegetables",
+    "preparation": "Boiled, drained, without salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 84.0,
+      "protein": 5.36,
+      "carbohydrates": 15.63,
+      "fat": 0.22,
+      "fiber": 5.5
+    },
+    "educationalDescription": "Peas contribute carbohydrate, plant protein, and fiber to a meal.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11305",
+      "description": "Peas, green, cooked, boiled, drained, without salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "green-beans",
+    "name": "Green beans",
+    "category": "Vegetables",
+    "preparation": "Boiled, drained, without salt",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 35.0,
+      "protein": 1.89,
+      "carbohydrates": 7.88,
+      "fat": 0.28,
+      "fiber": 3.2
+    },
+    "educationalDescription": "Green beans add fiber and a different texture to a meal. This reference has no added oil.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11053",
+      "description": "Beans, snap, green, cooked, boiled, drained, without salt",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "tomato",
+    "name": "Tomato",
+    "category": "Vegetables",
+    "preparation": "Raw, red and ripe",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 18.0,
+      "protein": 0.88,
+      "carbohydrates": 3.89,
+      "fat": 0.2,
+      "fiber": 1.2
+    },
+    "educationalDescription": "Tomato contributes water and fiber. This reference describes raw edible tomato.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "11529",
+      "description": "Tomatoes, red, ripe, raw, year round average",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "orange",
+    "name": "Orange",
+    "category": "Fruits",
+    "preparation": "Raw edible flesh, without peel",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 47.0,
+      "protein": 0.94,
+      "carbohydrates": 11.75,
+      "fat": 0.12,
+      "fiber": 2.4
+    },
+    "educationalDescription": "Orange contributes carbohydrate and fiber. Grams exclude the discarded peel.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "09200",
+      "description": "Oranges, raw, all commercial varieties",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
+  },
+  {
+    "id": "strawberry",
+    "name": "Strawberries",
+    "category": "Fruits",
+    "preparation": "Raw, edible fruit",
+    "defaultPortionGrams": 100,
+    "minPortionGrams": 25,
+    "maxPortionGrams": 300,
+    "servingLabel": "100 g",
+    "countable": false,
+    "conversionNote": "100 g edible food by weight. Model dimensions and piece counts are illustrative, not measured piece-to-gram conversions.",
+    "nutrientsPer100g": {
+      "calories": 32.0,
+      "protein": 0.67,
+      "carbohydrates": 7.68,
+      "fat": 0.3,
+      "fiber": 2.0
+    },
+    "educationalDescription": "Strawberries contribute carbohydrate and fiber. Grams exclude discarded leaves and stems.",
+    "source": {
+      "database": "USDA SR28 (2015)",
+      "id": "09316",
+      "description": "Strawberries, raw",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf"
+    }
   }
 ]

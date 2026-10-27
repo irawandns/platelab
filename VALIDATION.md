@@ -1,5 +1,24 @@
 # MVP validation
 
+## Food variety release preparation — 2026-10-27
+
+- Prepared the eight-food collection on an isolated checkout of main
+  `8c92e9ef948edda8af977dd4f0594a237aee421e`. The original working tree and its
+  kitchen prototype changes remain untouched. The release catalog has 23 foods.
+- `npm test`: 84 tests pass across 10 files, including source-row audits,
+  rendering resource cleanup, fractional portions, vessel contacts, intermediate
+  additions, and crowded 23/24-item plates.
+- `npm run build:pages`, `npm run format:check`, and `git diff --check`: pass.
+- One optional focused browser scenario passes against `/platelab/`: all eight
+  new foods have thumbnails, sources, independent portions, undo, correct totals,
+  and settled models. The full browser suite was not run.
+- Local validation uses README-supported Node 22.20.0, unchanged dependencies,
+  and Playwright Chromium 156 with SwiftShader. Browser/server execution requires
+  sandbox escalation. The repository pins Node 24.19.0 for GitHub Actions; local
+  fallback results are not claimed as equivalent to that CI environment.
+- A production deployment is confirmed only after the release is merged and its
+  deployment and live bundle are checked. Hardware performance remains unmeasured.
+
 ## Performance analysis — 2026-10-15
 
 The [performance notes](docs/performance.md) record production bundle sizes,

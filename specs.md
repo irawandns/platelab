@@ -889,3 +889,23 @@ capture. No meal state, portions, camera, or undo history is changed by photo
 settings. Closing releases the photo scene. Without WebGL, explain the limit
 and disable export rather than offering a blank photo. No external image or
 lighting assets, account, or server are required.
+
+## 20. Expanded food collection
+
+The available catalog contains 23 foods, including eight additional SR28 records:
+boiled potato, sweet potato, corn, peas and green beans, plus raw tomato, orange
+and strawberries. Each defaults to 100 g edible food and supports 25–300 g.
+The existing four archived foods remain unavailable. Source preparations,
+explicit edible weights, and missing-data rules continue to govern nutrition.
+
+The additions share reusable procedural recipes and vector shelf thumbnails.
+All plate/photo models batch compatible parts using vertex colors and reuse
+calibrated geometry and materials across servings. Repeated pieces use instancing;
+each portion remains one rigid body. New regular servings stay below 1,500
+triangles. Shared assets and instance buffers are released after use.
+
+The on-demand renderer, capped pixel ratio, 24-item plate capacity and 30-step
+undo history are retained. Device startup, frame times and sustained memory
+behavior require measurement on named hardware. Implementation details and
+visual estimates are documented in `docs/food-variety.md` and
+`src/data/visual-scale.md`.

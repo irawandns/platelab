@@ -2,7 +2,7 @@
 
 The original 15 food records in `foods.json` use the **USDA National Nutrient Database for Standard Reference, Release 28 (2015)**. Values are per 100 g of edible food, in the preparation state shown in each record. This is historical reference data, not live FoodData Central data or brand-specific advice.
 
-Fifteen foods are currently available, including four TKPI additions described below. Carrot, banana, apple, and whole milk have `available: false` and are excluded from the shelf and runtime food lookup. Their records and source rows remain here for later restoration; the fruit weights and milk conversion below describe those archived records.
+Twenty-three foods are currently available, including eight additional USDA foods and four TKPI additions described below. Carrot, banana, apple, and whole milk have `available: false` and are excluded from the shelf and runtime food lookup. Their records and source rows remain here for later restoration; the fruit weights and milk conversion below describe those archived records.
 
 Original documentation: https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf
 
@@ -100,3 +100,27 @@ and bakwan 50 g. Piece counts and whole-fish dimensions are visual estimates,
 not database household conversions. Users enter edible grams; increasing
 timun, kerupuk, or bakwan portions adds illustrative pieces. Nutrition remains
 weight-based. Timun also offers a whole form that scales by estimated volume; switching forms preserves edible grams and nutrition. Its silhouette is not a measured whole-cucumber weight. Prepared recipes and individual piece weights vary.
+
+## Additional food families — 2026-10-22
+
+Eight new records use the same pinned SR28 mirror and table checksums above.
+All five tracked nutrient rows are present for each food; values are retained
+without intermediate rounding and verified against the source rows in tests.
+
+| Food         | NDB ID | Preparation                                  | Default serving    |
+| ------------ | ------ | -------------------------------------------- | ------------------ |
+| Potato       | 11367  | Boiled flesh, without skin or salt           | 100 g              |
+| Sweet potato | 11510  | Boiled, without skin or salt                 | 100 g              |
+| Sweet corn   | 11168  | Boiled yellow kernels, drained, without salt | 100 g kernels      |
+| Green peas   | 11305  | Boiled, drained, without salt                | 100 g              |
+| Green beans  | 11053  | Boiled, drained, without salt                | 100 g              |
+| Tomato       | 11529  | Raw, red and ripe                            | 100 g              |
+| Orange       | 09200  | Raw, all commercial varieties                | 100 g edible flesh |
+| Strawberries | 09316  | Raw                                          | 100 g edible fruit |
+
+Default servings are weighed app examples. Piece counts and dimensions are
+artistic estimates, not household gram conversions. The retained household
+weight rows document the original source but are not used to claim a measured
+weight for the models. Orange excludes peel, corn excludes the cob, and
+strawberries exclude discarded leaves and stems. Boiled foods have no added
+salt or oil in these records.

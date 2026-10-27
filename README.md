@@ -15,7 +15,7 @@ The app has no backend, required credentials, analytics, or runtime data request
 
 ## What works
 
-- Fifteen available foods with procedural low-poly models and vector thumbnails. Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
+- Twenty-three available foods with procedural low-poly models and vector thumbnails. Eight additions include potato, sweet potato, corn, peas, green beans, tomato, orange, and strawberries; shared rendering keeps repeated pieces inexpensive. See the [food variety guide](docs/food-variety.md). Carrot, banana, apple, and whole milk are disabled for now; their source records are retained.
 - A 26 cm default plate, 20/26/32 cm presets, and custom 18–36 cm outer diameters. Plate changes preserve food size and nutrition and support undo.
 - Collapsible Plate options with size presets, custom diameter, and Cream, Sage, or Blue ceramic skins. The compact summary shows your current size and skin. Skin changes support undo and preserve food positions, portions, and nutrition.
 - A selectable stainless meal tray with five recessed compartments and a fixed 29 × 23 cm footprint. Foods settle against its wells and dividers; a compartment selector provides keyboard movement. Vessel changes preserve portions, cooking settings, and nutrition, and support undo. See the [meal tray guide](docs/meal-tray.md) for dimensions and limits.

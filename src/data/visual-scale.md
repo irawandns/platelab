@@ -2,7 +2,7 @@
 
 One scene unit equals **5 cm**. Plate diameter is measured across the outer rim: default **26 cm**, presets **20/26/32 cm**, custom **18–36 cm** in 0.1 cm steps. The flat eating area is 70% of the outer diameter. A continuous revolved ceramic shell has a shallow curved shoulder, rolled brown outer rim, fine inner brown line, cream glaze, and an underside foot ring, inspired by the supplied Indonesian household plate reference. Total height is 3.5 cm; diameter changes affect width and depth while height stays fixed. Camera framing fits the largest supported plate at each viewport size and does not change when selecting a new diameter.
 
-The fifteen available procedural models are normalized to the following bounding dimensions, including decorations such as stems. Most rows describe a regular serving; broccoli describes one illustrative floret. Width and depth lie along the plate; height is vertical. These are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight. Carrot, banana, apple, and whole milk are currently unavailable.
+The twenty-three available procedural models are normalized to the following bounding dimensions, including decorations such as stems. Most rows describe a regular serving; broccoli describes one illustrative floret. Width and depth lie along the plate; height is vertical. These are **visual estimates**, not USDA measurements or validated gram-to-volume conversions. Different real foods can have different shapes, packing, and densities at the same edible weight. Carrot, banana, apple, and whole milk are currently unavailable.
 
 | Food           | Regular serving                         | Width × height × depth (cm) |
 | -------------- | --------------------------------------- | --------------------------- |
@@ -29,3 +29,20 @@ Every available food uses controlled Rapier rigid-body physics. Placement bounds
 Adding/moving a food sweeps its hulls down from above to find support on the plate or existing foods. The sweep starts above the rotation-independent reach of existing portions, including tilted bread slices. During dragging it is controlled by the pointer above that support, without imparting pointer-speed impulses into other foods; release resumes normal contact, gravity, friction, damping, and tilt. Physics steps at 120 Hz with sixteen solver iterations and at most 0.1 seconds of catch-up per rendered frame. Sleeping bodies stop further frame requests. Food that spills outside the scene is returned to the plate. Portion changes rebuild the affected collision hull and settle the arrangement. Diameter changes re-place foods on the resized surface. Undo captures live positions and quaternions before a user edit and restores those poses asleep, including edits made during settling. Simulation frames do not consume undo history.
 
 Before physics initializes, conservative geometric clearance keeps the temporary models above the ceramic. Oversized portions are centered. Keyboard movement and the non-WebGL nutrition workflow remain available. Nutrition depends only on edible grams; position, orientation, camera and plate diameter cannot change it. Clearing retains the chosen diameter. Convex envelopes approximate uneven surfaces; soft-food deformation, loose grains, and independently moving pieces are not simulated.
+
+## Additional food families
+
+The new foods default to 100 g edible weight. Potato and sweet potato use three
+illustrative 4.5 × 2.5 × 4 cm chunks; tomato uses three 6 × 1.2 × 6 cm slices;
+orange uses four 5 × 2.5 × 3 cm wedges; strawberries use five 3.5 × 3.5 × 3 cm
+berries. Width × height × depth describes each piece, including decorative
+details. Full-size pieces repeat with portion weight and fractional remainders
+use cube-root scaling. These counts are visual estimates, not measured serving
+conversions. Corn and peas each use an 8 × 2.8 × 7 cm regular mound; green beans
+use a 9 × 2 × 7 cm regular cluster. These cohesive servings scale by volume.
+
+Shared model geometry and material batches are reused between servings and
+photo views. Visible geometry is calibrated through the same transforms as
+collision hulls. Small kernel meshes stay inside a single convex envelope per
+serving; they do not become independently simulated objects. See the
+[food variety guide](../../docs/food-variety.md) for rendering and validation.

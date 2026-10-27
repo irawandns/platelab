@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-27 — Expanded food collection
+
+- Add potato, sweet potato, sweet corn, green peas, green beans, tomato, orange, and strawberries with sourced nutrition, thumbnails, portion controls, and procedural 3D models.
+- Share calibrated food geometry and materials across plate and photo views, retaining portion-based physics and bounded rendering cost.
+- Extend nutrition, resource-lifetime, scale, physics, and focused browser coverage for the 23-food catalog.
+
 ## 2026-10-22 — Photo mode
 
 - Add Take photo beside Save plate with Warm table, Studio, and Dark lighting, real soft shadows, and Angled, Top view, or Current view framing.

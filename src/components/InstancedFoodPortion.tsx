@@ -1,56 +1,31 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
+import { Euler, InstancedMesh, Matrix4, Quaternion, Vector3 } from "three";
 import {
-  Euler,
-  InstancedMesh,
-  Matrix4,
-  MeshStandardMaterial,
-  Quaternion,
-  Vector3,
-} from "three";
-import {
-  foodPartGeometry,
-  foodPartTransforms,
-  physicsFoodParts,
-  type FoodPart,
-} from "../lib/food-shapes";
+  foodRenderResource,
+  retainFoodRenderResource,
+  type FoodRenderBatch,
+} from "../lib/food-render-resources";
 import { portionPieces, type VisualPiece } from "../lib/scale";
 
 function PartInstances({
-  part,
-  transform,
+  batch,
   pieces,
 }: {
-  part: FoodPart;
-  transform: Matrix4;
+  batch: FoodRenderBatch;
   pieces: VisualPiece[];
 }) {
   const mesh = useRef<InstancedMesh>(null);
   const { invalidate } = useThree();
-  // Bake calibration into each shared geometry. Instance matrices then contain
-  // only uniform portion scale and rotation, keeping normals and ray bounds
-  // correct without sheared instance transforms.
-  const geometry = useMemo(
-    () => foodPartGeometry(part).applyMatrix4(transform),
-    [part, transform],
-  );
-  const material = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: part.color,
-        vertexColors: !!part.colors,
-        flatShading: part.kind !== "torus" && part.kind !== "circle",
-        roughness: part.kind === "facet" ? 0.95 : 0.9,
-      }),
-    [part],
-  );
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
+  const { geometry, material } = batch;
+  useLayoutEffect(() => {
+    const current = mesh.current;
+    // Shared geometry/materials have their own lifetime; the instance buffer
+    // belongs to this serving and must still be released on resize/removal.
+    return () => {
+      current?.dispose();
+    };
+  }, [pieces.length, geometry, material]);
   useLayoutEffect(() => {
     if (!mesh.current) return;
     pieces.forEach((piece, index) => {
@@ -84,13 +59,9 @@ export function InstancedFoodPortion({
   ratio: number;
 }) {
   const pieces = useMemo(() => portionPieces(id, ratio), [id, ratio]);
-  const transforms = useMemo(() => foodPartTransforms(id), [id]);
-  return physicsFoodParts[id].map((part, index) => (
-    <PartInstances
-      key={index}
-      part={part}
-      transform={transforms[index]}
-      pieces={pieces}
-    />
+  const resource = useMemo(() => foodRenderResource(id), [id]);
+  useLayoutEffect(() => retainFoodRenderResource(resource), [resource]);
+  return resource.batches.map((batch, index) => (
+    <PartInstances key={index} batch={batch} pieces={pieces} />
   ));
 }
